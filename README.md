@@ -47,7 +47,7 @@ Geforce GTX 750 and higher (AMD is currently not supported)
 
 Modern CPU with AVX instructions
 
-16GB RAM
+4GB RAM
 
 Windows 10
 
@@ -55,12 +55,7 @@ Windows 10
 
 <tr><td colspan=2 align="center">
 
-coming soon
-<!--
-
 <a href="doc/setup_tutorial_windows/index.md">Windows 10 x64</a>
-
--->
 
 </td></tr>
 
