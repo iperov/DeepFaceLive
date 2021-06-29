@@ -41,7 +41,7 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### or select **_Device index_** in **_Camera source_**
+### or select **_Device index_** and **_Driver_**  in **_Camera source_**
 
 <img src="select_camera_source.jpg"></img>
 
