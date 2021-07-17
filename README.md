@@ -2,30 +2,27 @@
 
 <tr><td colspan=2 align="center">
 
-
-![](doc/logo_deepfacelive.png)
-
-## Real-time face swap for PC streaming or video calls.
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-![](doc/swapshot.jpg)
-
-powered by
+![](doc/deepfacelive_intro.png)
 
 ![](doc/logo_onnx.png)
+![](doc/logo_nvidia.png)
 ![](doc/logo_python.png)
 
 </td></tr>
 <tr><td colspan=2 align="center">
+
+
 
 ## Available celebrities
 
 -- coming soon --
 
 <!--
-# ![](doc/logo_nvidia.png)
+</td></tr>
+<tr><td colspan=2 align="center">
+
+
+# 
 
 <img src="doc/Tom_Cruise.jpg"></img>
 
