@@ -3,7 +3,7 @@
 <tr><td colspan=2 align="center">
 
 
-# DeepFaceLive
+![](doc/logo_deepfacelive.png)
 
 ## Real-time face swap for PC streaming or video calls.
 
@@ -15,7 +15,6 @@
 powered by
 
 ![](doc/logo_onnx.png)
-![](doc/logo_nvidia.png)
 ![](doc/logo_python.png)
 
 </td></tr>
@@ -26,6 +25,7 @@ powered by
 -- coming soon --
 
 <!--
+# ![](doc/logo_nvidia.png)
 
 <img src="doc/Tom_Cruise.jpg"></img>
 
