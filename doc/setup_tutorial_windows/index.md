@@ -76,7 +76,7 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### in **_Stream output_** choose **_Mode_** : **_Final Frame_** and press **_Show window_**
+### in **_Stream output_** choose **_Mode_** : **_Merged frame_** and press **_window_**
 
 <img src="stream_output.jpg"></img>
 
