@@ -587,16 +587,6 @@ class Localization:
                 'ru-RU' : 'Сохранить выходной стрим в виде набора изображений в директорию.',
                 'zh-CN' : '将输出流的图像序列保存到目录中。'},
 
-    'QStreamOutput.save_sequence_path':{
-                'en-US' : 'Save sequence',
-                'ru-RU' : 'Сохр. секвенцию',
-                'zh-CN' : '保存序列帧'},
-
-    'QStreamOutput.help.save_sequence_path':{
-                'en-US' : 'Save image sequence of output stream to the directory.',
-                'ru-RU' : 'Сохранить выходной стрим в виде набора изображений в директорию.',
-                'zh-CN' : '将输出流的图像序列保存到目录中。'},
-
     'QStreamOutput.save_fill_frame_gap':{
                 'en-US' : 'Fill frame gap',
                 'ru-RU' : 'Заполнить пустоты',
@@ -686,10 +676,12 @@ class Localization:
                 'en-US' : 'Aligned face',
                 'ru-RU' : 'Выровненное лицо',
                 'zh-CN' : '对齐校正后的脸'},
+
     'StreamOutput.SourceType.SWAPPED_FACE':{
                 'en-US' : 'Swapped face',
                 'ru-RU' : 'Заменённое лицо',
                 'zh-CN' : '换后的脸'},
+                
     'StreamOutput.SourceType.MERGED_FRAME':{
                 'en-US' : 'Merged frame',
                 'ru-RU' : 'Склеенный кадр',
