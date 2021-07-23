@@ -1,0 +1,1 @@
+from .winmm import timeBeginPeriod

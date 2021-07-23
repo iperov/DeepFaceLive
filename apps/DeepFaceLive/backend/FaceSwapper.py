@@ -1,0 +1,339 @@
+import time
+from pathlib import Path
+
+import numpy as np
+from modelhub import DFLive
+from xlib import os as lib_os
+from xlib.facemeta import FaceMask, FaceSwap
+from xlib.image.ImageProcessor import ImageProcessor
+from xlib.mp import csw as lib_csw
+from xlib.python import all_is_not_None
+
+from .BackendBase import (BackendConnection, BackendDB, BackendHost,
+                          BackendSignal, BackendWeakHeap, BackendWorker,
+                          BackendWorkerState)
+
+
+class FaceSwapper(BackendHost):
+    def __init__(self, weak_heap : BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection, dfm_models_path : Path, backend_db : BackendDB = None):
+        super().__init__(backend_db=backend_db,
+                         sheet_cls=Sheet,
+                         worker_cls=FaceSwapperWorker,
+                         worker_state_cls=WorkerState,
+                         worker_start_args=[weak_heap, reemit_frame_signal, bc_in, bc_out, dfm_models_path])
+
+    def get_control_sheet(self) -> 'Sheet.Host': return super().get_control_sheet()
+
+
+class FaceSwapperWorker(BackendWorker):
+    def get_state(self) -> 'WorkerState': return super().get_state()
+    def get_control_sheet(self) -> 'Sheet.Worker': return super().get_control_sheet()
+
+    def on_start(self, weak_heap : BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection, dfm_models_path : Path):
+        self.weak_heap = weak_heap
+        self.reemit_frame_signal = reemit_frame_signal
+        self.bc_in = bc_in
+        self.bc_out = bc_out
+        self.dfm_models_path = dfm_models_path
+
+        self.pending_bcd = None
+
+        self.dfm_model_initializer = None
+        self.dfm_model = None
+
+        lib_os.set_timer_resolution(1)
+
+        state, cs = self.get_state(), self.get_control_sheet()
+
+        cs.model.call_on_selected(self.on_cs_model_info)
+        cs.device.call_on_selected(self.on_cs_device)
+        cs.face_id.call_on_number(self.on_cs_face_id)
+        cs.morph_factor.call_on_number(self.on_cs_morph_factor)
+        cs.presharpen_amount.call_on_number(self.on_cs_presharpen_amount)
+        cs.pre_gamma_red.call_on_number(self.on_cs_gamma_red)
+        cs.pre_gamma_green.call_on_number(self.on_cs_pre_gamma_green)
+        cs.pre_gamma_blue.call_on_number(self.on_cs_pre_gamma_blue)
+        cs.two_pass.call_on_flag(self.on_cs_two_pass)
+
+        cs.model.enable()
+        cs.model.set_choices( DFLive.get_available_models_info(dfm_models_path), none_choice_name='@misc.menu_select')
+        cs.model.select(state.model)
+
+
+    def on_cs_model_info(self, idx, model):
+        state, cs = self.get_state(), self.get_control_sheet()
+        if state.model == model:
+
+            cs.device.enable()
+            cs.device.set_choices( DFLive.get_available_devices(), none_choice_name='@misc.menu_select')
+            cs.device.select(state.model_state.device)
+        else:
+            state.model = model
+            state.model_state = ModelState()
+            self.save_state()
+            self.restart()
+
+    def on_cs_device(self, idxs, device):
+        state, cs = self.get_state(), self.get_control_sheet()
+        if device is not None and state.model_state.device == device:
+            self.dfm_model_initializer = DFLive.DFMModel_from_info(state.model, device)
+            self.set_busy(True)
+        else:
+            state.model_state = ModelState()
+            state.model_state.device = device
+            self.save_state()
+            self.restart()
+
+    def on_cs_face_id(self, face_id):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        cfg = cs.face_id.get_config()
+        if model_state is not None:
+            face_id = model_state.face_id = int(np.clip(face_id, cfg.min, cfg.max))
+            cs.face_id.set_number(face_id)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+    def on_cs_presharpen_amount(self, presharpen_amount):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        cfg = cs.presharpen_amount.get_config()
+        if model_state is not None:
+            presharpen_amount = model_state.presharpen_amount = float(np.clip(presharpen_amount, cfg.min, cfg.max))
+            cs.presharpen_amount.set_number(presharpen_amount)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+    def on_cs_morph_factor(self, morph_factor):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        cfg = cs.morph_factor.get_config()
+        if model_state is not None:
+            morph_factor = model_state.morph_factor = float(np.clip(morph_factor, cfg.min, cfg.max))
+            cs.morph_factor.set_number(morph_factor)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+    def on_cs_gamma_red(self, pre_gamma_red):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        cfg = cs.pre_gamma_red.get_config()
+        if model_state is not None:
+            pre_gamma_red = model_state.pre_gamma_red = float(np.clip(pre_gamma_red, cfg.min, cfg.max))
+            cs.pre_gamma_red.set_number(pre_gamma_red)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+    def on_cs_pre_gamma_green(self, pre_gamma_green):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        cfg = cs.pre_gamma_green.get_config()
+        if model_state is not None:
+            pre_gamma_green = model_state.pre_gamma_green = float(np.clip(pre_gamma_green, cfg.min, cfg.max))
+            cs.pre_gamma_green.set_number(pre_gamma_green)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+    def on_cs_pre_gamma_blue(self, pre_gamma_blue):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        cfg = cs.pre_gamma_blue.get_config()
+        if model_state is not None:
+            pre_gamma_blue = model_state.pre_gamma_blue = float(np.clip(pre_gamma_blue, cfg.min, cfg.max))
+            cs.pre_gamma_blue.set_number(pre_gamma_blue)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+
+
+    def on_cs_two_pass(self, two_pass):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        if model_state is not None:
+            model_state.two_pass = two_pass
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+
+
+
+
+
+    def on_tick(self):
+        state, cs = self.get_state(), self.get_control_sheet()
+
+        if self.dfm_model_initializer is not None:
+            events = self.dfm_model_initializer.process_events()
+
+            if events.prev_status_downloading:
+                cs.model_dl_progress.disable()
+
+            if events.new_status_downloading:
+                cs.model_dl_progress.enable()
+                cs.model_dl_progress.set_config( lib_csw.Progress.Config(title='@FaceSwapper.downloading_model') )
+                cs.model_dl_progress.set_progress(0)
+            elif events.new_status_initialized:
+                self.dfm_model = events.dfm_model
+                self.dfm_model_initializer = None
+
+                model_width, model_height = self.dfm_model.get_input_res()
+
+                cs.model_info_label.enable()
+                cs.model_info_label.set_config( lib_csw.InfoLabel.Config(info_icon=True,
+                                                    info_lines=[f'@FaceSwapper.model_information',
+                                                                '',
+                                                                f'@FaceSwapper.filename',
+                                                                f'{self.dfm_model.get_model_path().name}',
+                                                                '',
+                                                                f'@FaceSwapper.resolution',
+                                                                f'{model_width}x{model_height}']) )
+                cs.face_id.enable()
+                cs.face_id.set_config(lib_csw.Number.Config(min=0, max=16, step=1, decimals=0, allow_instant_update=True))
+                cs.face_id.set_number(state.model_state.face_id if state.model_state.face_id is not None else 0)
+
+                if self.dfm_model.has_morph_value():
+                    cs.morph_factor.enable()
+                    cs.morph_factor.set_config(lib_csw.Number.Config(min=0, max=1, step=0.01, decimals=2, allow_instant_update=True))
+                    cs.morph_factor.set_number(state.model_state.morph_factor if state.model_state.morph_factor is not None else 0.75)
+
+                cs.presharpen_amount.enable()
+                cs.presharpen_amount.set_config(lib_csw.Number.Config(min=0, max=10, step=0.1, decimals=1, allow_instant_update=True))
+                cs.presharpen_amount.set_number(state.model_state.presharpen_amount if state.model_state.presharpen_amount is not None else 0)
+
+                cs.pre_gamma_red.enable()
+                cs.pre_gamma_red.set_config(lib_csw.Number.Config(min=0.01, max=4, step=0.01, decimals=2, allow_instant_update=True))
+                cs.pre_gamma_red.set_number(state.model_state.pre_gamma_red if state.model_state.pre_gamma_red is not None else 1)
+
+                cs.pre_gamma_green.enable()
+                cs.pre_gamma_green.set_config(lib_csw.Number.Config(min=0.01, max=4, step=0.01, decimals=2, allow_instant_update=True))
+                cs.pre_gamma_green.set_number(state.model_state.pre_gamma_green if state.model_state.pre_gamma_green is not None else 1)
+
+                cs.pre_gamma_blue.enable()
+                cs.pre_gamma_blue.set_config(lib_csw.Number.Config(min=0.010, max=4, step=0.01, decimals=2, allow_instant_update=True))
+                cs.pre_gamma_blue.set_number(state.model_state.pre_gamma_blue if state.model_state.pre_gamma_blue is not None else 1)
+
+                cs.two_pass.enable()
+                cs.two_pass.set_flag(state.model_state.two_pass if state.model_state.two_pass is not None else False)
+
+                self.set_busy(False)
+                self.reemit_frame_signal.send()
+
+            elif events.new_status_error:
+                self.set_busy(False)
+                cs.model_dl_error.enable()
+                cs.model_dl_error.set_error(events.error)
+
+            if events.download_progress is not None:
+                cs.model_dl_progress.set_progress(events.download_progress)
+
+
+        if self.pending_bcd is None:
+            self.start_profile_timing()
+
+            bcd = self.bc_in.read(timeout=0.005)
+            if bcd is not None:
+                bcd.assign_weak_heap(self.weak_heap)
+
+                model_state = state.model_state
+                dfm_model = self.dfm_model
+                if all_is_not_None(dfm_model, model_state):
+                    face_id = model_state.face_id
+                    if face_id is not None:
+                        for i, face_mark in enumerate(bcd.get_face_mark_list()):
+                            if face_id == i:
+                                face_align = face_mark.get_face_align()
+                                if face_align is not None:
+                                    face_align_image_name = face_align.get_image_name()
+                                    face_align_image = bcd.get_image(face_align_image_name)
+                                    if face_align_image is not None:
+
+                                        pre_gamma_red = model_state.pre_gamma_red
+                                        pre_gamma_green = model_state.pre_gamma_green
+                                        pre_gamma_blue = model_state.pre_gamma_blue
+
+                                        fai_ip = ImageProcessor(face_align_image)
+                                        if model_state.presharpen_amount != 0:
+                                            fai_ip.sharpen(factor=model_state.presharpen_amount)
+
+                                        if pre_gamma_red != 1.0 or pre_gamma_green != 1.0 or pre_gamma_blue != 1.0:
+                                            fai_ip.adjust_gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
+                                        face_align_image = fai_ip.get_image('HWC')
+
+                                        celeb_face, celeb_face_mask_img, face_align_mask_img = dfm_model.convert(face_align_image, morph_factor=model_state.morph_factor)
+                                        celeb_face, celeb_face_mask_img, face_align_mask_img = celeb_face[0], celeb_face_mask_img[0], face_align_mask_img[0]
+
+                                        if model_state.two_pass:
+                                            celeb_face, celeb_face_mask_img, _ = dfm_model.convert(celeb_face, morph_factor=model_state.morph_factor)
+                                            celeb_face, celeb_face_mask_img = celeb_face[0], celeb_face_mask_img[0]
+
+                                        face_align_mask = FaceMask()
+                                        face_align_mask.set_image_name(f'{face_align_image_name}_mask')
+                                        face_align.set_face_mask(face_align_mask)
+                                        bcd.set_image(face_align_mask.get_image_name(), face_align_mask_img)
+
+                                        face_swap = FaceSwap()
+                                        face_swap.set_image_name (f"{face_align_image_name}_swapped")
+                                        face_align.set_face_swap(face_swap)
+                                        bcd.set_image(face_swap.get_image_name(), celeb_face)
+
+                                        face_swap_mask = FaceMask()
+                                        face_swap_mask.set_image_name(f'{face_swap.get_image_name()}_mask')
+                                        face_swap.set_face_mask(face_swap_mask)
+                                        bcd.set_image(face_swap_mask.get_image_name(), celeb_face_mask_img)
+
+                self.stop_profile_timing()
+                self.pending_bcd = bcd
+
+        if self.pending_bcd is not None:
+            if self.bc_out.is_full_read(1):
+                self.bc_out.write(self.pending_bcd)
+                self.pending_bcd = None
+            else:
+                time.sleep(0.001)
+
+class Sheet:
+    class Host(lib_csw.Sheet.Host):
+        def __init__(self):
+            super().__init__()
+            self.model = lib_csw.DynamicSingleSwitch.Client()
+            self.model_info_label = lib_csw.InfoLabel.Client()
+            self.model_dl_progress = lib_csw.Progress.Client()
+            self.model_dl_error = lib_csw.Error.Client()
+            self.device = lib_csw.DynamicSingleSwitch.Client()
+            self.face_id = lib_csw.Number.Client()
+            self.morph_factor = lib_csw.Number.Client()
+            self.presharpen_amount = lib_csw.Number.Client()
+            self.pre_gamma_red = lib_csw.Number.Client()
+            self.pre_gamma_blue = lib_csw.Number.Client()
+            self.pre_gamma_green = lib_csw.Number.Client()
+            self.two_pass = lib_csw.Flag.Client()
+
+    class Worker(lib_csw.Sheet.Worker):
+        def __init__(self):
+            super().__init__()
+            self.model = lib_csw.DynamicSingleSwitch.Host()
+            self.model_info_label = lib_csw.InfoLabel.Host()
+            self.model_dl_progress = lib_csw.Progress.Host()
+            self.model_dl_error = lib_csw.Error.Host()
+            self.device = lib_csw.DynamicSingleSwitch.Host()
+            self.face_id = lib_csw.Number.Host()
+            self.morph_factor = lib_csw.Number.Host()
+            self.presharpen_amount = lib_csw.Number.Host()
+            self.pre_gamma_red = lib_csw.Number.Host()
+            self.pre_gamma_blue = lib_csw.Number.Host()
+            self.pre_gamma_green = lib_csw.Number.Host()
+            self.two_pass = lib_csw.Flag.Host()
+
+class ModelState(BackendWorkerState):
+    device = None
+    face_id : int = None
+    morph_factor : float = None
+    presharpen_amount : float = None
+    pre_gamma_red : float = None
+    pre_gamma_blue : float = None
+    pre_gamma_green: float = None
+    two_pass : bool = None
+
+class WorkerState(BackendWorkerState):
+    model : DFLive.DFMModelInfo = None
+    model_state : ModelState = None

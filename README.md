@@ -37,7 +37,7 @@ You can train your own face model using <a href="https://github.com/iperov/DeepF
 
 ## Minimum system requirements
 
-NVIDIA  GTX 750 or higher (AMD is not supported)
+NVIDIA  GTX 750 or higher (AMD is not supported yet)
 
 Modern CPU with AVX instructions
 

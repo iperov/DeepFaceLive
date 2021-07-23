@@ -1,0 +1,3982 @@
+
+from xlib import time as lib_time
+import numpy as np
+import cv2
+import cupy as cp
+import cupyx.scipy.ndimage
+import scipy
+import scipy.ndimage
+
+from typing import Union, Tuple
+
+from xlib.image import ImageProcessor
+
+# mat = def_mat = np.array([[ 8.5966533e-01,  8.3356246e-02, 1.9525000e+02 ],#
+#                           [-8.3356142e-02,  8.5966533e-01, 8.8052826e+01 ]], np.float32)#
+        
+# is_cp = False
+# while True:
+#     print('is_cp : ', is_cp)
+#     img = cv2.imread(r'D:\DevelopPython\test\00000.png')
+#     if is_cp:
+#         img = cp.asarray(img)
+#     is_cp = not is_cp
+    
+#     ip = ImageProcessor(img)
+#     #ip.erode_blur(50,0)
+#     ip.median_blur(5, 100)
+#     #ip.degrade_resize( np.random.rand() )
+
+
+#     #ip.erode_blur(50, 50, fade_to_border=False)
+#     #ip.resize( (500,500) )
+#     #ip.warpAffine(mat, 1920, 1080)
+#     x = ip.get_image('HWC')
+
+#     x = cp.asnumpy(x)
+#     cv2.imshow('', x )
+#     cv2.waitKey(0) 
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+
+# from xlib import opencl as lib_cl
+# import numpy as np
+# from xlib import time as lib_time
+
+# d = lib_cl.get_available_devices_info()
+# dev = lib_cl.get_device(d[0])
+
+# img1_np = np.ones( (1920,1080,3), dtype=np.float32 )
+# img2_np = np.ones( (1920,1080,3), dtype=np.float32 )
+# img3_np = np.ones( (1920,1080,3), dtype=np.float32 )
+
+# img1_t = dev.alloc ( size=1920*1080*3*4 )
+# img2_t = dev.alloc ( size=1920*1080*3*4 )
+# img3_t = dev.alloc ( size=1920*1080*3*4 )
+
+# while True:
+#     with lib_time.timeit():    
+#         img1_t.set(img1_np)
+#         img2_t.set(img2_np)
+#         img3_t.set(img3_np)
+        
+#         dev.wait()
+
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+
+# def func():
+#     print('1')    
+#     yield 1
+
+# f = func()
+
+
+# #x=np.ndarray((1,), dtype=np.uint8, buffer=bytes(1))
+# # q = bytearray([1,2,3])
+
+# class Test():
+#     class Status:
+#         INITIALIZING, DOWNLOADING, INITIALIZED, ERROR, = range(4)
+        
+#     ...
+
+# while True:
+#     with lib_time.timeit():
+#         for _ in range(10000000):
+#             Test()
+
+# from enum import IntEnum
+
+
+# class PreinsertMeta(type):
+
+#     # def resolvedField(self):
+#     #     if isinstance(self.field, basestring):
+#     #         tbl, fld = self.field.split(".")
+#     #         self.field = (tbl, fld)
+#     #     return self.field
+
+#     # Field = property(resolvedField)
+
+#     # def __getattr__(self, attrname):
+#     #     if attrname == "field":
+#     #         if isinstance(self.field, basestring):
+#     #             tbl, fld = self.field.split(".")
+#     #             self.field = (tbl, fld)
+#     #         return self.field
+#     #     else:
+#     #         return super(PreinsertMeta, self).__getattr__(attrname)
+#     # @classmethod
+#     # def __prepare__(mcs, name, bases, **kwargs):
+#     #     print('  Meta.__prepare__(mcs=%s, name=%r, bases=%s, **%s)' % (
+#     #         mcs, name, bases, kwargs
+#     #     ))
+#     #     import code
+#     #     code.interact(local=dict(globals(), **locals()))
+
+        
+        
+#     #     return {}
+    
+#     @classmethod
+#     def __setattr__(self, attrname, value):
+#         print('__setattr__')
+#         super(PreinsertMeta, self).__setattr__(attrname, value)
+
+
+# class CEnum(metaclass=PreinsertMeta):
+    
+        
+#     class ID:
+#         ...
+
+# class Status(CEnum):
+#     ST0 = CEnum.ID()
+#     ST1 = CEnum.ID()
+    
+    
+# #    # class __metaclass__(type):
+# #     def __getattr__(self, name):
+# #         print('123')
+# #         return self.values.index(name)
+    
+# x = Status.ST0
+
+# from xlib import mp as lib_mp
+# import pickle
+
+# data = [0,1,2,3,[1,2]]
+
+# rd = lib_mp.MPSPSCMRRingData(table_size=8192, heap_size_mb=1)
+
+# rd.write( bytes(1024*1024-24) )
+# rd.write( bytes(1024*1024-24) )
+# #x = rd.read()
+# #x=pickle.loads(x)
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+# import onnx
+# m = onnx.load_model(r'D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\onnxruntime\YoloV5Face\YoloV5Face.onnx')
+
+# 
+
+#from xlib import torch as lib_torch
+#x = lib_torch.get_available_devices()
+#s = lib_torch.S3FD(x[0])
+#lib_torch.S3FD.save_as_onnx(r'D:\s3fd.onnx')
+
+# if __name__ == '__main__':
+#     #from 
+# from xlib import opencl as cl
+
+# x = cl.get_available_devices_info()
+
+# import xlib.onnxruntime as lib_ort
+
+# x = lib_ort.get_available_devices_info()
+
+# from xlib.deepface import DFMModelInfo
+# from xlib import onnxruntime as lib_ort
+
+# import numpy as np
+
+# c = DFMModelInfo(DFMModelInfo.CelebType.CUSTOM, device=lib_ort.get_cpu_device())
+# c.convert( np.zeros( (224,224,3), np.float32 ))
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+# yolo = lib_ort.YoloV5Face( lib_ort.CPUDeviceInfo() )
+
+# #img = cv2.imread(r'D:\DevelopPython\test\00009.jpg')
+# img = cv2.imread(r'D:\DevelopPPP\projects\DeepFaceLive\multiphotos\000004.jpg')
+# #img = cv2.resize(img, (640,384))
+
+# H,W,C = img.shape
+# rects = yolo.extract(img)[0]
+
+# rects = [ FaceURect.from_ltrb( (l/W, t/H, r/W, b/H) ) for l,t,r,b in rects ]
+# print(len(rects))
+# rects[0].draw(img, (0,255,0))
+
+# cv2.imshow('', img)
+# cv2.waitKey(0)
+
+
+
+import io
+import multiprocessing
+import pickle
+import time
+from xlib.io import FormattedMemoryViewIO
+
+from .MPAtomicInt32 import MPAtomicInt32
+from .MPSharedMemory import MPSharedMemory
+
+class MPDataSlot:
+    """
+    Multiprocess high performance multireader-multiwriter single data slot.
+    MPDataSlot operates any picklable python object
+    The slot mean only one object can exist in the slot in one time.
+    
+    Has acquire/release methods to init/free resource
+    By default MPDataSlot in non acquired state.
+    """
+    def __init__(self, size_mb):
+        self._size = size = size_mb*1024*1024
+        self._shared_mem = None
+        self._atom = None
+        
+        self._avail_size = size-4-4-8
+        self._last_pop_f = None
+        self._acq_count = 0
+        
+    def acquire(self):
+        """
+        acquire the resource. It will be initialized if acquired first time
+        """
+        self._acq_count += 1
+        if self._acq_count == 1:
+            shared_mem = self._shared_mem = MPSharedMemory(self._size)
+            self._atom = MPAtomicInt32(ar=shared_mem.get_ar(), index=0)
+        
+    def release(self):
+        """
+        release the resource.
+        """
+        if self._acq_count == 0:
+            raise Exception('wrong release call, acq_count == 0')
+            
+        self._acq_count -= 1 
+        if self._acq_count == 0:
+            self._shared_mem = None
+            self._atom = None
+            
+    def push(self, d):
+        """
+        push obj to the slot
+
+        arguments
+
+         d      picklable python object
+         
+        returns True if success, 
+                otherwise False - the slot is not emptied by receiver side.
+        """
+        if self._acq_count == 0:
+            return False
+            
+        # Construct the data in local memory
+        d_dumped = pickle.dumps(d, 4)
+        size = len(d_dumped)
+        
+        if size >= self._avail_size:
+            raise Exception('size of MPDataSlot is not enough to push the object')
+        
+        if self._atom.compare_exchange(0, 1) != 0:
+            return False
+
+        fmv = FormattedMemoryViewIO(self._shared_mem.get_mv()[4:])
+        ver, = fmv.get_fmt('I')
+        fmv.write_fmt('IQ', ver+1, size)
+        fmv.write (d_dumped)
+
+        self._atom.set(2, with_lock=False)
+
+        return True
+
+    def get_pop(self, your_ver):
+        """
+        same as pop() but the data will not be popped.
+        Also checks current ver with 'your_ver'
+        
+        returns
+            obj, ver
+
+        if nothing to get or ver the same, obj is None
+        """
+        if self._acq_count == 0:
+            return None, your_ver
+            
+        
+        fmv = FormattedMemoryViewIO(self._shared_mem.get_mv()[4:])
+        ver, = fmv.read_fmt('I')
+        if ver == 0 or ver == your_ver:
+            return None, your_ver
+
+        f = self._last_pop_f = io.BytesIO()
+        
+        while True:
+            initial_val = self._atom.multi_compare_exchange( (0,2), 1)
+            if initial_val in (0,2):
+                break
+            time.sleep(0.001)
+
+        fmv.seek(0)
+        ver, size = fmv.read_fmt('IQ')
+        fmv.readinto(f, size )
+
+        self._atom.set(initial_val, with_lock=False)
+        
+        f.seek(0)
+        return pickle.load(f), ver
+
+
+    def pop(self):
+        """
+        pop the MPDataSlotData
+        returns
+
+            MPDataSlotData or None
+        """
+        if self._acq_count == 0:
+            return None
+
+        # Acquire the lock and copy the data to the local memory
+        if self._atom.compare_exchange(2, 1) != 2:
+            return None
+
+        f = self._last_pop_f = io.BytesIO()
+        fmv = FormattedMemoryViewIO(self._shared_mem.get_mv()[4:])
+        ver, size = fmv.read_fmt('IQ')
+        fmv.readinto(f, size )
+        
+        self._atom.set(0, with_lock=False)
+        
+        f.seek(0)
+        
+        return pickle.load(f)
+    
+    def get_last_pop(self):
+        """
+        get last popped data
+        returns
+            MPDataSlotData or None
+        """
+        if self._acq_count == 0:
+            return None
+            
+        f = self._last_pop_f
+        if f is not None:
+            f.seek(0)
+            return pickle.load(f)
+        return None
+
+    def __getstate__(self):
+        if self._acq_count == 0:
+            raise Exception('Pickling non-acquired MPDataSlot')
+        
+        d = self.__dict__.copy()
+        d.pop('_last_pop_f')
+        return d
+
+    def __setstate__(self, d):
+        self.__dict__.update(d)
+        self._last_pop_f = None
+        self._acq_count = 1
+
+
+
+
+
+
+
+
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from .QXFlatPanel import QXFlatPanel
+from ._part_QXWidget import _part_QXWidget
+from ..gui.QXPixmap import QXPixmap
+from ..gui.QXImageSequence import QXImageSequence
+from ..core.QXTimeLine import QXTimeLine
+
+class QXFlatPushButton(QAbstractButton, _part_QXWidget):
+    """
+    Flat push button for QXFlatPanel
+    
+    by default fills only minimum space
+    
+    if text specified, the minimum_width/height will be set for text the font
+    """
+    def __init__(self, 
+                       text=None, pixmap=None, depth_shift=0, checkable=False, 
+                       toggled=None, released=None,
+                       font=None, tooltip_text=None, size_policy=None, minimum_width=None, minimum_height=None, fixed_width=None, fixed_height=None, hided=False, enabled=True):
+        super().__init__()
+        
+        if size_policy is None:
+            size_policy = (QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+                
+        if pixmap is not None:
+            if not isinstance(pixmap, QXPixmap):
+                raise ValueError('pixmap must be an instance of QXPixmap')
+            
+        self._pixmap = pixmap
+        self.setCheckable(checkable)
+                
+        
+        color = 68
+        
+        self._normal_color = QColor(color, color, color, 255 )
+        
+        normal_gradient = self._normal_gradient = QLinearGradient(0,0,0,1)
+        normal_gradient.setCoordinateMode(QGradient.CoordinateMode.ObjectMode)
+        normal_gradient.setColorAt(0.0, QColor(255,255,255, 15 ) )
+        normal_gradient.setColorAt(0.499, QColor(255,255,255, 10 ) )
+        normal_gradient.setColorAt(0.5, QColor(255,255,255, 3 ) )
+        normal_gradient.setColorAt(1.0, QColor(255,255,255, 10 )  )
+
+        hover_gradient = self._hover_gradient = QLinearGradient(0,0,0,1)
+        hover_gradient.setCoordinateMode(QGradient.CoordinateMode.ObjectMode)
+        hover_gradient.setColorAt(0.0, QColor(255,255,255, 30 ) )
+        hover_gradient.setColorAt(0.499, QColor(255,255,255, 20 ) )
+        hover_gradient.setColorAt(0.5, QColor(255,255,255, 6 ) )
+        hover_gradient.setColorAt(1.0, QColor(255,255,255, 20 )  )
+        
+        pressed_gradient = self._pressed_gradient = QLinearGradient(0,0,0,1)
+        pressed_gradient.setCoordinateMode(QGradient.CoordinateMode.ObjectMode)
+        pressed_gradient.setColorAt(0.0, QColor(0,0,0, 0 ) )
+        pressed_gradient.setColorAt(0.33, QColor(0,0,0, 50 ) )
+        pressed_gradient.setColorAt(0.66, QColor(0,0,0, 50 ) )
+        pressed_gradient.setColorAt(1.0, QColor(0,0,0, 0 )  )
+            
+        _part_QXWidget.connect_signal(released, self.released)
+        _part_QXWidget.connect_signal(toggled, self.toggled)
+        _part_QXWidget.__init__(self, font=font, tooltip_text=tooltip_text, 
+                                size_policy=size_policy, minimum_width=minimum_width, minimum_height=minimum_height, 
+                                fixed_width=fixed_width, fixed_height=fixed_height, 
+                                hided=hided, enabled=enabled )
+                                
+        if text is not None:
+            self.setText(text)
+            self.setMinimumWidth(self.fontMetrics().horizontalAdvance(text)+4)
+            self.setMinimumHeight(self.fontMetrics().height()+4)
+        
+        
+        self._qp = QPainter()
+        self._normal_color = QColor(0,0,0,0)
+        
+        self._pixmap_sequence = None
+        self._tl = None
+        
+    def set_pixmap(self, pixmap):
+        """
+        set static pixmap
+        """
+        if not isinstance(pixmap, QXPixmap):
+            raise ValueError('pixmap must be an instance of QXPixmap')
+            
+        self.stop_pixmap_sequence()
+        
+        self._pixmap = pixmap
+        self.repaint()
+        
+    def set_pixmap_sequence(self, pixmap_sequence : QXImageSequence, loop_count : int = 1):
+        """
+        set and play pixmap sequence
+        """
+        self._pixmap_sequence = pixmap_sequence
+
+        self._tl = QXTimeLine(  duration=pixmap_sequence.get_duration(),
+                                frame_range=(0, pixmap_sequence.get_frame_count()-1),
+                                loop_count=0,
+                                update_interval=int( (1.0/pixmap_sequence.get_fps()) * 1000),
+                                frameChanged=self._tl_frameChanged, 
+                                start=True )
+        
+    def stop_pixmap_sequence(self):
+        if self._tl is not None:
+            self._tl.stop()
+            self._tl = None
+            self._pixmap_sequence = None
+            
+    def _tl_frameChanged(self, frame_id):
+        self._pixmap = self._pixmap_sequence.get_frame(frame_id)
+        self.repaint()
+    
+    def sizeHint(self) -> QSize:
+        return QSize(0,0)
+        
+    def focusInEvent(self, ev : QFocusEvent):
+        super().focusInEvent(ev)
+        _part_QXWidget.focusInEvent(self, ev)
+
+    def resizeEvent(self, ev : QResizeEvent):
+        super().resizeEvent(ev)
+        _part_QXWidget.resizeEvent(self, ev)
+        
+           
+        
+    def paintEvent(self, ev : QPaintEvent):
+        rect = self.rect()
+        qp = self._qp
+        qp.begin(self)
+        qp.setRenderHint(QPainter.RenderHint.Antialiasing)
+        qp.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        
+        qp.fillRect(rect, self._normal_color)
+    
+        pixmap = self._pixmap
+        if pixmap is not None:
+            w, h = rect.width(), rect.height()
+            rect_aspect = w / h
+            
+            size = pixmap.size()
+            pixmap_aspect = size.width() / size.height()
+            
+            if pixmap_aspect != rect_aspect:
+                if pixmap_aspect > rect_aspect:
+                    pw, ph = w, int(h * (rect_aspect / pixmap_aspect))
+                    px, py = 0, h/2-ph/2
+                elif pixmap_aspect < rect_aspect:
+                    pw, ph = int( w * (pixmap_aspect / rect_aspect) ), h
+                    px, py = w/2-pw/2, 0
+                
+                pixmap = pixmap.scaled_cached(pw,ph)
+            else:
+                px, py, pw, ph = 0, 0, w, h
+                
+            pixmap = pixmap.scaled_cached(pw,ph)
+            
+            if self.isEnabled():            
+                qp.drawPixmap(px, py, pixmap)
+            else:
+                qp.drawPixmap(px, py, pixmap.grayscaled_cached() )
+                
+        text = self.text()
+        
+        if text is not None:
+            qp.setFont(self.font())
+            qp.drawText(rect, Qt.AlignmentFlag.AlignCenter, text)
+        
+        if self.isEnabled():
+            if self.isDown():
+                qp.setCompositionMode(QPainter.CompositionMode.CompositionMode_Multiply)
+                qp.fillRect(rect, self._pressed_gradient)
+            elif self.underMouse():
+                qp.setCompositionMode(QPainter.CompositionMode.CompositionMode_Screen)
+                qp.fillRect(rect, self._hover_gradient)
+            else:
+                qp.setCompositionMode(QPainter.CompositionMode.CompositionMode_Screen)
+                qp.fillRect(rect, self._normal_gradient)
+                
+        else:
+            qp.setCompositionMode(QPainter.CompositionMode.CompositionMode_Screen)
+            qp.fillRect(rect, self._normal_gradient)
+            
+        qp.end()
+        
+
+
+import numpy as np
+from xlib import opencl as lib_cl
+from xlib import time as lib_time
+
+
+# # #lib_cl.CLBuffer()
+# face_mask = np.ones( (1024,1024,1), dtype=np.float32 )
+
+# # # # #d = CL.get_available_devices()
+
+dev = lib_cl.get_device(d)
+
+# # 
+
+# # # buf.set(data_np)
+
+KW = 5
+KH = 5
+
+IH = 64
+IW = 64
+IC = 1024
+
+OH = IH
+OW = IW
+OC = IC
+
+
+input_np = np.ones( (IH,IW,IC), dtype=np.float32 )
+kernel_np = np.ones( (KH,KW,OC, IC), dtype=np.float32 )
+
+
+input_t = dev.alloc ( size=IH*IW*IC*4 )
+kernel_t = dev.alloc ( size=KH*KW*OC*IC*4 )
+output_t = dev.alloc ( size=OH*OW*OC*4 )
+
+input_t.set(input_np)
+kernel_t.set(kernel_np)
+
+
+
+krn1 = lib_cl.OpenCLKernel(kernel_text=f"""
+#define OH {OH}
+#define OW {OW}
+#define OC {OC}
+
+#define IC {IC}
+
+#define KH {KH}
+#define KW {KW}
+
+#define kh 0
+#define kw 0
+
+__kernel void impl(__global float* O, const __global float* I, const __global float* K)
+{{
+    size_t gid = get_global_id(0);
+    
+    size_t oc = gid % OC; gid /= OC;
+    size_t ow = gid % OW; gid /= OW;
+    size_t oh = gid % OH; gid /= OH;
+    
+    //size_t lid = get_local_id(0);
+    
+    __local float Iv[IC];
+    Iv[oc] = I[ oh*OW*OC + ow*OC + oc ];
+    barrier(CLK_LOCAL_MEM_FENCE);
+    
+    
+    float v = 0.0f;    
+#pragma unroll 
+    for (int ic=0; ic<IC; ++ic)
+        v += Iv[oc] * K[ kh*KW*OC*IC + kw*OC*IC + ic*OC + oc  ];
+    
+    O[oh*OW*OC + ow*OC + oc ] += v;
+}}
+""")
+
+# x = dev.get_max_work_group_size()
+
+while True:
+    with lib_time.timeit():
+        for kh in range(KH):
+            for kw in range(KW):
+                dev.run(krn1, output_t, input_t, kernel_t, global_shape=(OH*OW*OC,), local_shape=(IC,) )
+        dev.wait()
+        
+        #print(output_t.np(shape=(OH,OW,OC) ))
+        
+        #import code
+        #code.interact(local=dict(globals(), **locals()))
+
+x=output_t.np(shape=(OH,OW,OC) )
+import code
+code.interact(local=dict(globals(), **locals()))
+
+
+
+krn2 = lib_cl.OpenCLKernel(kernel_text=f"""
+__kernel void impl(__global float* O, const __global float* I)
+{{
+    size_t gid = get_global_id(0);
+    
+    size_t i0 = gid % 256; gid /= 256;
+    size_t i1 = gid % 200000; gid /= 200000;
+    
+    O[i0*200000 + i1 + 1] = I[i0*200000 + i1];
+}}
+""")
+
+krn3 = lib_cl.OpenCLKernel(kernel_text=f"""
+__kernel void impl(__global float* O)
+{{
+    size_t gid = get_global_id(0);
+    
+    O[gid*2+0] = O[gid*2+0]*O[gid*2+1];
+}}
+""")
+
+
+
+
+# #buf.set(kernel_np)
+# while True:
+#     with lib_time.timeit():    
+#         #for _ in range(1000):
+#         dev.run(krn1, working_t, input_t, global_shape=(256*200000,) )
+#         dev.run(krn2, working_t, dense_kernel, global_shape=(256*200000,) )
+#         dev.run(krn3, working_t, global_shape=(256*200000,) )
+#         dev.wait()
+
+
+
+
+
+# from xlib import radeonml
+
+
+# from xlib.torch import S3FD
+# S3FD.save_as_onnx( Path(__file__).parent / 'S3FD.onnx')
+import numpy as np
+
+# # # # CenterFace_to_onnx( Path(__file__).parent / 'CenterFace.onnx' )
+# if __name__ == '__main__':
+        
+
+#     x = get_tf_devices_info()
+    
+#     from xlib import tf
+    
+#     #tf.initialize(x[0])
+#     #x.add( CPUDeviceInfo() )
+    
+#     model_path = r'D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\model_hub\tf\TOM_CRUISE.pb'
+#     sess = tf.TFInferenceSession(model_path, x[0],
+#                                  in_tensor_names=['in_face:0', 'morph_value:0'],
+#                                  out_tensor_names=['out_face_mask:0','out_celeb_face:0','out_celeb_face_mask:0'])
+                                 
+#     x= sess.run( [ np.zeros( (1,224,224,3), np.float32 ), [0.5] ])
+#     #x= sess.run( [ np.zeros( (1,3,224,224), np.float32 ), [0.5] ])
+#     import code
+#     code.interact(local=dict(globals(), **locals()))
+
+
+
+
+# factory = create_DXGIFactory1()
+# if factory is None:
+#     raise Exception('Unable to CreateDXGIFactory')
+
+
+# adapters = []
+# for i in itertools.count():
+#     adapter = factory.enum_adapters1(i)
+#     if adapter is not None:
+#         adapters.append(adapter)
+#     else:
+#         break
+    
+# device = d3d12_create_device(adapters[0], D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_11_0)
+
+# desc = D3D12_COMMAND_QUEUE_DESC()
+# desc.Type = D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT
+# desc.Flags = D3D12_COMMAND_QUEUE_FLAGS.D3D12_COMMAND_QUEUE_FLAG_NONE
+
+# comm_q = device.create_command_queue(desc)
+# comm_alloc = device.create_command_allocator(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT)
+# comm_list = device.create_command_list(0, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT, comm_alloc)
+
+# #D3D12_COMMAND_QUEUE_DESC
+# # D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
+# # commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+# # commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+
+# comm_list.GetType()
+# import code
+# code.interact(local=dict(globals(), **locals()))
+    
+# dxgi_factory = IDXGIFactory1()
+# hr = dxgi_CreateDXGIFactory1( byref(IDXGIFactory1.IID), byref(dxgi_factory) )
+
+
+
+# adapters = dxgi_factory.EnumAdapters1()
+# for adapter in adapters:
+#     x = adapter.GetDesc1()
+
+
+
+
+# def proc(conn : multiprocessing.connection.Connection):
+    
+#     while True:
+#         if conn.poll():
+#             with lib_time.timeit():
+#                 conn.recv_bytes()
+    
+# # def proc(ds : lib_mp.MPDataSlot ):
+    
+# #     while True:
+# #         #t = lib_time.timeit()
+# #         #t.__enter__()
+        
+# #         ds = ds.pop()
+# #         #if ds is not None:
+# #         #    t.__exit__(None,None,None)
+    
+    
+# if __name__ == '__main__':
+#     q = multiprocessing.Queue()
+#     p1,p2 = multiprocessing.Pipe()
+    
+#     ds = lib_mp.MPDataSlot()
+
+#     p = multiprocessing.Process(target=proc, args=(p2,), daemon=True)
+#     #p = multiprocessing.Process(target=proc, args=(ds,), daemon=True)
+#     p.start()
+
+#     x = np.zeros( (1920,1080,3), np.uint8 )
+
+#     for _ in range(5):
+#         dumped = pickle.dumps(x)
+#         with lib_time.timeit():
+#         #    ds.push(dumped)
+#             p1.send(dumped)
+
+# img1 = lib_cv.imread(r'D:\DevelopPython\test\ct_00001.jpg')
+# img2 = lib_cv.imread(r'D:\DevelopPython\test\ct_00002.jpg')
+# img = np.stack( [img1,img2], 0)
+
+# ip = ImageProcessor(img).to_grayscale()
+
+# img = ip.get_image('NHWC')
+
+# # ip.erode_blur(0, 25)
+
+# cv2.imshow('', img[0])
+# cv2.waitKey(0)
+# cv2.imshow('', img[1])
+# cv2.waitKey(0)
+
+import threading
+import time
+
+
+from xlib.net import ThreadFileDownloader
+from xlib import onnxruntime as lib_ort
+# #FileDownloader( r'https://github.com/iperov/DeepFaceLive/releases/download/CELEB_MODEL/TOM_CRUISE.onnx' )
+    
+
+# if __name__ == '__main__':
+
+#     x = ThreadFileDownloader( r'https://bootstrap.pypa.io/get-pip.py', savepath=r'D:\asd.1' )
+
+# print(1)
+
+# x = cv2.VideoCapture(0)
+# x.isOpened()
+# w = x.get(cv2.CAP_PROP_FRAME_WIDTH)
+# h = x.get(cv2.CAP_PROP_FRAME_HEIGHT)
+# fps = x.get(cv2.CAP_PROP_FPS)
+
+# # #ret, img = x.read()
+
+# import asyncio
+# import time
+# async def hello_world():
+#     #asyncio.sleep(1.0)
+#     print("Hello World!")
+    
+# l = asyncio.get_event_loop()
+# l.run_in_executor(None, hello_world)
+
+# class _part_QInitialize:
+#     def func(self):
+#         print('_part_QInitialize func')
+        
+# class Base():
+#     def func(self):
+#         print('Base func')
+        
+# class A(_part_QInitialize,Base):
+#     def func(self):
+#         super().func()
+#         print('A func')   
+
+# A().func()
+
+#from xlib import deepface as lib_deepface
+
+# celeb_type = lib_deepface.CelebType.TOM_CRUISE
+# avail_devices = lib_deepface.get_available_devices_for_celeb(celeb_type)
+# model = lib_deepface.instantiate_odel(celeb_type, avail_devices[0] )
+
+# img1 = lib_cv.imread(r'D:\DevelopPython\test\ct_00001.jpg')
+# img2 = lib_cv.imread(r'D:\DevelopPython\test\ct_00002.jpg')
+# img = np.stack( [img1,img2], 0)
+
+# x = model.convert(img1)
+
+# vcap = cv2.VideoCapture(0)
+# ret, img = vcap.read()
+
+#x = lib_cv.imread(r'D:\DevelopPython\test\ct_00001.jpg')
+
+# img = lib_cv.imread(r'D:\DevelopPython\test\00006.jpg')
+# img = img.astype(np.float32) / 255.0
+# img = cv2.resize(img, (192,192) )
+
+# from xlib import math as lib_math
+# import mediapipe as mp
+
+# mp_face_mesh = mp.solutions.face_mesh
+# face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, min_detection_confidence=0.5)
+
+# 
+# device = lib_ort.CudaDevice.CPU()
+
+# sess = lib_ort.InferenceSession_with_device(str(Path(__file__).parent/'FaceMesh.onnx'), device)
+
+
+# x = sess.run(None, {sess.get_inputs()[0].name: img[None,...]})
+
+# lmrks = np.ndarray.flatten(x[0]).reshape( (468,3) )
+
+# lmrks = lmrks[:,0:2]
+
+# #pts = self.as_numpy(w_h=(w,h)).astype(np.int32)
+
+# for x, y in lmrks:
+#     cv2.circle(img, (x, y), 1, (0,1,0), lineType=cv2.LINE_AA)
+
+# mat = lib_math.(lmrks, uni_468_lmrks, True)[0:2]
+
+# #cv2.imshow('', img)
+# #cv2.waitKey(0)
+
+# import onnx
+# p = Path(r'D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\onnxruntime\FaceMesh\FaceMesh.onnx')
+# g = onnx.load(p)
+# #g.graph.input[0].type.tensor_type.shape.dim[0].dim_param = '?'
+
+# # g.graph.output[0].type.tensor_type.shape.dim[0].dim_param = '?'
+# # g.graph.output[0].type.tensor_type.shape.dim[1].dim_param = '?'
+# # g.graph.output[0].type.tensor_type.shape.dim[2].dim_param = '?'
+# # g.graph.output[0].type.tensor_type.shape.dim[3].dim_param = '?'
+# # g.graph.output[0].name = 'conv2d_21_raw_output___4:0'
+# # g.graph.node.pop(-1)
+
+# #g.graph.initializer.pop( [i for i,x in enumerate(g.graph.initializer) if x.name == 'new_shape__294'][0] )
+# #onnx.save(g, p)
+
+# node_by_name = {}
+# for node in g.graph.node:
+#     node_by_name[node.name] = node
+    
+
+# x=lib_device.get_torch_devices_info()
+
+# img = lib_cv.imread(r'D:\DevelopPython\test\00006.jpg')
+# # img2 = lib_cv.imread(r'D:\DevelopPython\test\00006.jpg')
+# face_mesh = lib_ort.FaceMesh( lib_ort.CudaDevice.CPU() )
+
+# # #img = np.stack([img,img2])
+
+# x = face_mesh.extract(img)
+
+x = np.zeros( (2,3), dtype=np.float32 )
+
+#aff = x.view(Affine2DMat)
+
+#np.ndarray()
+#x = Affine2DMat.create(  [ [2,1,3], [4,3,2] ] )
+
+#p = x.transform_points( [[43.0,43.0]])
+
+# from xlib.math import Affine2DMat
+
+
+# x = Affine2DMat([ [1,2,3],[2,3,4]])
+# x = np.ones( (3,), np.uint8)
+
+
+
+# [ 0.426036,     0.609345  ], #32
+#[0.500151  , 0.420106  ]
+
+
+       
+wh = 1024
+
+offx = 0
+offy = 0
+ang = 0.0
+sca = 1.0
+
+# while True:
+#     image = np.zeros( (wh,wh,3), np.float32 )
+
+#     for x,y in uni_landmarks_68:
+#         x = int(x*wh)
+#         y = int(y*wh)
+#         cv2.circle(image, (x,y), 1, (0,1,0), )
+    
+#     lmrks = uni_landmarks_468.copy()
+#     lmrks = lib_math.Affine2DMat( cv2.getRotationMatrix2D( (0.5, 0.5) , ang, sca) ).transform_points(lmrks)
+#     lmrks *= (wh, wh)
+#     lmrks += (offx, offy)
+    
+#     for x,y in lmrks:
+#         cv2.circle(image, (x,y), 1, (0,0,1), )
+        
+            
+#     cv2.imshow('', image)
+#     ord_key = cv2.waitKeyEx(10)
+
+#     if ord_key != -1:
+#         chr_key = chr(ord_key) if ord_key <= 255 else chr(0)
+#         print(chr_key)
+#         if chr_key == '1':
+#             offx -= 1
+#         if chr_key == '2':
+#             offx += 1
+#         if chr_key == '3':
+#             offy -= 1
+#         if chr_key == '4':
+#             offy += 1
+#         if chr_key == '5':
+#             ang -= 0.1
+#         if chr_key == '6':
+#             ang += 0.1
+#         if chr_key == '7':
+#             sca -= 0.01
+#         if chr_key == '8':
+#             sca += 0.01
+        
+#         print( (lmrks/wh).__repr__())
+#         #lmrks 
+
+
+# frame_image = np.zeros( (480,640,3), np.float32 )
+# frame_face_swap_img = np.zeros( (480,640,3), np.float32 )
+
+# frame_face_mask = np.zeros( (480,640,1), np.float32 )
+
+
+# with lib_time.timeit():
+#     frame_merged = frame_image*(1.0-frame_face_mask) + frame_face_swap_img*frame_face_mask
+    
+# # with lib_time.timeit():
+# #     x = np.clip(x, 0, 255, out=x)
+
+# import numexpr as ne
+
+# with lib_time.timeit():
+#     frame_merged = ne.evaluate('frame_image*(1.0-frame_face_mask) + frame_face_swap_img*frame_face_mask')
+
+class CLKernelHelper:
+    """
+    Helper to format CL kernels.
+    """
+    
+    @staticmethod
+    def define_axes_accessor(axis_letter, shape, axes_symbols=None):
+        """
+        Returns a definitions of shape accesor
+        
+        arguments
+            
+            axis_letter     text symbol A-Z in any case.
+            
+            shape           Iterable
+            
+            axes_symbols(None)  string of symbols. 
+                                None -> numeric symbols will be used
+            
+         example for 'i', TensorAxes((4,512))
+         
+            #define I0 4
+            #define I1 512            
+            #define I_idx(i0,i1) ((size_t)i0)*I1+i1
+            //access by idx with modulus
+            #define I_idx_mod(i0,i1) MODULO(((size_t)i0), I0)*I1 + MODULO(i1, I1)
+        """
+        shape = tuple(shape)
+        rank = len(shape)
+        
+        if axes_symbols is None:
+            axes_symbols = "".join([str(i) for i in range(rank)])
+        axes_symbols = axes_symbols.upper()
+        
+        out = '#define MODULO(x,N) (x % N)\n'
+
+        for i in range(rank):
+            out += f'#define {axis_letter.upper()}{axes_symbols[i]} {shape[i]}\n'        
+        
+        out += f'#define {axis_letter.upper()}_idx({CLKernelHelper.axes_seq_enum(axis_letter, rank)}) '
+        
+        for i in range(rank):
+            if i == 0:
+                out += f'((size_t)({axis_letter.lower()}{i}))'
+            else:
+                out += f'({axis_letter.lower()}{i})'
+            
+            for j in range(i+1,rank):
+                out += f'*{axis_letter.upper()}{axes_symbols[j]}'
+            if i != rank-1:
+                out += '+'
+            
+        out += '\n'
+                
+        out += f'#define {axis_letter.upper()}_idx_mod('
+        out += CLKernelHelper.axes_seq_enum(axis_letter, rank)
+        out += ") "
+        
+        for i in range(rank):
+            if i == 0:
+                out += f'MODULO( ((size_t)({axis_letter.lower()}{i})) ,{axis_letter.upper()}{axes_symbols[i]})'
+            else:
+                out += f'MODULO( ({axis_letter.lower()}{i}),{axis_letter.upper()}{axes_symbols[i]})'
+            
+            for j in range(i+1,rank):
+                out += f'*{axis_letter.upper()}{axes_symbols[j]}'
+            if i != rank-1:
+                out += '+'
+                
+        out += "\n"
+        return out
+    
+    @staticmethod    
+    def define_axes_sizes(axis_letter, axes_sizes):
+        """
+        Returns a text of axes sizes, example
+        #define I0 4
+        #define I1 512
+        #define I2 512
+        """
+        out = ""
+        axes_sizes = tuple(axes_sizes)        
+        ndim = len(axes_sizes)
+        for i in range(ndim):
+            out += f'#define {axis_letter.upper()}{i} {axes_sizes[i]}\n'        
+        
+        return out
+   
+    @staticmethod         
+    def axes_idxs_from_var(axis_letter, rank_or_axes_symbols, var_name):
+        """
+        decompose a size_t variable to axes indexes.
+        Keeps original variable untouched.
+        
+        Example
+         'i',3,'gid'
+         size_t gid_original = gid;
+         size_t i2 = gid % I2; gid /= I2;
+         size_t i1 = gid % I1; gid /= I1;
+         size_t i0 = gid % I0; gid = gid_original;
+         
+         'i','HW','gid'
+         size_t gid_original = gid;
+         size_t iw = gid % IW; gid /= IW;
+         size_t ih = gid % IH; gid = gid_original;
+        """
+        
+        if isinstance(rank_or_axes_symbols, int):
+            rank = rank_or_axes_symbols
+            axes_symbols = "".join([str(i) for i in range(rank)])
+        elif isinstance(rank_or_axes_symbols, str):
+            rank = len(rank_or_axes_symbols)
+            axes_symbols = rank_or_axes_symbols
+        else:
+            raise ValueError(f'Unknown type of rank_or_axes_symbols')
+            
+        out = f'size_t {var_name}_original = {var_name};'
+        
+        for i in range(rank-1,-1,-1):
+            if i == 0:
+                if rank > 1:
+                    out += f'size_t {axis_letter.lower()}{axes_symbols[i].lower()} = {var_name} / {axis_letter.upper()}{axes_symbols[i+1].upper()};'
+                else:
+                    out += f'size_t {axis_letter.lower()}{axes_symbols[i].lower()} = {var_name};'
+            else:
+                out += f'size_t {axis_letter.lower()}{axes_symbols[i].lower()} = {var_name} % {axis_letter.upper()}{axes_symbols[i].upper()};'
+                
+            if i > 1:
+                out += f' {var_name} /= {axis_letter.upper()}{axes_symbols[i].upper()};\n'
+        out += f'{var_name} = {var_name}_original;\n'
+        return out
+    
+    @staticmethod    
+    def axes_order_enum(axis_letter, axes_order):
+        """
+        returns axis enumeration with given order
+        
+        Example        
+         ('i', (1,2,0)) returns 'i1,i2,i0'         
+         ('i', 'HW') return 'ih,iw'
+        """
+        if isinstance(axes_order, str):
+            axes_order = axes_order.lower()
+        else:
+            axes_order = tuple(axes_order)
+        
+        return ','.join( [ f'{axis_letter.lower()}{axes_order[axis]}' for axis in range(len(axes_order)) ])
+       
+    @staticmethod 
+    def axes_seq_enum(axis_letter, rank, new_axis=None, zero_axes=None):
+        """
+        returns axis sequental enumeration with given rank
+        
+        Example
+        
+         ('i', 4) returns 'i0,i1,i2,i3'
+            
+         ('i', 4, new_axis=('name',1) ) returns 'i0,name,i1,i2,i3'
+         
+         ('i', 3, zero_axes=(1,) ) returns 'i0,0,i2'
+        """
+        
+        if zero_axes is not None:
+            axes = [ '0' if axis in zero_axes else f'{axis_letter.lower()}{axis}' for axis in range(rank) ]
+        else:
+            axes = [ f'{axis_letter.lower()}{axis}' for axis in range(rank) ]
+        
+        if new_axis is not None:
+            name, axis = new_axis            
+            return','.join(axes[:axis] + [name] + axes [axis:])            
+        else:
+            return ','.join(axes)
+        
+    @staticmethod
+    def include_constants_pi():
+        """
+        defines PI constants
+        
+         PI_F
+         PI_2_F
+         PI_4_F
+        """
+        return f"""
+#define  PI_F          3.14159274101257f
+#define  PI_2_F        1.57079637050629f
+#define  PI_4_F        0.78539818525314f
+"""
+      
+    @staticmethod
+    def include_hash():
+        """
+        returns hash functions:
+        
+         uint  hash_uint_uint(uint v)
+         uint2 hash_uint2_uint2(uint2 v)
+         uint3 hash_uint3_uint3(uint3 v) 
+         
+         float hash_float_uint(uint q) 
+         float2 hash_float2_uint(uint q)
+         float3 hash_float3_uint (uint v)
+         
+         float hash_float_float(float p)
+         float hash_float_float2(float2 p)
+        """
+
+        return f"""
+//---------- PCG hashes from https://www.shadertoy.com/view/XlGcRh
+
+#define UIF (1.0 / (float)(0xffffffffU))
+uint hash_uint_uint(uint v)
+{{
+    uint state = v * 747796405u + 2891336453u;
+    uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
+}}
+
+uint2 hash_uint2_uint2 (uint2 v)
+{{
+    v = v * 1664525u + 1013904223u;
+    v.x += v.y * 1664525u;
+    v.y += v.x * 1664525u;
+    v ^= v>>16u;
+    v.x += v.y * 1664525u;
+    v.y += v.x * 1664525u;
+    v ^= v>>16u;
+    return v;
+}}
+
+uint3 hash_uint3_uint3(uint3 v) 
+{{
+    v = v * 1664525u + 1013904223u;
+    v.x += v.y*v.z;
+    v.y += v.z*v.x;
+    v.z += v.x*v.y;
+    v ^= v >> 16u;
+    v.x += v.y*v.z;
+    v.y += v.z*v.x;
+    v.z += v.x*v.y;
+    return v;
+}}
+
+float hash_float_uint(uint v)
+{{   
+	return (float)( hash_uint_uint(v) ) * UIF;
+}}
+
+float2 hash_float2_uint (uint v)
+{{
+    uint2 q = hash_uint2_uint2( (uint2)(v, 1) );    
+    return (float2)(q.x, q.y) * UIF;
+}}
+
+float3 hash_float3_uint (uint v)
+{{
+    uint3 q = hash_uint3_uint3( (uint3)(v, 1, 1) );    
+    return (float3)(q.x, q.y, q.z) * UIF;
+}}
+
+//---------- Classic hashes used in shaders
+
+float hash_float_float(float p)
+{{
+    
+    float x = sin(p*12.9898)*43758.5453;
+    return x - floor(x);
+}}
+
+float hash_float_float2(float2 p)
+{{
+    float x = sin( dot(p, (float2)(12.9898, 78.233)) )*43758.5453;
+    return x - floor(x);
+}}
+"""
+ph = CLKernelHelper
+
+
+
+from xlib import opencl as lib_cl
+
+# # #lib_cl.CLBuffer()
+
+
+# 
+# face_mask = np.ones( (1024,1024,1), dtype=np.float32 )
+
+
+# # # # #d = CL.get_available_devices()
+
+dev = lib_cl.get_device(d)
+
+# # 
+
+# # # buf.set(data_np)
+
+inp_np = np.ones( (1024,18,18), dtype=np.float32 )
+
+sh = (102760448//2,)
+#kernel_np = np.ones( (102760448,), dtype=np.float32 )
+    
+    
+input_t = dev.alloc ( size=1*200000*4 )
+dense_kernel = dev.alloc ( size=256*200000*4 )
+working_t = dev.alloc ( size=256*200000*2*4 )
+
+krn1 = lib_cl.OpenCLKernel(kernel_text=f"""
+__kernel void impl(__global float* O, const __global float* I)
+{{
+    size_t gid = get_global_id(0);
+    
+    size_t i0 = gid % 256; gid /= 256;
+    size_t i1 = gid % 200000; gid /= 200000;
+    
+    O[i0*200000 + i1 + 0] = I[i1];
+}}
+""")
+
+krn2 = lib_cl.OpenCLKernel(kernel_text=f"""
+__kernel void impl(__global float* O, const __global float* I)
+{{
+    size_t gid = get_global_id(0);
+    
+    size_t i0 = gid % 256; gid /= 256;
+    size_t i1 = gid % 200000; gid /= 200000;
+    
+    O[i0*200000 + i1 + 1] = I[i0*200000 + i1];
+}}
+""")
+
+krn3 = lib_cl.OpenCLKernel(kernel_text=f"""
+__kernel void impl(__global float* O)
+{{
+    size_t gid = get_global_id(0);
+    
+    O[gid*2+0] = O[gid*2+0]*O[gid*2+1];
+}}
+""")
+
+# 1, 200000
+# 256, 200000
+#
+
+
+# #buf.set(kernel_np)
+# while True:
+#     with lib_time.timeit():    
+#         #for _ in range(1000):
+#         dev.run(krn1, working_t, input_t, global_shape=(256*200000,) )
+#         dev.run(krn2, working_t, dense_kernel, global_shape=(256*200000,) )
+#         dev.run(krn3, working_t, global_shape=(256*200000,) )
+#         dev.wait()
+
+
+
+# import onnxruntime as rt
+# import onnx
+# model = onnx.load_model(r'D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\onnxruntime\FaceMesh\FaceMesh.onnx')
+# g=model.graph
+
+# chs = {}
+# for node in g.node:
+#     if 'channel_padding' in node.name:
+#         chs[node.name] = node
+
+#from xlib.directml import 
+
+
+# def GetPlatforms() -> List[platform]:
+#     num_platforms = cl_uint()
+#     lib_GetPlatformIDs(0, None, byref(num_platforms))
+#     n = num_platforms.value
+#     if n > 0:
+#         platform_array = (platform * n)()
+#         lib_GetPlatformIDs(num_platforms, platform_array, None)
+#         return tuple(x for x in platform_array)
+#     else:
+#         return ()
+        
+#HRESULT WINAPI CreateDXGIFactory(REFIID riid, _COM_Outptr_ void **ppFactory);
+
+
+# for i,node in enumerate(g.node):
+#     print(i,node.name)
+
+# onnx.save_model(model, r'D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\onnxruntime\FaceMesh\FaceMesh2.onnx')
+
+# x = rt.get_available_providers()
+
+# model = onnx.load_model(r'D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\deepface\CELEB_MODEL\TOM_CRUISE.onnx')
+
+# g=model.graph
+
+# y=[x for x in g.node if x.name == 'Conv2D_62']
+
+
+# mat = np.eye(2,3)
+# with lib_time.timeit():
+#     x = cv2.warpAffine( face_mask, mat, frame_image.shape[1::-1], np.zeros(frame_image.shape[0:2], dtype=np.float32), flags=cv2.WARP_INVERSE_MAP | cv2.INTER_LINEAR )
+#     x = cv2.warpAffine( face_mask, mat, frame_image.shape[1::-1], np.zeros(frame_image.shape[0:2], dtype=np.float32), flags=cv2.WARP_INVERSE_MAP | cv2.INTER_LINEAR )
+                         
+# x = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(15,15))
+
+# x = np.float32( [ (0,0),(1,0),(1,1),(0,1),(0.5,0.5) ])
+
+# x = lib_math.Affine2DMat( [ [1,1,1],[1,1,1] ])
+
+# p = Path(r'D:\qwe\asd.txt')
+
+# import itertools
+# from xlib.api.win32.dxgi import *
+# from xlib.api.win32.d3d12 import *
+# from xlib.api.win32.directml import *
+
+# factory = create_DXGIFactory1()
+# if factory is None:
+#     raise Exception('Unable to CreateDXGIFactory')
+
+
+# adapters = []
+# for i in itertools.count():
+#     adapter = factory.enum_adapters1(i)
+#     if adapter is not None:
+#         adapters.append(adapter)
+#     else:
+#         break
+    
+# device = d3d12_create_device(adapters[0], D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_11_0)
+
+# desc = D3D12_COMMAND_QUEUE_DESC()
+# desc.Type = D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT
+# desc.Flags = D3D12_COMMAND_QUEUE_FLAGS.D3D12_COMMAND_QUEUE_FLAG_NONE
+
+# comm_q = device.create_command_queue(desc)
+# comm_alloc = device.create_command_allocator(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT)
+# comm_list = device.create_command_list(0, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT, comm_alloc)
+
+# #D3D12_COMMAND_QUEUE_DESC
+# # D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
+# # commandQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+# # commandQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+
+# comm_list.GetType()
+# import code
+# code.interact(local=dict(globals(), **locals()))
+    
+# dxgi_factory = IDXGIFactory1()
+# hr = dxgi_CreateDXGIFactory1( byref(IDXGIFactory1.IID), byref(dxgi_factory) )
+
+
+
+# adapters = dxgi_factory.EnumAdapters1()
+# for adapter in adapters:
+#     x = adapter.GetDesc1()
+
+# from xlib import radeonml
+
+
+# from xlib.torch import S3FD
+# S3FD.save_as_onnx( Path(__file__).parent / 'S3FD.onnx')
+  
+# # CenterFace_to_onnx( Path(__file__).parent / 'CenterFace.onnx' )
+
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+
+
+
+
+
+
+
+
+  [0.499976992607117, 0.652534008026123],
+  [0.500025987625122, 0.547487020492554],
+  [0.499974012374878, 0.602371990680695],
+  [0.482113003730774, 0.471979022026062],
+  [0.500150978565216, 0.527155995368958],
+  [0.499909996986389, 0.498252987861633],
+  [0.499523013830185, 0.40106201171875],
+  [0.289712011814117, 0.380764007568359],
+  [0.499954998493195, 0.312398016452789],
+  [0.499987006187439, 0.269918978214264],
+  [0.500023007392883, 0.107050001621246],
+  [0.500023007392883, 0.666234016418457],
+  [0.5000159740448, 0.679224014282227],
+  [0.500023007392883, 0.692348003387451],
+  [0.499976992607117, 0.695277988910675],
+  [0.499976992607117, 0.70593398809433],
+  [0.499976992607117, 0.719385027885437],
+  [0.499976992607117, 0.737019002437592],
+  [0.499967992305756, 0.781370997428894],
+  [0.499816000461578, 0.562981009483337],
+  [0.473773002624512, 0.573909997940063],
+  [0.104906998574734, 0.254140973091125],
+  [0.365929991006851, 0.409575998783112],
+  [0.338757991790771, 0.41302502155304],
+  [0.311120003461838, 0.409460008144379],
+  [0.274657994508743, 0.389131009578705],
+  [0.393361985683441, 0.403706014156342],
+  [0.345234006643295, 0.344011008739471],
+  [0.370094001293182, 0.346076011657715],
+  [0.319321990013123, 0.347265005111694],
+  [0.297903001308441, 0.353591024875641],
+  [0.24779200553894, 0.410809993743896],
+  [0.396889001131058, 0.842755019664764],
+  [0.280097991228104, 0.375599980354309],
+  [0.106310002505779, 0.399955987930298],
+  [0.2099249958992, 0.391353011131287],
+  [0.355807989835739, 0.534406006336212],
+  [0.471751004457474, 0.65040397644043],
+  [0.474155008792877, 0.680191993713379],
+  [0.439785003662109, 0.657229006290436],
+  [0.414617002010345, 0.66654098033905],
+  [0.450374007225037, 0.680860996246338],
+  [0.428770989179611, 0.682690978050232],
+  [0.374971002340317, 0.727805018424988],
+  [0.486716985702515, 0.547628998756409],
+  [0.485300987958908, 0.527395009994507],
+  [0.257764995098114, 0.314490020275116],
+  [0.401223003864288, 0.455172002315521],
+  [0.429818987846375, 0.548614978790283],
+  [0.421351999044418, 0.533740997314453],
+  [0.276895999908447, 0.532056987285614],
+  [0.483370006084442, 0.499586999416351],
+  [0.33721199631691, 0.282882988452911],
+  [0.296391993761063, 0.293242990970612],
+  [0.169294998049736, 0.193813979625702],
+  [0.447580009698868, 0.302609980106354],
+  [0.392390012741089, 0.353887975215912],
+  [0.354490011930466, 0.696784019470215],
+  [0.067304998636246, 0.730105042457581],
+  [0.442739009857178, 0.572826027870178],
+  [0.457098007202148, 0.584792017936707],
+  [0.381974011659622, 0.694710969924927],
+  [0.392388999462128, 0.694203019142151],
+  [0.277076005935669, 0.271932005882263],
+  [0.422551989555359, 0.563233017921448],
+  [0.385919004678726, 0.281364023685455],
+  [0.383103013038635, 0.255840003490448],
+  [0.331431001424789, 0.119714021682739],
+  [0.229923993349075, 0.232002973556519],
+  [0.364500999450684, 0.189113974571228],
+  [0.229622006416321, 0.299540996551514],
+  [0.173287004232407, 0.278747975826263],
+  [0.472878992557526, 0.666198015213013],
+  [0.446828007698059, 0.668527007102966],
+  [0.422762006521225, 0.673889994621277],
+  [0.445307999849319, 0.580065965652466],
+  [0.388103008270264, 0.693961024284363],
+  [0.403039008378983, 0.706539988517761],
+  [0.403629004955292, 0.693953037261963],
+  [0.460041999816895, 0.557139039039612],
+  [0.431158006191254, 0.692366003990173],
+  [0.452181994915009, 0.692366003990173],
+  [0.475387006998062, 0.692366003990173],
+  [0.465828001499176, 0.779190003871918],
+  [0.472328990697861, 0.736225962638855],
+  [0.473087012767792, 0.717857003211975],
+  [0.473122000694275, 0.704625964164734],
+  [0.473033010959625, 0.695277988910675],
+  [0.427942007780075, 0.695277988910675],
+  [0.426479011774063, 0.703539967536926],
+  [0.423162013292313, 0.711845993995667],
+  [0.4183090031147, 0.720062971115112],
+  [0.390094995498657, 0.639572978019714],
+  [0.013953999616206, 0.560034036636353],
+  [0.499913990497589, 0.58014702796936],
+  [0.413199990987778, 0.69539999961853],
+  [0.409626007080078, 0.701822996139526],
+  [0.468080013990402, 0.601534962654114],
+  [0.422728985548019, 0.585985004901886],
+  [0.463079988956451, 0.593783974647522],
+  [0.37211999297142, 0.47341400384903],
+  [0.334562003612518, 0.496073007583618],
+  [0.411671012639999, 0.546965003013611],
+  [0.242175996303558, 0.14767599105835],
+  [0.290776997804642, 0.201445996761322],
+  [0.327338010072708, 0.256527006626129],
+  [0.399509996175766, 0.748921036720276],
+  [0.441727995872498, 0.261676013469696],
+  [0.429764986038208, 0.187834024429321],
+  [0.412198007106781, 0.108901023864746],
+  [0.288955003023148, 0.398952007293701],
+  [0.218936994671822, 0.435410976409912],
+  [0.41278201341629, 0.398970007896423],
+  [0.257135003805161, 0.355440020561218],
+  [0.427684992551804, 0.437960982322693],
+  [0.448339998722076, 0.536936044692993],
+  [0.178560003638268, 0.45755398273468],
+  [0.247308000922203, 0.457193970680237],
+  [0.286267012357712, 0.467674970626831],
+  [0.332827985286713, 0.460712015628815],
+  [0.368755996227264, 0.447206974029541],
+  [0.398963987827301, 0.432654976844788],
+  [0.476410001516342, 0.405806005001068],
+  [0.189241006970406, 0.523923993110657],
+  [0.228962004184723, 0.348950982093811],
+  [0.490725994110107, 0.562400996685028],
+  [0.404670000076294, 0.485132992267609],
+  [0.019469000399113, 0.401564002037048],
+  [0.426243007183075, 0.420431017875671],
+  [0.396993011236191, 0.548797011375427],
+  [0.266469985246658, 0.376977026462555],
+  [0.439121007919312, 0.51895797252655],
+  [0.032313998788595, 0.644356966018677],
+  [0.419054001569748, 0.387154996395111],
+  [0.462783008813858, 0.505746960639954],
+  [0.238978996872902, 0.779744982719421],
+  [0.198220998048782, 0.831938028335571],
+  [0.107550002634525, 0.540755033493042],
+  [0.183610007166862, 0.740257024765015],
+  [0.134409993886948, 0.333683013916016],
+  [0.385764002799988, 0.883153975009918],
+  [0.490967005491257, 0.579378008842468],
+  [0.382384985685349, 0.508572995662689],
+  [0.174399003386497, 0.397670984268188],
+  [0.318785011768341, 0.39623498916626],
+  [0.343364000320435, 0.400596976280212],
+  [0.396100014448166, 0.710216999053955],
+  [0.187885001301765, 0.588537991046906],
+  [0.430987000465393, 0.944064974784851],
+  [0.318993002176285, 0.898285031318665],
+  [0.266247987747192, 0.869701027870178],
+  [0.500023007392883, 0.190576016902924],
+  [0.499976992607117, 0.954452991485596],
+  [0.366169989109039, 0.398822009563446],
+  [0.393207013607025, 0.39553701877594],
+  [0.410373002290726, 0.391080021858215],
+  [0.194993004202843, 0.342101991176605],
+  [0.388664990663528, 0.362284004688263],
+  [0.365961998701096, 0.355970978736877],
+  [0.343364000320435, 0.355356991291046],
+  [0.318785011768341, 0.35834002494812],
+  [0.301414996385574, 0.363156020641327],
+  [0.058132998645306, 0.319076001644135],
+  [0.301414996385574, 0.387449026107788],
+  [0.499987989664078, 0.618434011936188],
+  [0.415838003158569, 0.624195992946625],
+  [0.445681989192963, 0.566076993942261],
+  [0.465844005346298, 0.620640993118286],
+  [0.49992299079895, 0.351523995399475],
+  [0.288718998432159, 0.819945991039276],
+  [0.335278987884521, 0.852819979190826],
+  [0.440512001514435, 0.902418971061707],
+  [0.128294005990028, 0.791940987110138],
+  [0.408771991729736, 0.373893976211548],
+  [0.455606997013092, 0.451801002025604],
+  [0.499877005815506, 0.908990025520325],
+  [0.375436991453171, 0.924192011356354],
+  [0.11421000212431, 0.615022003650665],
+  [0.448662012815475, 0.695277988910675],
+  [0.4480200111866, 0.704632043838501],
+  [0.447111994028091, 0.715808033943176],
+  [0.444831997156143, 0.730794012546539],
+  [0.430011987686157, 0.766808986663818],
+  [0.406787008047104, 0.685672998428345],
+  [0.400738000869751, 0.681069016456604],
+  [0.392399996519089, 0.677703022956848],
+  [0.367855995893478, 0.663918972015381],
+  [0.247923001646996, 0.601333022117615],
+  [0.452769994735718, 0.420849978923798],
+  [0.43639200925827, 0.359887003898621],
+  [0.416164010763168, 0.368713974952698],
+  [0.413385987281799, 0.692366003990173],
+  [0.228018000721931, 0.683571994304657],
+  [0.468268007040024, 0.352671027183533],
+  [0.411361992359161, 0.804327011108398],
+  [0.499989002943039, 0.469825029373169],
+  [0.479153990745544, 0.442654013633728],
+  [0.499974012374878, 0.439637005329132],
+  [0.432112008333206, 0.493588984012604],
+  [0.499886006116867, 0.866917014122009],
+  [0.49991300702095, 0.821729004383087],
+  [0.456548988819122, 0.819200992584229],
+  [0.344549000263214, 0.745438992977142],
+  [0.37890899181366, 0.574010014533997],
+  [0.374292999505997, 0.780184984207153],
+  [0.319687992334366, 0.570737957954407],
+  [0.357154995203018, 0.604269981384277],
+  [0.295284003019333, 0.621580958366394],
+  [0.447750002145767, 0.862477004528046],
+  [0.410986006259918, 0.508723020553589],
+  [0.31395098567009, 0.775308012962341],
+  [0.354128003120422, 0.812552988529205],
+  [0.324548006057739, 0.703992962837219],
+  [0.189096003770828, 0.646299958229065],
+  [0.279776990413666, 0.71465802192688],
+  [0.1338230073452, 0.682700991630554],
+  [0.336768001317978, 0.644733011722565],
+  [0.429883986711502, 0.466521978378296],
+  [0.455527991056442, 0.548622965812683],
+  [0.437114000320435, 0.558896005153656],
+  [0.467287987470627, 0.529924988746643],
+  [0.414712011814117, 0.335219979286194],
+  [0.37704598903656, 0.322777986526489],
+  [0.344107985496521, 0.320150971412659],
+  [0.312875986099243, 0.32233202457428],
+  [0.283526003360748, 0.333190023899078],
+  [0.241245999932289, 0.382785975933075],
+  [0.102986000478268, 0.468762993812561],
+  [0.267612010240555, 0.424560010433197],
+  [0.297879010438919, 0.433175981044769],
+  [0.333433985710144, 0.433878004550934],
+  [0.366427004337311, 0.426115989685059],
+  [0.396012008190155, 0.416696012020111],
+  [0.420121014118195, 0.41022801399231],
+  [0.007561000064015, 0.480777025222778],
+  [0.432949006557465, 0.569517970085144],
+  [0.458638995885849, 0.479089021682739],
+  [0.473466008901596, 0.545744001865387],
+  [0.476087987422943, 0.563830018043518],
+  [0.468472003936768, 0.555056989192963],
+  [0.433990985155106, 0.582361996173859],
+  [0.483518004417419, 0.562983989715576],
+  [0.482482999563217, 0.57784903049469],
+  [0.42645001411438, 0.389798998832703],
+  [0.438998997211456, 0.39649498462677],
+  [0.450067013502121, 0.400434017181396],
+  [0.289712011814117, 0.368252992630005],
+  [0.276670008897781, 0.363372981548309],
+  [0.517862021923065, 0.471948027610779],
+  [0.710287988185883, 0.380764007568359],
+  [0.526226997375488, 0.573909997940063],
+  [0.895093023777008, 0.254140973091125],
+  [0.634069979190826, 0.409575998783112],
+  [0.661242008209229, 0.41302502155304],
+  [0.688880026340485, 0.409460008144379],
+  [0.725341975688934, 0.389131009578705],
+  [0.606630027294159, 0.40370500087738],
+  [0.654766023159027, 0.344011008739471],
+  [0.629905998706818, 0.346076011657715],
+  [0.680678009986877, 0.347265005111694],
+  [0.702096998691559, 0.353591024875641],
+  [0.75221198797226, 0.410804986953735],
+  [0.602918028831482, 0.842862963676453],
+  [0.719901978969574, 0.375599980354309],
+  [0.893692970275879, 0.399959981441498],
+  [0.790081977844238, 0.391354024410248],
+  [0.643998026847839, 0.534487962722778],
+  [0.528249025344849, 0.65040397644043],
+  [0.525849997997284, 0.680191040039062],
+  [0.560214996337891, 0.657229006290436],
+  [0.585384011268616, 0.66654098033905],
+  [0.549625992774963, 0.680860996246338],
+  [0.57122802734375, 0.682691991329193],
+  [0.624852001667023, 0.72809898853302],
+  [0.513050019741058, 0.547281980514526],
+  [0.51509702205658, 0.527251958847046],
+  [0.742246985435486, 0.314507007598877],
+  [0.598631024360657, 0.454979002475739],
+  [0.570338010787964, 0.548575043678284],
+  [0.578631997108459, 0.533622980117798],
+  [0.723087012767792, 0.532054007053375],
+  [0.516445994377136, 0.499638974666595],
+  [0.662801027297974, 0.282917976379395],
+  [0.70362401008606, 0.293271005153656],
+  [0.830704987049103, 0.193813979625702],
+  [0.552385985851288, 0.302568018436432],
+  [0.607609987258911, 0.353887975215912],
+  [0.645429015159607, 0.696707010269165],
+  [0.932694971561432, 0.730105042457581],
+  [0.557260990142822, 0.572826027870178],
+  [0.542901992797852, 0.584792017936707],
+  [0.6180260181427, 0.694710969924927],
+  [0.607590973377228, 0.694203019142151],
+  [0.722943007946014, 0.271963000297546],
+  [0.577413976192474, 0.563166975975037],
+  [0.614082992076874, 0.281386971473694],
+  [0.616907000541687, 0.255886018276215],
+  [0.668509006500244, 0.119913995265961],
+  [0.770092010498047, 0.232020974159241],
+  [0.635536015033722, 0.189248979091644],
+  [0.77039098739624, 0.299556016921997],
+  [0.826722025871277, 0.278755009174347],
+  [0.527121007442474, 0.666198015213013],
+  [0.553171992301941, 0.668527007102966],
+  [0.577238023281097, 0.673889994621277],
+  [0.554691970348358, 0.580065965652466],
+  [0.611896991729736, 0.693961024284363],
+  [0.59696102142334, 0.706539988517761],
+  [0.596370995044708, 0.693953037261963],
+  [0.539958000183105, 0.557139039039612],
+  [0.568841993808746, 0.692366003990173],
+  [0.547818005084991, 0.692366003990173],
+  [0.52461302280426, 0.692366003990173],
+  [0.534089982509613, 0.779141008853912],
+  [0.527670979499817, 0.736225962638855],
+  [0.526912987232208, 0.717857003211975],
+  [0.526877999305725, 0.704625964164734],
+  [0.526966989040375, 0.695277988910675],
+  [0.572058022022247, 0.695277988910675],
+  [0.573521018028259, 0.703539967536926],
+  [0.57683801651001, 0.711845993995667],
+  [0.581691026687622, 0.720062971115112],
+  [0.609944999217987, 0.639909982681274],
+  [0.986046016216278, 0.560034036636353],
+  [0.5867999792099, 0.69539999961853],
+  [0.590372025966644, 0.701822996139526],
+  [0.531915009021759, 0.601536989212036],
+  [0.577268004417419, 0.585934996604919],
+  [0.536915004253387, 0.593786001205444],
+  [0.627542972564697, 0.473352015018463],
+  [0.665585994720459, 0.495950996875763],
+  [0.588353991508484, 0.546862006187439],
+  [0.757824003696442, 0.14767599105835],
+  [0.709249973297119, 0.201507985591888],
+  [0.672684013843536, 0.256581008434296],
+  [0.600408971309662, 0.74900496006012],
+  [0.55826598405838, 0.261672019958496],
+  [0.570303976535797, 0.187870979309082],
+  [0.588165998458862, 0.109044015407562],
+  [0.711045026779175, 0.398952007293701],
+  [0.781069993972778, 0.435405015945435],
+  [0.587247014045715, 0.398931980133057],
+  [0.742869973182678, 0.355445981025696],
+  [0.572156012058258, 0.437651991844177],
+  [0.55186802148819, 0.536570012569427],
+  [0.821442008018494, 0.457556009292603],
+  [0.752701997756958, 0.457181990146637],
+  [0.71375697851181, 0.467626988887787],
+  [0.66711300611496, 0.460672974586487],
+  [0.631101012229919, 0.447153985500336],
+  [0.6008620262146, 0.432473003864288],
+  [0.523481011390686, 0.405627012252808],
+  [0.810747981071472, 0.523926019668579],
+  [0.771045982837677, 0.348959028720856],
+  [0.509127020835876, 0.562718033790588],
+  [0.595292985439301, 0.485023975372314],
+  [0.980530977249146, 0.401564002037048],
+  [0.573499977588654, 0.420000016689301],
+  [0.602994978427887, 0.548687994480133],
+  [0.733529984951019, 0.376977026462555],
+  [0.560611009597778, 0.519016981124878],
+  [0.967685997486115, 0.644356966018677],
+  [0.580985009670258, 0.387160003185272],
+  [0.537728011608124, 0.505385041236877],
+  [0.760966002941132, 0.779752969741821],
+  [0.801778972148895, 0.831938028335571],
+  [0.892440974712372, 0.54076099395752],
+  [0.816350996494293, 0.740260004997253],
+  [0.865594983100891, 0.333687007427216],
+  [0.614073991775513, 0.883246004581451],
+  [0.508952975273132, 0.579437971115112],
+  [0.617941975593567, 0.508316040039062],
+  [0.825608015060425, 0.397674977779388],
+  [0.681214988231659, 0.39623498916626],
+  [0.656635999679565, 0.400596976280212],
+  [0.603900015354156, 0.710216999053955],
+  [0.81208598613739, 0.588539004325867],
+  [0.56801301240921, 0.944564998149872],
+  [0.681007981300354, 0.898285031318665],
+  [0.733752012252808, 0.869701027870178],
+  [0.633830010890961, 0.398822009563446],
+  [0.606792986392975, 0.39553701877594],
+  [0.589659988880157, 0.391062021255493],
+  [0.805015981197357, 0.342108011245728],
+  [0.611334979534149, 0.362284004688263],
+  [0.634037971496582, 0.355970978736877],
+  [0.656635999679565, 0.355356991291046],
+  [0.681214988231659, 0.35834002494812],
+  [0.698584973812103, 0.363156020641327],
+  [0.941866993904114, 0.319076001644135],
+  [0.698584973812103, 0.387449026107788],
+  [0.584177017211914, 0.624107003211975],
+  [0.554318010807037, 0.566076993942261],
+  [0.534153997898102, 0.62064003944397],
+  [0.711217999458313, 0.819975018501282],
+  [0.664629995822906, 0.852871000766754],
+  [0.559099972248077, 0.902631998062134],
+  [0.871706008911133, 0.791940987110138],
+  [0.591234028339386, 0.373893976211548],
+  [0.544341027736664, 0.451583981513977],
+  [0.624562978744507, 0.924192011356354],
+  [0.88577002286911, 0.615028977394104],
+  [0.551338016986847, 0.695277988910675],
+  [0.551980018615723, 0.704632043838501],
+  [0.552887976169586, 0.715808033943176],
+  [0.555167973041534, 0.730794012546539],
+  [0.569944024085999, 0.767035007476807],
+  [0.593203008174896, 0.685675978660583],
+  [0.599261999130249, 0.681069016456604],
+  [0.607599973678589, 0.677703022956848],
+  [0.631937980651855, 0.663500010967255],
+  [0.752032995223999, 0.601315021514893],
+  [0.547226011753082, 0.420395016670227],
+  [0.563543975353241, 0.359827995300293],
+  [0.583841025829315, 0.368713974952698],
+  [0.586614012718201, 0.692366003990173],
+  [0.771915018558502, 0.683578014373779],
+  [0.531597018241882, 0.352482974529266],
+  [0.588370978832245, 0.804440975189209],
+  [0.52079701423645, 0.442565023899078],
+  [0.567984998226166, 0.493479013442993],
+  [0.543282985687256, 0.819254994392395],
+  [0.655317008495331, 0.745514988899231],
+  [0.621008992195129, 0.574018001556396],
+  [0.625559985637665, 0.78031200170517],
+  [0.680198013782501, 0.570719003677368],
+  [0.64276397228241, 0.604337990283966],
+  [0.704662978649139, 0.621529996395111],
+  [0.552012026309967, 0.862591981887817],
+  [0.589071989059448, 0.508637011051178],
+  [0.685944974422455, 0.775357007980347],
+  [0.645735025405884, 0.812640011310577],
+  [0.675342977046967, 0.703978002071381],
+  [0.810858011245728, 0.646304965019226],
+  [0.72012197971344, 0.714666962623596],
+  [0.866151988506317, 0.682704985141754],
+  [0.663187026977539, 0.644596993923187],
+  [0.570082008838654, 0.466325998306274],
+  [0.544561982154846, 0.548375964164734],
+  [0.562758982181549, 0.558784961700439],
+  [0.531987011432648, 0.530140042304993],
+  [0.585271000862122, 0.335177004337311],
+  [0.622952997684479, 0.32277899980545],
+  [0.655896008014679, 0.320163011550903],
+  [0.687132000923157, 0.322345972061157],
+  [0.716481983661652, 0.333200991153717],
+  [0.758756995201111, 0.382786989212036],
+  [0.897013008594513, 0.468769013881683],
+  [0.732392013072968, 0.424547016620636],
+  [0.70211398601532, 0.433162987232208],
+  [0.66652500629425, 0.433866024017334],
+  [0.633504986763, 0.426087975502014],
+  [0.603875994682312, 0.416586995124817],
+  [0.579657971858978, 0.409945011138916],
+  [0.992439985275269, 0.480777025222778],
+  [0.567192018032074, 0.569419980049133],
+  [0.54136598110199, 0.478899002075195],
+  [0.526564002037048, 0.546118021011353],
+  [0.523913025856018, 0.563830018043518],
+  [0.531529009342194, 0.555056989192963],
+  [0.566035985946655, 0.582329034805298],
+  [0.51631098985672, 0.563053965568542],
+  [0.5174720287323, 0.577877044677734],
+  [0.573594987392426, 0.389806985855103],
+  [0.560697972774506, 0.395331978797913],
+  [0.549755990505219, 0.399751007556915],
+  [0.710287988185883, 0.368252992630005],
+  [0.723330020904541, 0.363372981548309]
+])
+
+
+
+# import torch
+
+#from xlib import onnxruntime as lib_ort
+
+# img = lib_cv.imread(r'D:\DevelopPython\test\00008.jpg')
+# img = cv2.resize(img, (224,224) )
+# img = img[None,...].transpose( (0,3,1,2) )
+# img = img.astype(np.float32) / 255.0
+
+# sess = lib_ort.InferenceSession_with_device(r"D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\deepface\celeb\TOM_CRUISE\model.onnx", lib_ort.get_available_devices().get_best_device())
+
+# sess = lib_ort.InferenceSession_with_device(r"D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\torch\CenterFace\CenterFace.onnx", lib_ort.get_available_devices().get_worst_device())
+
+
+
+# # # input = sess.get_inputs()[0]
+# # # # input_name = sess.get_inputs()[0].name
+
+# while True:
+#     img = np.random.random ( (1,3,672,672 )).astype(np.float32)
+#     with lib_time.timeit():
+#         #try:
+#         preds = sess.run(None, {sess.get_inputs()[0].name: img})
+#         #except:
+#         #    print('errro')
+
+# import onnx
+# g = onnx.load(r"D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\torch\CenterFace\CenterFace.onnx")
+# g.graph.input[0].type.tensor_type.shape.dim[0].dim_param = '?'
+# g.graph.input[0].type.tensor_type.shape.dim[2].dim_param = '?'
+# g.graph.input[0].type.tensor_type.shape.dim[3].dim_param = '?'
+
+# onnx.save(g, r"D:\DevelopPPP\projects\DeepFaceLive\github_project\xlib\torch\CenterFace\CenterFace.onnx")
+
+
+# img = np.ones( (1100,600), np.float32 )
+
+# x = fit_in(img, 800,800)
+
+# cv2.imshow('',img)
+# cv2.waitKey(0)
+# cv2.imshow('',x)
+# cv2.waitKey(0)
+
+# poly = np.array([ [0,0],[2,0],[2,2],[0,2] ])
+# print(polygon_area(poly))
+
+# def gen_not_None(func):
+    
+#     def wrapper(*args, gen_not_None=False, **kwargs):
+#         result = func(*args, **kwargs)
+        
+#         if gen_not_None:
+#             for v in [ result ]:
+#                 if v is not None:
+#                     yield v
+#         else:        
+#             return result
+#     return wrapper
+    
+# @gen_not_None
+# def test(v = 0):
+#     return 1
+    
+    
+# for v in test( gen_not_None=True ):
+#     print(v)
+
+#from xlib.torch import S3FD
+#S3FD.save_as_onnx(r'D:\S3FD.onnx')
+    
+
+# #CenterFace_to_onnx( Path(__file__).parent / 'CenterFace.onnx' )
+
+# class A:
+#     def __new__(cls, *args, **kwargs):
+#         print('__new__ A')
+#         obj = super().__new__(cls)
+#         obj.asd : int = 0
+        
+#     def __init__(self):
+#         print('__init__ A')
+#         super().__init__()
+        
+# class B(A):
+#     def __new__(cls, *args, **kwargs):
+#         print('__new__ B')
+#         return super().__new__(cls, *args, **kwargs)
+    
+#     def __init__(self, x=0):
+#         print('__init__ B')
+#         print(x)
+#         super().__init__()
+        
+
+# x = pickle.loads(pickle.dumps(B()))
+# #x = B(3)
+
+
+
+# # for pred in preds:
+# #     pred = pred.transpose( (0,2,3,1))
+# #     cv2.imshow('', pred[0])
+# #     cv2.waitKey(0)
+
+
+
+
+# class A(lib_serialization.Serializable):
+#     _a = None
+#     _b = None
+#     _c = None
+#     _d = None
+#     _e = None
+#     _f = None
+#     _g = None
+
+#     def __init__(self):
+#         super().__init__(#_on_serialize={'_d': self._on_serialize_a},
+#                          _on_deserialize={'_d': self._on_deserialize_a}
+#                                 )
+
+#     def _on_serialize_a(self, obj):
+#         return 1
+
+#     def _on_deserialize_a(self, obj):
+#         return obj
+
+#     def set_test_vars(self):
+#         self._a = None
+#         self._b = 'asd'
+#         self._c = 'asd'.encode('utf-8')
+
+#         nested_a = A()
+#         nested_a._a = 'qwe'
+#         nested_a._b = np.ones( (256,4) )
+
+#         self._d = [ [nested_a], nested_a ]
+#         self._e = ( nested_a, nested_a )
+#         self._f = { 0: [nested_a]  }
+#         self._g = 123
+
+# class A(lib_serialization.Serializable):
+#     _a = np.ones( (256,4) )
+
+# a = A()
+# #a.set_test_vars()
+
+# # b = bytearray(16*1024*1024)
+# # mv = memoryview(b)
+# # bf = lib_serialization.BinaryMemoryViewSerializer(mv)
+# # #bf = lib_serialization.BinaryBytesIOSerializer()
+
+# # with lib_time.timeit():
+# #     for i in range(1000):
+# #         bf.set_cursor(0)
+# #         lib_serialization.Serializable.serialize(a, bf)
+# x = np.ones( (256,4) )
+
+
+
+
+from xlib import python as lib_python
+import zlib
+
+class AdditiveFileStorage(lib_python.Disposable):
+    """
+    Tiny file storage designed for fastest addition files not larger than 4Gb.
+
+    Removing is unsupported.
+    File with the same name will just overwrite old file.
+    """
+
+    """
+    File format
+
+    name table block (4096) aligned in 4096:
+        prev table cluster offset(4)
+            offset to prev table from this offset * 4096
+            0 = is last table
+
+        records_count(4)
+
+        511 fixed records:
+            name_crc_32_hash(4)
+
+        511 fixed records:
+            file sizes(4)
+
+
+
+    file block (not higher 4*1024*1024*1024-1):
+        pickled name
+        pickled data
+
+    always at the end of file:
+        [backward offset to latest name table = eof_offset - offset - 8]
+        VERSION (4)
+        MAGIC NUMBER (4)
+
+
+
+    File format
+
+    file block ( up to 15Tb ):
+        file size(8)
+        data
+        padding last to cluster size 4096
+
+
+    Current table at the end of file:
+
+    name table block (4096) aligned in 4096:
+        prev table offset(8)
+            0 = is last table
+
+        records_count(4)
+        reserved(4)
+
+        255 fixed records:
+            name(12 bytes max)
+            cluster file offset from table (4) * 4096
+
+    always at the end of file after table:
+        VERSION (4)
+        MAGIC NUMBER (4)
+    """
+
+    class _Table:
+        def __init__(self):
+            ...
+
+        @staticmethod
+        def load(f : lib_io.FormattedFileIO):
+            ...
+
+    class FileIterator:
+        def __init__(self):
+            ...
+
+        def __enter__(self):
+            ...
+
+        def __exit__(self, *_):
+            ...
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            ...
+            #raise StopIteration()
+
+    def __init__(self, filepath, create_new=False):
+        self.filepath = filepath = Path(filepath)
+
+        self._f = f = lib_io.FormattedFileIO (filepath, 'w+' if create_new else 'a+')
+
+        self._table_files_count_max = 511
+
+        size = f.seek(0,2)
+        if size == 0:
+            self._table_g_offset = 0
+            self._add_table()
+        else:
+            f.seek(0,2)
+            magic_number, = f.read_backward_fmt('I')
+            if magic_number != 0xFED1D1AD:
+                raise Exception(f'File {filepath} is not an AdditiveFileStorage.')
+
+            last_table_offset, version, = f.read_backward_fmt('QI')
+
+            f.seek(-last_table_offset,1)
+            self._load_table()
+
+    def _on_dispose(self):
+        f = getattr(self, '_f', None)
+        if f is not None:
+            f.close()
+
+    def close(self):
+        self.dispose()
+
+    def _add_table(self):
+        """
+        add and write new table at current file offset
+        """
+        f = self._f
+
+        # Pad to 4096
+        cluster_overlap = f.tell() % 4096
+        if cluster_overlap != 0:
+            f.fill(0, 4096 - cluster_overlap)
+
+        self._table_prev_offset = (f.tell() - self._table_g_offset) // 4096
+        self._table_files_count = 0
+        self._table_name_hashes = [0]*self._table_files_count_max
+        self._table_file_sizes = [0]*self._table_files_count_max
+
+        self._table_g_offset = f.tell()
+        f.write_fmt('I', self._table_prev_offset)
+        self._table_files_count_offset = f.tell()
+        f.write_fmt('I', 0)
+        self._table_name_hashes_offset = f.tell()
+        f.fill(0, 4*511)
+        self._table_file_sizes_offset = f.tell()
+        f.fill(0, 4*511)
+        self._write_header()
+        f.truncate()
+
+    def _table_get_next_free_space_offset(self):
+        files_count = self._table_files_count
+        offset = self._table_g_offset + 4096
+        if files_count != 0:
+            offset += sum(self._table_file_sizes[:files_count])
+        return offset
+
+    def _add_new_table(self):
+        # Seek to free space
+        self._f.seek( self._table_get_next_free_space_offset() )
+        self._add_table()
+
+    def _load_table(self):
+        """load table from current offset"""
+        f = self._f
+        self._table_g_offset = f.tell()
+        self._table_prev_offset = self._table_g_offset - f.read_fmt('I')[0]*4096
+
+        self._table_files_count_offset = f.tell()
+        self._table_files_count = f.read_fmt('I')[0]
+
+        self._table_name_hashes_offset = f.tell()
+        self._table_name_hashes = list(f.read_fmt('I'*self._table_files_count_max))
+
+        self._table_file_sizes_offset = f.tell()
+        self._table_file_sizes = list(f.read_fmt('I'*self._table_files_count_max))
+
+
+    def _write_header(self):
+        f = self._f
+        f.write_fmt('QII', f.tell()-self._table_g_offset, 1, 0xFED1D1AD)
+
+
+    def add_file(self, filename, data):
+
+        f = self._f
+
+        if self._table_files_count == self._table_files_count_max:
+            # Current table is full, add new
+            self._add_new_table()
+
+        file_offset = self._table_get_next_free_space_offset()
+        f.seek(file_offset)    # Seek to free space
+        f.write_utf8(filename) # Write filename
+        f.write(data)          # Write the data
+
+        # Calc total file size
+        file_size = f.tell() - file_offset
+        if file_size > 4*1024*1024*1024-1:
+            raise Exception(f'File cannot be more than {4*1024*1024*1024}. Written: {file_size}')
+
+        # Inc and write table files count
+        file_idx = self._table_files_count
+        self._table_files_count += 1
+        f.write_fmt_at(self._table_files_count_offset, 'I', self._table_files_count)
+
+        # Set and write name CRC 32 hash
+        self._table_name_hashes[file_idx] = namehash = zlib.crc32( filename.encode('utf-8') )
+        f.write_fmt_at(self._table_name_hashes_offset + file_idx*4, 'I', namehash)
+
+        # Set and write file size
+        self._table_file_sizes[file_idx] = file_size
+
+        f.write_fmt_at(self._table_file_sizes_offset + file_idx*4, 'I', file_size)
+
+        self._write_header()
+        self._f.truncate()
+        self._f.flush()
+
+# b = bytearray(8*1000)
+# bf = lib_serialization.BinaryMemoryViewSerializer( memoryview(b) )
+
+class PickleFS:
+    """
+    Mini file storage inside a file.
+
+    Designed for several files combined together, for example metadata + images.
+
+    Unpickled class has a function to load other data from the file where it was stored.
+    """
+
+# from xlib import path as lib_path
+# filenames = lib_path.get_files_paths(r'E:\FakeFaceVideoSources\Datasets\CelebA\data_src')
+
+# with lib_time.timeit():
+#     for filename in filenames:
+#         with open(filename, 'rb+') as f:
+#             f.read(4096)
+
+# x = 56
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+# fs = AdditiveFileStorage(r'E:\1.faceset', create_new=True)
+
+# b = bytearray(4*1024*1024*1024 -8)
+# fs.add_file('asd', b )
+# fs.close()
+
+# fs = AdditiveFileStorage(r'E:\1.faceset')
+# b = bytearray(8)
+# fs.add_file('asd', b )
+# fs.close()
+
+# #fs = AdditiveFileStorage(r'E:\1.faceset')
+# #fs.add_file('qwe', bytes(range(8)) )
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+# fs = AdditiveFileStorage(r'E:\1.faceset')
+# fs._add_table()
+# fs.add_file('asd', bytes(range(8)) )
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+# with lib_io.FormattedFileIO(r'E:\test.txt', 'w+') as f1:
+#     f1.truncate(4*1024*1024*1024)
+#with lib_io.FormattedFileIO(r'E:\test.txt', 'a+') as f1:
+#    f1.read(4*1024*1024*1024)
+
+# import uuid
+
+# x=uuid.uuid4()
+# y=uuid.uuid4()
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+# ar= []
+# with lib_time.timeit():
+#     with lib_io.FormattedFileIO(r'E:\test.txt', 'a+') as f1:
+#         for i in range(1024*1024):
+#             f1.seek( i*4096 )
+#             ar.append( f1.read(256) )
+
+
+# # a = { f'0123456789_{i}': 0xFFFFFFFF for i in range(1024*1024) }
+
+
+# # with lib_time.timeit():
+# #     d = pickle.dumps(a,4)
+# # with lib_time.timeit():
+# #     pickle.loads(d)
+
+# x = np.array( [ [-2,3], [9,12]])
+
+# x = None
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+# a = 1
+# b = 2
+# c = 3
+# d = 4
+
+# with lib_time.timeit():
+#     for _ in range(100000):
+#         if a is not None and b is not None and c is not None and d is not None:
+#             ...
+
+# with lib_time.timeit():
+#     for _ in range(100000):
+#         if all(x for x in [a,b,c,d] if x is not None):
+#             ...
+
+
+
+
+# with lib_io.FormattedFileIO(r'E:\test.txt', 'a+') as f1:
+#     f1.seek(4*1024*1024*1024)
+
+
+# #fs.save_file('asd', bytes(range(8)) )
+# #x = fs.load_file('asd')
+
+
+# bf.write_object( (1,) )
+
+# with lib_time.timeit():
+#     bf.fill_raw(0x01, 4)
+#     f1.close()
+
+# d = { x:'asd' for x in range(1000)  }
+
+# b = d.copy()
+
+
+
+# class B():
+#     def __init__(self):
+#         print('__init__ B')
+
+#     def __getstate__(self):
+#         print('__getstate__ B')
+#         return self.__dict__.copy()
+
+#     def __setstate__(self, d):
+
+#         print('__setstate__ B')
+#         self.__init__()
+#         self.__dict__.update(d)
+
+# class A():
+#     def __init__(self):
+#         print('__init__ A')
+#         self.b = B()
+
+#     def __getstate__(self):
+#         print('__getstate__ A')
+#         return self.__dict__.copy()
+
+#     def __setstate__(self, d):
+#         self.__init__()
+
+#         self.__dict__.update(d)
+
+# a = A()
+# pickle.loads(pickle.dumps(a))
+
+
+# #pickle.load(myf)
+
+# class A(lib_serialization.Serializable):
+#     _a = None
+#     _b = None
+#     _c = None
+#     _d = None
+#     _e = None
+#     _f = None
+#     _g = None
+
+
+#     def __init__(self, nested=True):
+#         self._a = None
+#         self._b = 'asd'
+#         self._c = 'asd'.encode('utf-8')
+
+#         if nested:
+#             nested_a = A(nested=False)
+#             nested_a._a = 'qwe'
+#             nested_a._b = np.ones( (1080,1920,3), np.uint8 )
+
+#             self._d = [ [nested_a], nested_a ]
+#             self._e = ( nested_a, nested_a )
+#             self._f = { 0: [nested_a]  }
+#         self._g = 123
+
+# f = io.BytesIO()
+# f2 = io.BytesIO()
+# myf = MyIO()
+
+# a = A()
+# with lib_time.timeit():
+#     pickle.dump(a, f)
+#     f.getbuffer()
+
+# with lib_time.timeit():
+#     pickle.dumps(a)
+
+# # #f.seek(0)
+# # #x = pickle.load(f)
+
+# # # ar = bytearray(1080*1920*3)
+# # # ar[0] = 1
+# # # mar = memoryview(ar)
+# # # with lib_time.timeit():
+# # #     f.write(mar)
+
+# bf = lib_serialization.BinaryBytesIOSerializer(f)
+# with lib_time.timeit():
+#     lib_serialization.Serializable.serialize(a, bf)
+
+
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+# with lib_time.timeit():
+#     pickle.dumps(a)
+
+
+# b = bytearray(8)
+
+# with lib_io.FormattedFileIO(r'C:\test.txt', 'a+') as f1:
+#     f1.seek(0)
+#     # f1.write_fmt('II',1, 2)
+#     # f1.seek(0)
+#     # f1.readinto(b, 4)
+
+#     import code
+#     code.interact(local=dict(globals(), **locals()))
+
+
+
+# with lib_time.timeit():
+#     bf.write_fmt('I'*1000000, *([1]*1000000))
+#     bf.set_cursor(0)
+#     x = bf.read_fmt('I'*1000000)
+
+
+
+
+
+
+# f2 = open(r'C:\test.txt', 'ab+')
+# f2.seek(0,0)
+
+# bf1 = lib_serialization.BinaryFileSerializer(f1)
+# bf2 = lib_serialization.BinaryFileSerializer(f2)
+# #bf.write_fmt('I', 4)
+
+# #f.close()
+
+# a = np.ones( (1080,1920,3), dtype=np.uint8 )
+# av = memoryview(a.reshape(-1))
+
+# import hashlib
+
+
+# with lib_time.timeit():
+#     sha = hashlib.sha1()
+#     sha.update(av)
+#     sha.digest()
+
+
+# lib_python.Serializable.serialize(a, bf)
+
+# bf.set_cursor(0)
+# b = lib_python.Serializable.deserialize(bf)
+
+# dsd = backend.BackendConnectionData(frame_image=np.zeros((1920,1080,3), np.uint8))
+
+# with lib_time.timeit():
+#     for i in range(1000):
+#         bf.set_cursor(0)
+#         lib_python.Serializable.serialize(dsd, bf)
+
+# f = open(r'D:\asd', 'rb+')
+
+
+# #bf = lib_serialization.BinaryFileSerializer(f)
+
+# bf.write_ndarray( np.zeros((5,), dtype=np.int32))
+# bf.set_cursor(0)
+# x=bf.read_ndarray()
+
+
+# class ASD(lib_serialization.Serializable):
+#     _a = None
+
+# from backend import BackendConnectionData
+# d = BackendConnectionData()
+
+
+
+
+
+# mat = np.array([ [2,0,10], [0,2,10]])
+
+# pts = np.array([ [10,10],[30,30] ])
+
+# pts2 = Affine2DMat.transform_points(pts, mat, invert=True)
+
+
+# result = []
+# for x in MyEnum:
+#     x_splits = []
+#     for s in x.name.split('_'):
+#         x_splits.append( s.capitalize() )
+#     result.append ( ' '.join(x_splits) )
+
+# # >>> result
+# # ['Foo Bar', 'John Doe']
+
+# # Now let's simplify
+# # First step:
+
+# result = []
+# for x in MyEnum:
+#     x_splits = [ s.capitalize() for s in x.name.split('_') ]
+#     result.append ( ' '.join(x_splits) )
+
+# # Second step:
+
+# result = []
+# for x in MyEnum:
+#     result.append ( ' '.join( s.capitalize() for s in x.name.split('_') ) )
+
+# # Third step:
+
+# result = [ ' '.join( s.capitalize() for s in x.name.split('_') ) for x in MyEnum ]
+
+# # >>> result
+# # ['Foo Bar', 'John Doe']
+
+
+# from xlib import torch as lib_torch
+# from collections import Iterable
+# a = lib_torch.Devices.get_all()
+
+# import zipfile
+
+# with lib_time.timeit():
+#     zip = zipfile.ZipFile(r'C:\test.zip', mode='a', compression=zipfile.ZIP_STORED)
+
+# import random
+
+# try:
+#     x = zip.read('asd')
+# except KeyError as e:
+#     print(e)
+
+
+# for i in range(1000000):
+#     zip.writestr( str(i), bytes(0) )
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+# with lib_time.timeit():
+#     for i in range(1000000):
+#         #x = zip.read( str(i) )
+#         x = zip.read( str( random.randint(0, 1000000-1) ) )
+
+#         #print(x.__class__)
+#         #zip.writestr( str(i), bytes(64) )
+# zip.close()
+
+# import h5py
+
+# f = h5py.File(r'C:\1.faceset', 'a')
+
+
+# with lib_time.timeit():
+#     for i in range(1000000):
+#         f[str(i)] = np.zeros( (64,), np.uint8 )
+#     f.flush()
+
+
+# b = bytearray(8)
+
+
+# n = np.frombuffer(b, np.uint8, 8)
+# b[0] = 1
+
+# if 'a' in f:
+#     del f['a']
+# f['a'] = n
+# b2 = bytearray(8)
+# n2 = np.frombuffer(b2, np.uint8, 8)
+
+# f['a'].read_direct(n2)
+
+# from enum import IntEnum, Enum
+# def is_IntEnum(obj):
+#     try:
+#         return isinstance(obj, Iterable) and isinstance (next(iter(obj)), IntEnum)
+#     except:
+#         return False # Handle StopIteration, if obj has no elements
+
+# class MyEnum(IntEnum):
+#     FOO_BAR = 0
+#     JOHN_DOE = 1
+
+# x = []
+# #print( issubclass(x, IntEnum)  )
+# print( issubclass(MyEnum, IntEnum) ) # False
+
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+# class B(lib_serialization.Serializable):
+#     _a = 2
+
+# class A(lib_serialization.Serializable):
+#     _a = 1
+
+# a = A()
+# a._b = B()
+
+# f = open(r'D:\qwe', 'wb+')
+# bf = lib_serialization.BinaryFileSerializer(f)
+# a.serialize(bf)
+
+# import numpy as np
+
+# x = np.int32(12)
+# import pickle
+
+# class A():
+#     ...
+
+# class B():
+#     ...
+
+# a = A()
+# a.b = a.a = B()
+
+# x = pickle.loads(pickle.dumps(a))
+
+# from timeit import timeit
+# print( timeit("[None]*1000",number=10000) )
+# print( timeit("[None for _ in range(1000)]",number=10000) )
+# print( timeit("list(range(1000))",number=10000) )
+
+
+# import io
+# x = io.BytesIO()
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+
+# def subproc( ds : lib_mp.MPDataSlot):
+#     while True:
+#         d = ds.pop()
+
+#         if d is not None:
+#             b = d._a
+#             if b is None:
+#                 print('b is None')
+#             else:
+#                 print('b is not None')
+#                 # val = b[0]
+
+#                 # for i in range(len(b)):
+#                 #     if b[i] != val:
+#                 #         print(b[i], val)
+#         #del d
+
+# if __name__ == '__main__':
+#     ds = lib_mp.MPDataSlot(size=512*1024*1024)
+
+#     p = multiprocessing.Process(target=subproc, args=(ds,),)
+#     p.daemon = True
+#     p.start()
+
+#     #import code
+#     #code.interact(local=dict(globals(), **locals()))
+
+#     #b = bytes(1024)
+#     #c = 0
+#     #for i in range(1024):
+#     #    b[i] = c
+#     #c = (c + 1) % 256
+#     #time.sleep(0.001)
+
+#     a = ASD()
+#     a._a = bytes(312*1024*1024)
+
+#     while True:
+#         ds.push(a)
+
+
+
+
+
+
+
+
+
+
+"""
+
+UUIDDB
+
+FaceDB(UUIDDB)
+
+
+_FaceBase
+|
+| uuid
+| image_name
+
+_FacePersonBase(_FaceBase)
+|
+| person_name
+
+FaceMark (_FacePersonBase)
+|
+| rect : FaceRect
+| lmrks_list
+    FaceLandmarks
+    | type (5, 68, ...)
+    | np.ndarray
+
+
+FaceAlign (_FacePersonBase)
+|
+| uuid_face_mark
+| lmrks_type : FaceLandmarks.Type
+| source_to_align_mat : np.ndarray           
+| coverage
+
+FaceSwap (_FacePersonBase)
+|
+| uuid_face_align
+|
+
+FaceSeg (_FaceBase)
+|
+| uuid_face_base
+    
+
+"""
+# class UUIDBase(PicklableExpandable):
+    
+#     def __init__(self):
+#         super().__init__()
+#         self._uuid : uuid.UUID = uuid.uuid4()
+        
+#     def get_uuid(self) -> uuid.UUID: return self._uuid
+
+
+   
+# class _FaceBase(PicklableExpandable):
+    
+#     def __init__(self):
+#         super().__init__()
+#         self._uuid : uuid.UUID = uuid.uuid4()
+        
+#         self._image_name : Union[str, None] = None
+    
+#     def get_uuid(self) -> uuid.UUID: return self._uuid
+        
+#     def get_image_name(self) -> Union[str, None]: return self._image_name
+#     def set_image_name(self, image_name : Union[str, None]):
+#         if image_name is not None and not isinstance(image_name, str):
+#             raise ValueError(f'image_name must be an instance of str or None')
+#         self._image_name = image_name
+    
+        
+# class _FacePersonBase(_FaceBase):
+
+#     def __init__(self):
+#         super().__init__()
+#         self._person_name : Union[str, None] = None
+        
+#     def get_person_name(self) -> Union[str, None]: return self._person_name
+#     def set_person_name(self, person_name : Union[str, None]):
+#         if person_name is not None and not isinstance(person_name, str):
+#             raise ValueError(f'person_name must be an instance of str or None')
+#         self._person_name = person_name
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+import pickle
+import struct
+
+import numpy as np
+
+class BinarySerializer:
+    """
+    base binary serializer class
+    """
+    
+    def __init__(self):
+        self.idx_stack = []
+
+    def get_cursor(self):
+        raise NotImplementedError()
+    def set_cursor(self, cursor):
+        raise NotImplementedError()
+    
+    def write_raw_bytes(self, b_bytes):
+        raise NotImplementedError()
+    def read_raw_bytes(self, len):
+        raise NotImplementedError()
+    
+    def read_raw_bytes_as_mv(self, len):
+        """
+        read raw bytes as memoryview
+        """
+        return memoryview(self.read_raw_bytes(len))
+    
+    def get_raw_bytes(self, len, offset=None):
+        self.push_idx(offset)
+        result = self.read_raw_bytes(len)
+        self.pop_idx()
+        return result
+        
+    def push_idx(self, new_idx=None):
+        self.idx_stack.append(self.get_cursor())
+        if new_idx is not None:
+            self.set_cursor(new_idx)
+    def pop_idx(self):
+        self.set_cursor(self.idx_stack.pop())
+
+    def write_bytes(self, b_bytes, noneable=False):
+        """
+        writes bytes() object
+        """
+        if noneable:
+            self.write_fmt('?', b_bytes is not None)
+            if b_bytes is None:
+                return self.get_cursor()
+
+        self.write_fmt('Q', len(b_bytes))
+        return self.write_raw_bytes(b_bytes)
+
+    def read_bytes(self, noneable=False):
+        if noneable:
+            has, = self.read_fmt('?')
+            if not has:
+                return None
+        return self.read_raw_bytes( self.read_fmt('Q')[0] )
+
+    def write_fmt(self, fmt, *args):
+        if noneables:
+            self.write_fmt('?'*len(fmt), *(arg is not None for arg in args) )
+            self.write_fmt(''.join( fmt[i] if arg is not None else 'B' for i,arg in enumerate(args)  ),
+                                     *(arg if arg is not None else 0 for arg in args) )
+        else:
+            self.write_raw_bytes( struct.pack(fmt, *args) )
+
+    def get_fmt(self, fmt):
+        return struct.unpack (fmt, self.get_raw_bytes(struct.calcsize(fmt)) )
+
+    def read_fmt(self, fmt, noneables=False):
+        if noneables:
+            bools = self.read_fmt( '?'*len(fmt) )
+            y = self.read_fmt( ''.join(fmt[i] if has else 'B' for i,has in enumerate(bools)) )
+            return ( y[i] if has else None for i,has in enumerate(bools)  )
+        else:
+            fmt_size = struct.calcsize(fmt)
+            return struct.unpack (fmt, self.read_raw_bytes(fmt_size))
+
+    def write_utf8(self, s):
+        self.write_bytes( s.encode('utf-8') )
+
+    def read_utf8(self):
+        return self.read_bytes().decode('utf-8')
+
+    def write_ndarray(self, npar : np.ndarray, noneable=False):
+        if noneable:
+            self.write_fmt('?', npar is not None)
+            if npar is None:
+                return self.c
+        shape = npar.shape
+        dtype = npar.dtype
+
+        np_view = memoryview(npar.reshape(-1))
+        format = np_view.format
+        nbytes = np_view.nbytes
+        ar_info = pickle.dumps( (shape, dtype, nbytes, format) )
+        self.write_bytes(ar_info)
+        self.write_raw_bytes(np_view.cast('B'))
+
+        return self.get_cursor()
+
+    def read_ndarray(self, noneable=False):
+        if noneable:
+            has, = self.read_fmt('?')
+            if not has:
+                return None
+        shape, dtype, nbytes, format = pickle.loads(self.read_bytes())
+        np_ar = np.empty(shape, dtype)
+        memoryview(np_ar.reshape(-1))[:] = self.read_raw_bytes_as_mv(nbytes).cast(format)
+        return np_ar
+    
+       
+class BinaryFileSerializer(BinarySerializer):
+
+    def __init__(self, f, offset=0):
+        super().__init__()
+        self.f = f
+        self.base_cursor = offset
+        if offset != 0:
+            self.set_cursor(0)
+
+    def get_cursor(self):
+        return self.f.tell()-self.base_cursor
+
+    def set_cursor(self, cursor):
+        self.f.seek(self.base_cursor+cursor, 0)
+
+    def write_raw_bytes(self, b_bytes):
+        self.f.write(b_bytes)
+        return self.f.tell()
+
+    def read_raw_bytes(self, len):
+        return self.f.read(len)
+        
+    
+        
+        
+class BinaryMemorySerializer(BinarySerializer):
+    def __init__(self, mv : memoryview, offset=0):
+        super().__init__()
+        if offset != 0:
+            mv = mv[offset:]
+        self.mv = mv
+        self.c = 0
+
+    def get_cursor(self): return self.c
+    def set_cursor(self, cursor): self.c = cursor
+        
+    def write_raw_bytes(self, b_bytes):
+        b_bytes_len = len(b_bytes)
+        self.mv[self.c:self.c+b_bytes_len] = b_bytes
+        self.c += b_bytes_len
+        return self.c
+
+    def read_raw_bytes(self, size):
+        result = self.mv[self.c:self.c+size].tobytes()
+        self.c += size
+        return result
+    
+    def read_raw_bytes_as_mv(self, size):
+        result = self.mv[self.c:self.c+size]
+        self.c += size
+        return result
+        
+    def write_raw_bytes_from_mv(self, mv : memoryview, size):
+        self.mv[self.c:self.c+size] = mv[:size]
+        self.c += size
+        return self.c
+        
+    def read_raw_bytes_to_mv (self, mv : memoryview, size):
+        mv[:size] = self.mv[self.c:self.c+size]
+        self.c += size
+        
+# class MemoryViewFormatter:
+
+#     def __init__(self, mv, offset=0):
+#         if offset != 0:
+#             mv = mv[offset:]
+
+#         self.mv = mv
+#         self.c = 0
+#         self.idx_stack = []
+
+#     def push_idx(self, new_idx):
+#         self.idx_stack.append(self.c)
+#         self.c = new_idx
+
+#     def pop_idx(self):
+#         self.c = self.idx_stack.pop()
+
+#     def get_cursor(self): return self.c
+#     def set_cursor(self, idx): self.c = idx
+
+#     def write_utf8(self, s):
+#         self.write_bytes( s.encode('utf-8') )
+
+#     def read_utf8(self):
+#         return self.read_bytes().decode('utf-8')
+
+#     def write_object(self, obj, noneable=False):
+#         if noneable:
+#             self.write_fmt('?', obj is not None)
+#             if obj is None:
+#                 return self.c
+
+#         if isinstance(obj, bytes):
+#             self.write_fmt('I', 0)
+#         elif isinstance(obj, np.ndarray):
+#             self.write_fmt('I', 1)
+
+
+#     #     self.write_bytes( pickle.dumps(obj) if obj is not None else None, noneable=noneable )
+
+#     # def read_object(self, noneable=False):
+#     #     b = self.read_bytes(noneable=noneable)
+#     #     return pickle.loads(b) if b is not None else None
+
+#     def write_bytes(self, b_bytes, noneable=False):
+#         if noneable:
+#             self.write_fmt('?', b_bytes is not None)
+#             if b_bytes is None:
+#                 return self.c
+
+#         b_bytes_len = len(b_bytes)
+#         self.write_fmt('Q', b_bytes_len)
+
+#         self.mv[self.c:self.c+b_bytes_len] = b_bytes
+#         self.c += b_bytes_len
+#         return self.c
+
+#     def write_ndarray(self, npar : np.ndarray, noneable=False):
+#         if noneable:
+#             self.write_fmt('?', npar is not None)
+#             if npar is None:
+#                 return self.c
+#         shape = npar.shape
+#         dtype = npar.dtype
+
+#         np_view = memoryview(npar.reshape(-1))
+#         format = np_view.format
+#         nbytes = np_view.nbytes
+
+#         ar_info = pickle.dumps( (shape, dtype, nbytes, format) )
+
+
+
+#         self.write_bytes(ar_info)
+
+#         self.mv[self.c:self.c+nbytes] = np_view.cast('B')
+
+#         self.c += nbytes
+#         return self.c
+
+#     def read_ndarray(self, noneable=False):
+#         if noneable:
+#             has, = self.read_fmt('?')
+#             if not has:
+#                 return None
+#         shape, dtype, nbytes, format = pickle.loads(self.read_bytes())
+
+#         np_ar = np.empty(shape, dtype)
+#         memoryview(np_ar.reshape(-1))[:] = self.mv[self.c:self.c+nbytes].cast(format)
+#         self.c += nbytes
+#         return np_ar
+
+#     def read_bytes(self, noneable=False):
+#         if noneable:
+#             has, = self.read_fmt('?')
+#             if not has:
+#                 return None
+
+#         b_bytes_len, = self.read_fmt('Q')
+
+#         b_bytes = self.mv[self.c:self.c+b_bytes_len].tobytes()
+#         self.c += b_bytes_len
+#         return b_bytes
+
+#     def write_mvf(self, mvf : 'MemoryViewFormatter', offset, size):
+#         self.write_fmt('Q', size)
+#         self.mv[self.c:self.c+size] = mvf.mv[offset:offset+size]
+#         self.c += size
+
+#     def read_mvf(self, to_mv : memoryview = None):
+#         size, = self.read_fmt('Q')
+#         if to_mv is not None:
+#             to_mv[0:size] = self.mv[self.c:self.c+size]
+#             mvf = MemoryViewFormatter(to_mv, offset=0)
+#         else:
+#             mvf = MemoryViewFormatter(self.mv, offset=self.c)
+
+#         self.c += size
+#         return mvf
+
+#     def write_fmt(self, fmt, *args, noneables=False):
+#         if noneables:
+#             self.write_fmt('?'*len(fmt), *(arg is not None for arg in args) )
+#             self.write_fmt(''.join( fmt[i] if arg is not None else 'B' for i,arg in enumerate(args)  ),
+#                     *(arg if arg is not None else 0 for arg in args) )
+#         else:
+#             fmt_size = struct.calcsize(fmt)
+#             self.mv[self.c:self.c+fmt_size] = struct.pack(fmt, *args)
+#             self.c += fmt_size
+
+#     def read_fmt(self, fmt, noneables=False):
+#         if noneables:
+#             bools = self.read_fmt( '?'*len(fmt) )
+
+#             y = self.read_fmt( ''.join(fmt[i] if has else 'B' for i,has in enumerate(bools)) )
+
+#             return ( y[i] if has else None for i,has in enumerate(bools)  )
+#         else:
+#             fmt_size = struct.calcsize(fmt)
+#             result = struct.unpack (fmt, self.mv[self.c:self.c+fmt_size])
+#             self.c += fmt_size
+#             return result
+
+#     def get(self, fmt):
+#         fmt_size = struct.calcsize(fmt)
+#         return struct.unpack (fmt, self.mv[self.c:self.c+fmt_size])
+
+
+
+from localization import LQTFonts, LStrings
+from xlib import torch as lib_torch
+from xlib import qt as lib_qt
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+
+
+class QDeviceChooser(QFrame):
+    """
+
+     on_choosed     func(lib_torch.Devices)
+    """
+
+    def __init__(self, devices : lib_torch.Devices, choose_multi=True, on_choosed=None):
+        super().__init__()
+        self.devices = devices
+        self.choose_multi = choose_multi
+        self.on_choosed = on_choosed
+
+        if choose_multi:
+            main_l = lib_qt.QXVBoxLayout()
+            device_chboxes = self.device_chboxes = []
+
+            for i, device in enumerate(devices):
+                c = lib_qt.QXCheckBox(text=f'{device.name}', font=LQTFonts.get_fixedwidth_font(size=8), toggled=lambda checked, i=i: self.on_toggled(i, checked)  )
+                device_chboxes.append(c)
+
+                main_l.addWidget(c)
+
+            self.setLayout( lib_qt.QXVBoxLayout([ lib_qt.QXCollapsibleSection('Device', main_l, is_opened=True) ], contents_margins=(0,0,0,0) ) )
+        else:
+            label_device = lib_qt.QXLabel('Device')
+
+            cbox_choose = self.cbox_choose = lib_qt.QXComboBox(font=LQTFonts.get_fixedwidth_font(size=8), maximum_width=200 )
+
+            cbox_choose.addItem( QIcon(), '')
+            for i, device in enumerate(devices):
+                cbox_choose.addItem( QIcon(), f'{device.name}{device.name}{device.name}')
+
+            cbox_choose.setCurrentIndex(0)
+            cbox_choose.currentIndexChanged.connect(lambda idx: self.on_toggled(idx, True))
+
+
+
+            #self.setLayout( lib_qt.QXVBoxLayout([ lib_qt.QXCollapsibleSection('Device', lib_qt.QXHBoxLayout([cbox_choose], contents_margins=(0,0,0,0)) , is_opened=True, allow_open_close=False, show_content_frame=False) ], contents_margins=(0,0,0,0) ) )
+
+            self.setLayout( lib_qt.QXHBoxLayout([label_device, cbox_choose], contents_margins=(0,0,0,0)) )
+
+    def get_devices(self) -> lib_torch.Devices : return self.devices
+
+    def unselect_all(self, block_signals : bool):
+        if self.choose_multi:
+            with lib_qt.BlockSignals(self.device_chboxes, block_signals=block_signals):
+                for device_chbox in self.device_chboxes:
+                    device_chbox.setChecked(False)
+        else:
+            with lib_qt.BlockSignals(self.cbox_choose, block_signals=block_signals):
+                self.cbox_choose.setCurrentIndex(0)
+
+
+    def set_selected_index(self, index, is_selected, block_signals : bool):
+        if self.choose_multi:
+            with lib_qt.BlockSignals(self.device_chboxes, block_signals=block_signals):
+                self.device_chboxes[index].setChecked(is_selected)
+        elif is_selected:
+            with lib_qt.BlockSignals(self.cbox_choose, block_signals=block_signals):
+                self.cbox_choose.setCurrentIndex(index+1)
+
+    def set_selected(self, devices : lib_torch.Devices, block_signals : bool):
+        if self.choose_multi:
+            with lib_qt.BlockSignals(self.device_chboxes, block_signals=block_signals):
+                for i, device in enumerate(self.devices):
+                    self.device_chboxes[i].setChecked( True if device in devices else False )
+        else:
+            with lib_qt.BlockSignals(self.cbox_choose, block_signals=block_signals):
+                if len(devices) == 0:
+                    self.cbox_choose.setCurrentIndex(0)
+                else:
+                    for i, device in enumerate(self.devices):
+                        if device == devices[0]:
+                            self.cbox_choose.setCurrentIndex(i+1)
+                            break
+
+    def get_selected(self) -> lib_torch.Devices:
+        if self.choose_multi:
+            devices_list = []
+            for i, device_chbox in enumerate(self.device_chboxes):
+                if device_chbox.isChecked():
+                    devices_list.append(self.devices[i])
+
+            return lib_torch.Devices(devices_list)
+        else:
+            idx = self.cbox_choose.currentIndex()
+            if idx == 0:
+                return lib_torch.Devices()
+            return lib_torch.Devices( [ self.devices[idx-1] ] )
+
+    def on_toggled(self, idx, checked):
+
+        if self.choose_multi:
+            with lib_qt.BlockSignals(self.device_chboxes):
+                for device_chbox in self.device_chboxes:
+                    device_chbox.setChecked(False)
+                self.device_chboxes[idx].setChecked(checked)
+
+        if self.on_choosed is not None:
+            self.on_choosed( self.get_selected() )
+            
+            
+import multiprocessing
+import pickle
+
+import numpy as np
+from xlib import python as lib_python
+
+from .RWLock import RWLock
+from .MPAtomicInt32 import MPAtomicInt32
+
+class MPDataSlotMirror:
+    """
+    mirror for MPDataSlot for single advisor.
+    
+    """
+    
+    def __init__(self, buffer_size=128*1024*1024):
+        self._ar = ar = multiprocessing.RawArray('B', buffer_size)
+        self._ar_view = memoryview(ar).cast('B')
+        
+        self._lock = RWLock()
+        
+        self._cached_dict = {}
+        self._cached_dict_ver = -1
+        
+    
+
+    def commit(self, mvf_src, offset, size):
+        
+        mvf = lib_python.MemoryViewFormatter(self._ar_view)
+        
+        self._lock.write_lock()
+        
+        ver, = mvf.get('I')
+        mvf.write('I', ver+1)
+        mvf.write_mvf(mvf_src, offset, size)        
+        
+        self._lock.write_unlock()
+        
+        
+        
+    def get(self):
+        
+        mvf = lib_python.MemoryViewFormatter(self._ar_view)        
+        
+        self._lock.read_lock()
+        ver, = mvf.read('I')
+        mvf_bytes = mvf.read_bytes()       
+        
+        self._lock.read_unlock()
+        
+        mvf = lib_python.MemoryViewFormatter( memoryview(mvf_bytes) )
+        
+        import code
+        code.interact(local=dict(globals(), **locals()))
+        
+   
+        
+        
+
+class MPDataSlot:
+    """
+    Multiprocess high performance multireader-multiwriter DataSlot.
+
+    The slot mean only one dict can exist in slot in one time.
+    """
+    def __init__(self, buffer_size=128*1024*1024, use_mirror=False):
+        self._ar = ar = multiprocessing.RawArray('B', buffer_size)
+        self._ar_view = memoryview(ar).cast('B')
+
+        self._atom = MPAtomicInt32(ar=ar, index=0)
+        
+        self.use_mirror = use_mirror
+        self._dsm = MPDataSlotMirror(buffer_size) if use_mirror else None
+        
+        #self.push( {} ) 
+        #self.pop()
+
+    def get_dsm(self): return self._dsm
+    
+    def push(self, d, wait=True):
+        """
+        arguments
+
+         d      dict
+
+         wait       True:   wait while other side pop the data and push the dict
+                            returns True
+
+                    False:  returns True if success push right now,
+                            otherwise the slot is busy and returns False
+        """
+        if not isinstance(d, dict):
+            raise ValueError('only dict can be pushed')
+
+        bytes_buffers = []
+        ndarray_buffers = []
+        dict_key_vals = []
+
+        for key in d:
+            value = d[key]
+            if isinstance(value, bytes):
+                bytes_buffers.append( (pickle.dumps(key), value) )
+            elif isinstance(value, np.ndarray):
+                ndarray_buffers.append( (pickle.dumps(key), value) )
+            else:
+                dict_key_vals.append( (key, value) )
+
+        dict_key_vals_bytes = pickle.dumps(dict_key_vals, 4)
+        
+        mvf = lib_python.MemoryViewFormatter(self._ar_view, offset=4)
+
+        if wait:
+            while True:
+                if self._atom.compare_exchange(0, 1) == 1:
+                    break
+        elif self._atom.compare_exchange(0, 1) != 1:
+            return False
+
+        mvf.write_bytes(dict_key_vals_bytes)
+        mvf.write('II', len(bytes_buffers), len(ndarray_buffers))
+        for key_bytes, bytes_buffer in bytes_buffers:
+            mvf.write_bytes(key_bytes)
+            mvf.write_bytes(bytes_buffer)
+        for key_bytes, nd_ar in ndarray_buffers:
+            mvf.write_bytes(key_bytes)
+            mvf.write_ndarray(nd_ar)
+            
+        if self.use_mirror:
+            self._dsm.commit( mvf, 0, mvf.get_idx() )
+
+        self._atom.set(2)
+        return True
+        
+    def pop(self, wait=True):
+        """
+
+        """
+        mvf = lib_python.MemoryViewFormatter(self._ar_view, offset=4)
+
+        ndarray_buffers = []
+        bytes_buffers = []
+        
+        if wait:
+            while True:
+                if self._atom.compare_exchange(2, 1) == 1:
+                    break
+        elif self._atom.compare_exchange(2, 1) != 1:
+            return None
+        
+        dict_key_vals = pickle.loads(mvf.read_bytes())
+        bytes_buffers_len, ndarray_buffers_len = mvf.read('II')        
+        for i in range(bytes_buffers_len):
+            bytes_buffers.append( (mvf.read_bytes(), mvf.read_bytes()) )
+        for i in range(ndarray_buffers_len):
+            ndarray_buffers.append( (mvf.read_bytes(), mvf.read_ndarray()) )
+
+        self._atom.set(0)
+
+        d = {}
+        for key,value in dict_key_vals:
+            d[key] = value
+        for key_bytes, bytes_buffer in bytes_buffers:
+            d[pickle.loads(key_bytes)] = bytes_buffer
+        for key_bytes, nd_ar in ndarray_buffers:
+            d[pickle.loads(key_bytes)] = nd_ar
+
+        return d
+
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        # pop unpicklable memoryview object
+        d.pop('_ar_view')
+        return d
+
+    def __setstate__(self, d):
+        # restore memoryview of RawArray
+        d['_ar_view'] = memoryview(d['_ar']).cast('B')
+        
+        self.__dict__.update(d)
+
+
+
+
+import multiprocessing
+import pickle
+
+import numpy as np
+from xlib import python as lib_python
+
+from .RWLock import RWLock
+
+class MPDataPipe:
+    """
+    DataPipe between two processes.
+    """
+    def __init__(self, buffer_size=4096*4096*3*4):
+        self._ar = ar = multiprocessing.RawArray('B', buffer_size)
+        self._ar_view = memoryview(ar).cast('B')
+        self._ev = multiprocessing.Event()
+        self._lock = RWLock()
+        self.set( {} )
+
+    def set(self, d):
+        """
+        set dict without pushing an event
+        increments current version
+
+        arguments
+
+         d      dict
+        """
+        if not isinstance(d, dict):
+            raise ValueError('only dict can be pushed')
+
+        bytes_buffers = []
+        ndarray_buffers = []
+
+        for key in d:
+            value = d[key]
+            if isinstance(value, bytes):
+                # Remove bytes() value to separated buffer
+                bytes_buffers.append( (pickle.dumps(key), value) )
+                d[key] = None
+            elif isinstance(value, np.ndarray):
+                # Remove np.ndarray value to separated buffer
+                ndarray_buffers.append( (pickle.dumps(key), value) )
+                d[key] = None
+
+        dict_bytes = pickle.dumps(d, 4)
+
+        bf = lib_python.MemoryViewFormatter(self._ar_view)
+
+        self._lock.write_lock()
+
+        idx = bf.get_idx()
+        ver, = bf.read('Q')
+        bf.set_idx(idx)
+        bf.write('Q', ver+1)
+
+        bf.write_bytes(dict_bytes)
+        bf.write('II', len(bytes_buffers), len(ndarray_buffers))
+        for key_bytes, bytes_buffer in bytes_buffers:
+            bf.write_bytes(key_bytes)
+            bf.write_bytes(bytes_buffer)
+        for key_bytes, nd_ar in ndarray_buffers:
+            bf.write_bytes(key_bytes)
+            bf.write_ndarray(nd_ar)
+
+        self._lock.write_unlock()
+
+    def push(self, d):
+        """
+        set dict, increments current version, and set an event
+
+        arguments
+
+         d      dict
+        """
+        self.set(d)
+        self._ev.set()
+
+    def get_ver(self) -> int:
+        """
+        Get current version of dict.
+        """
+        bf = lib_python.MemoryViewFormatter(self._ar_view)
+        ver, = bf.read('Q')
+        return ver
+
+    def get(self, with_ver=False):
+        """
+        Get current or last dict without checking and clear event.
+        """
+        bf = lib_python.MemoryViewFormatter(self._ar_view)
+        bytes_buffers = []
+        ndarray_buffers = []
+
+        self._lock.read_lock()
+
+        ver, = bf.read('Q')
+        dict_bytes = bf.read_bytes()
+        bytes_buffers_len, ndarray_buffers_len = bf.read('II')
+
+        for i in range(bytes_buffers_len):
+            bytes_buffers.append( (bf.read_bytes(), bf.read_bytes()) )
+        for i in range(ndarray_buffers_len):
+            ndarray_buffers.append( (bf.read_bytes(), bf.read_ndarray()) )
+
+        self._lock.read_unlock()
+
+
+        d = pickle.loads(dict_bytes)
+        for key_bytes, bytes_buffer in bytes_buffers:
+            d[pickle.loads(key_bytes)] = bytes_buffer
+        for key_bytes, nd_ar in ndarray_buffers:
+            d[pickle.loads(key_bytes)] = nd_ar
+            
+        if with_ver:
+            return ver, d
+        else:
+            return d
+
+    def pop(self, timeout_sec=None):
+        """
+        Get dict only if event is set
+
+        returns None if event is not set
+        """
+        ev = self._ev
+
+        if (timeout_sec is None     and ev.is_set()) or \
+           (timeout_sec is not None and ev.wait(timeout_sec)):
+            d = self.get()
+            ev.clear()
+            return d
+        return None
+
+    def is_pushed(self):
+        """
+        return True if data is already pushed, and still did not retrieved by other side
+        """
+        return self._ev.is_set()
+
+    def __getstate__(self):
+        d = self.__dict__.copy()
+        # pop unpicklable memoryview object
+        d.pop('_ar_view')
+        return d
+
+    def __setstate__(self, d):
+        # restore memoryview of RawArray
+        d['_ar_view'] = memoryview(d['_ar']).cast('B')
+        self.__dict__.update(d)
+
+class HCDataSheet1:
+    """
+    Base class for data-sheet between host and client process.
+
+    arguments
+
+     var_names  list of string of variables in datasheet
+
+    Host "commits" suggested data.
+    Client validate the data and can send changes back to the host with error messages for every param.
+    Suitable when speed of data transfer does not matter.
+    """
+
+    def __init__(self, var_names):
+        self.var_names = var_names
+        self.pickled = False
+        self.conn, self.other_conn = multiprocessing.Pipe()
+        self.error_msgs = {}
+        
+        for v in var_names:
+            setattr(self, v, None)
+
+    
+    def commit(self):
+        """
+        Commit the data
+        """
+        self.conn.send( (self._dump_vars(), self.error_msgs) )
+        self.error_msgs = {}
+        
+    def pull(self, timeout=0):
+        """
+        Pulls new version of sheet from other process.
+        Returns None if nothing received.
+
+        otherwise returns dotdict (dict with dot access) of variables, and dotdict of error msgs of vars
+        You should merge these variables manually
+
+         timeout    0sec : only check, don't wait
+                    None : wait infinite
+        """
+        if self.conn.poll(timeout):
+            vars, errs = self.conn.recv()
+
+            return dotdict(vars), dotdict(errs)
+        return None, None
+        
+    def set_error(self, var_name, msg):
+        """
+        set error message for var_name for new commit.
+        All error messages will be cleaned after commit.
+        """
+        if var_name not in self.var_names:
+            raise ValueError(f'{var_name} is not registered var_name in data sheet.')
+
+        self.error_msgs[var_name] = msg
+        
+    def has_errors(self):
+        return len(self.error_msgs.keys()) != 0
+   
+    def _dump_vars(self):
+        return { v : getattr(self, v) for v in self.var_names }
+        
+    def __getstate__(self):
+        if self.pickled:
+            raise Exception(f'{self.__class__.__name__} can be pickled only once')
+        self.pickled = True
+        d = dict()
+        d['conn'] = self.other_conn
+        d['vars'] = self._dump_vars()
+        return d
+
+    def __setstate__(self, d):
+        self.conn = d['conn']
+        vars = d['vars']
+        self.var_names = list(vars.keys())
+        for v in vars:
+            setattr(self, v, vars[v])
+        self.error_msgs = {}
+
+
+
+
+
+class StreamNode:
+    def __init__(self, fssh):
+        self.fssh = fssh
+
+    # def fssh_initialize(self):
+    #     fssh = self.fssh
+
+    #     fssh.image_sequence_dir = None
+
+    #     fssh.fps = 30
+    #     fssh.commit()
+        
+    # def fssh_merge(self, fssh, fssh_new):
+    #     fps_new = fssh_new.fps
+
+    #     if fssh.fps != fps_new:            
+    #         if fps_new < 1:
+    #             fssh.set_error('fps', 'fps cannot be < 1')
+    #         else:
+    #             fssh.fps = fps_new
+
+    #     if fssh.has_errors():
+    #         fssh.commit()
+
+
+    @staticmethod
+    def proc(*args): StreamNode(*args).run()
+    def run(self):
+        #self.fssh_initialize()
+        #fssh = self.fssh
+
+        while True:
+            """
+            check new sheet
+            merge and check vars
+            if some vars are invalid, flag to commit new version
+
+            """
+            #fssh_new, _ = fssh.pull()
+            #if fssh_new is not None:
+            #    self.fssh_merge(fssh, fssh_new)
+
+            time.sleep(0.001)
+
+
+
+
+class HCDataSheet:
+    """
+    DataSheet between Host and Client
+    """
+    class Variable():
+        def __init__(self):
+            self.value = None
+            self.err_msg = None
+            self.on_merge_func = None
+
+        def err(self, msg):
+            self.err_msg = msg
+            
+        def call_on_merge(self, func):
+            if self.on_merge_func is not None:
+                raise Exception('on_merge_func is already set')
+            self.on_merge_func = func
+            
+        def __call__(self, *args, err_msg=None, by_pull=False, **kwargs):
+            args_len = len(args)
+            if args_len == 0:
+                return self.value
+            elif args_len == 1:
+                old_value = self.value
+                new_value = args[0]
+                if by_pull and self.on_merge_func is not None:
+                    self.on_merge_func(self, old_value, new_value, err_msg)
+                else:
+                    self.value = new_value
+                    
+    def __init__(self):
+        self.pickled = False
+        self._on_merge_funcs = []
+        self.conn, self.other_conn = multiprocessing.Pipe()
+    
+    def call_on_merge(self, func):
+        """Call the func when the datasheet is updated by other side"""
+        self._on_merge_funcs.append(func)
+        
+        
+    def commit(self, err_msg=None):
+        """
+        Commit the data
+        """
+        self.conn.send( (self._dump_vars(), err_msg) )
+
+        
+    def pull(self, timeout=0):
+        """
+        Pulls new version of sheet from other process.
+         timeout    0sec : only check, don't wait
+                    None : wait infinite
+        """
+        if self.conn.poll(timeout):
+            vars, errs = self.conn.recv()
+            
+            for v in vars:
+                v_var = getattr(self, v, None)
+                v_var(vars[v], err_msg=errs[v], by_pull=True)
+ 
+    def has_errors(self):
+        for v in vars(self):
+            v_val = getattr(self, v)
+            if isinstance(v_val, HCDataSheet.Variable):        
+                if v_val.err_msg is not None:
+                    return True
+        return False
+        
+    def _get_var_names(self):
+        d = []        
+        for v in vars(self):
+            v_val = getattr(self, v)
+            if isinstance(v_val, HCDataSheet.Variable):        
+                d.append(v)
+        return d
+   
+    def _dump_vars(self):
+        d = {}        
+        for v in vars(self):
+            v_val = getattr(self, v)
+            if isinstance(v_val, HCDataSheet.Variable):        
+                d[v] = v_val.value        
+        return d
+        
+    def _dump_errs(self, clear=False):
+        d = {}        
+        for v in vars(self):
+            v_val = getattr(self, v)
+            if isinstance(v_val, HCDataSheet.Variable):        
+                d[v] = v_val.err_msg     
+                if clear:
+                    v_val.err_msg = None
+        return d
+        
+    def __getstate__(self):
+        #if self.pickled:
+        #    raise Exception(f'{self.__class__.__name__} can be pickled only once')
+        #self.pickled = True
+        d = dict()
+        d['conn'] = self.other_conn        
+        d['vars'] = self._get_var_names()
+        return d
+
+    def __setstate__(self, d):
+        self.conn = d['conn']
+        vars = d['vars']
+        for v in vars:
+            setattr(self, v, HCDataSheet.Variable())

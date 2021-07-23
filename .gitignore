@@ -1,0 +1,7 @@
+*
+!*.py
+!*.md
+!*.txt
+!*.jpg
+!*.png
+!requirements*
