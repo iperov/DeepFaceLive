@@ -43,51 +43,8 @@ class fixPathAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, os.path.abspath(os.path.expanduser(values)))
 
-
-# from xlib import time as lib_time
-# import numpy as np
-# import cv2
-# import cupy as cp
-# import cupyx.scipy.ndimage
-# import scipy
-# import scipy.ndimage
-
-# from typing import Union, Tuple
-
-# from xlib.image import ImageProcessor
-
-# mat = def_mat = np.array([[ 8.5966533e-01,  8.3356246e-02, 1.9525000e+02 ],#
-#                           [-8.3356142e-02,  8.5966533e-01, 8.8052826e+01 ]], np.float32)#
-        
-# is_cp = False
-# while True:
-#     print('is_cp : ', is_cp)
-#     img = cv2.imread(r'D:\DevelopPython\test\00000.png')
-#     if is_cp:
-#         img = cp.asarray(img)
-#     is_cp = not is_cp
-    
-#     ip = ImageProcessor(img)
-#     ip.sharpen(factor=10.0)
-#     #ip.degrade_resize( np.random.rand() )
-
-
-#     #ip.erode_blur(50, 50, fade_to_border=False)
-#     #ip.resize( (500,500) )
-#     #ip.warpAffine(mat, 1920, 1080)
-#     x = ip.get_image('HWC')
-
-#     x = cp.asnumpy(x)
-#     cv2.imshow('', x )
-#     cv2.waitKey(0) 
-# import code
-# code.interact(local=dict(globals(), **locals()))
-
-
-
 if __name__ == '__main__':
     main()
-
-
+    
 # import code
 # code.interact(local=dict(globals(), **locals()))
