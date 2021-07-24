@@ -1,7 +1,6 @@
 import time
 from enum import IntEnum
 
-import cupy as cp
 import numexpr as ne
 import numpy as np
 from xlib import cupy as lib_cp
@@ -38,6 +37,8 @@ class FaceMergerWorker(BackendWorker):
     def get_control_sheet(self) -> 'Sheet.Worker': return super().get_control_sheet()
 
     def on_start(self, weak_heap : BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection):
+
+
         self.weak_heap = weak_heap
         self.reemit_frame_signal = reemit_frame_signal
         self.bc_in = bc_in
@@ -95,6 +96,9 @@ class FaceMergerWorker(BackendWorker):
 
             if device != 'CPU':
                 self.is_gpu = True
+
+                global cp
+                import cupy as cp # BUG eats 1.8Gb paging file per process, so import on demand
                 cp.cuda.Device( device.get_index() ).use()
 
                 self.cp_mask_clip_kernel = cp.ElementwiseKernel('T x', 'T z', 'z = x < 0.004 ? 0 : x > 1.0 ? 1.0 : x', 'mask_clip_kernel')

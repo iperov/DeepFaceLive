@@ -1,14 +1,9 @@
 from enum import IntEnum
 from typing import Tuple, Union
 
-import cupy as cp
-import cupyx.scipy.ndimage
 import cv2
 import numexpr as ne
 import numpy as np
-import scipy
-import scipy.ndimage
-
 
 class ImageProcessor:
     """
@@ -24,13 +19,20 @@ class ImageProcessor:
 
     for cupy you should set device before using ImageProcessor
     """
-    def __init__(self, img : Union[np.ndarray,cp.ndarray], copy=False):
-        self._xp = xp = cp.get_array_module(img)
-
-        if copy and xp == np:
-            img = img.copy()
-
-        self._sp = cupyx.scipy if xp == cp else scipy
+    def __init__(self, img : Union[np.ndarray,'cp.ndarray'], copy=False):
+        
+        if img.__class__ == np.ndarray:        
+            self._xp = np
+            import scipy
+            import scipy.ndimage
+            self._sp = scipy
+            if copy:
+                img = img.copy()
+        else:
+            import cupy as cp   # BUG eats 1.8Gb paging file per process, so import on demand
+            import cupyx.scipy.ndimage
+            self._xp = cp
+            self._sp = cupyx.scipy
 
         ndim = img.ndim
         if ndim not in [2,3,4]:
@@ -145,10 +147,10 @@ class ImageProcessor:
         if scale != 1.0:
             img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
 
-            if self._xp == cp:
-                img = sp.ndimage.zoom(img, (scale, scale, 1.0), order=1)
-            else:
+            if self._xp == np:
                 img = cv2.resize (img, ( int(W*scale), int(H*scale) ), interpolation=ImageProcessor.Interpolation.LINEAR)
+            else:
+                img = sp.ndimage.zoom(img, (scale, scale, 1.0), order=1)
 
             H,W,_ = img.shape
             img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
@@ -191,17 +193,17 @@ class ImageProcessor:
         N,H,W,C = img.shape
         img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
 
-        if xp == cp:
-            W_lr = max(4, round(W*(1.0-power)))
-            H_lr = max(4, round(H*(1.0-power)))
-            img = sp.ndimage.zoom(img, (H_lr/H, W_lr/W, 1), order=_scipy_order[interpolation])
-            img = sp.ndimage.zoom(img, (H/img.shape[0], W/img.shape[1], 1), order=_scipy_order[interpolation])
-        else:
+        if xp == np:
             W_lr = max(4, int(W*(1.0-power)))
             H_lr = max(4, int(H*(1.0-power)))
             img = cv2.resize (img, (W_lr,H_lr), interpolation=_cv_inter[interpolation])
             img = cv2.resize (img, (W,H)      , interpolation=_cv_inter[interpolation])
-
+        else:
+            W_lr = max(4, round(W*(1.0-power)))
+            H_lr = max(4, round(H*(1.0-power)))
+            img = sp.ndimage.zoom(img, (H_lr/H, W_lr/W, 1), order=_scipy_order[interpolation])
+            img = sp.ndimage.zoom(img, (H/img.shape[0], W/img.shape[1], 1), order=_scipy_order[interpolation])
+           
         img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
 
         self._img = img
@@ -226,13 +228,13 @@ class ImageProcessor:
 
         img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
 
-        if xp == cp:
-            img_blur = sp.ndimage.median_filter(img, size=(size,size,1) )
-            img = img*(1.0-power) + img_blur*power
-        else:
+        if xp == np:
             img_blur = cv2.medianBlur(img, size)
             img = ne.evaluate('img*(1.0-power) + img_blur*power')
-
+        else:
+            img_blur = sp.ndimage.median_filter(img, size=(size,size,1) )
+            img = img*(1.0-power) + img_blur*power
+            
         img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
         self._img = img
 
@@ -262,18 +264,18 @@ class ImageProcessor:
         if erode > 0:
             el = xp.asarray(cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3)))
             iterations = max(1,erode//2)
-            if self._xp == cp:
-                img = sp.ndimage.binary_erosion(img, el[...,None], iterations = iterations, brute_force=True ).astype(dtype)
-            else:
+            if self._xp == np:
                 img = cv2.erode(img, el, iterations = iterations )
+            else:
+                img = sp.ndimage.binary_erosion(img, el[...,None], iterations = iterations, brute_force=True ).astype(dtype)
 
         elif erode < 0:
             el = xp.asarray(cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3)))
             iterations = max(1,-erode//2)
-            if self._xp == cp:
-                img = sp.ndimage.binary_dilation(img, el[...,None], iterations = iterations, brute_force=True).astype(dtype)
-            else:
+            if self._xp == np:
                 img = cv2.dilate(img, el, iterations = iterations )
+            else:
+                img = sp.ndimage.binary_dilation(img, el[...,None], iterations = iterations, brute_force=True).astype(dtype)
 
         if fade_to_border:
             h_clip_size = H + blur // 2
@@ -285,10 +287,10 @@ class ImageProcessor:
 
         if blur > 0:
             sigma = blur * 0.125 * 2
-            if self._xp == cp:
-                img = sp.ndimage.gaussian_filter(img, (sigma, sigma,0), mode='constant')
-            else:
+            if self._xp == np:
                 img = cv2.GaussianBlur(img, (0, 0), sigma)
+            else:
+                img = sp.ndimage.gaussian_filter(img, (sigma, sigma,0), mode='constant')
 
         #if img.ndim == 2:
         #    img = img[...,None]
@@ -370,11 +372,11 @@ class ImageProcessor:
         N,H,W,C = img.shape
         img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
 
-        if xp == cp:
-            raise
-        else:
+        if xp == np:
             blur = cv2.GaussianBlur(img, (kernel_size, kernel_size) , 0)
             img = cv2.addWeighted(img, 1.0 + (0.5 * factor), blur, -(0.5 * factor), 0)
+        else:
+            raise
 
         img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
 
@@ -478,10 +480,10 @@ class ImageProcessor:
 
             img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
 
-            if self._xp == cp:
-                img = sp.ndimage.zoom(img, (TW/W, TH/H, 1), order=_scipy_order[interpolation])
-            else:
+            if self._xp == np:
                 img = cv2.resize (img, (TW, TH), interpolation=_cv_inter[interpolation])
+            else:
+                img = sp.ndimage.zoom(img, (TW/W, TH/H, 1), order=_scipy_order[interpolation])
 
             img = img.reshape( (TH,TW,N,C) ).transpose( (2,0,1,3) )
 
@@ -503,9 +505,11 @@ class ImageProcessor:
         if interpolation is None:
             interpolation = ImageProcessor.Interpolation.LINEAR
 
-        if xp == cp:
+        if xp == np:
+            img = cv2.warpAffine(img, mat, (out_width, out_height), flags=_cv_inter[interpolation] )
+        else:
             # AffineMat inverse
-            xp_mat = cp.get_array_module(mat)
+            xp_mat = xp.get_array_module(mat)
             mat = xp_mat.linalg.inv(xp_mat.concatenate( ( mat, xp_mat.array([[0,0,1]], xp_mat.float32)), 0) )[0:2,:]
 
             mx, my = xp.meshgrid( xp.arange(0, out_width, dtype=xp.float32), xp.arange(0, out_height, dtype=xp.float32) )
@@ -513,10 +517,7 @@ class ImageProcessor:
 
             mat_coords = xp.matmul (xp.asarray(mat), coords.reshape( (3,-1) ) ).reshape( (2,out_height,out_width))
             img = xp.concatenate([sp.ndimage.map_coordinates( img[...,c], mat_coords[::-1,...], order=_scipy_order[interpolation], mode='opencv' )[...,None] for c in range(N*C) ], -1)
-
-        else:
-            img = cv2.warpAffine(img, mat, (out_width, out_height), flags=_cv_inter[interpolation] )
-
+            
         img = img.reshape( (out_height,out_width,N,C) ).transpose( (2,0,1,3) )
         self._img = img
         return self

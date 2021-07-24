@@ -1,6 +1,6 @@
 from typing import List
 
-import cupy as cp
+
 
 
 class CuPyDeviceInfo:
@@ -55,6 +55,7 @@ def get_available_devices() -> List[CuPyDeviceInfo]:
     """
     global _cupy_devices
     if _cupy_devices is None:
+        import cupy as cp # BUG eats 1.8Gb paging file per process, so import on demand
         devices = []
 
         for i in range (cp.cuda.runtime.getDeviceCount()):
