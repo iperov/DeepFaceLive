@@ -150,7 +150,7 @@ class Localization:
     'QFileSource.is_autorewind':{
                 'en-US' : 'Auto rewind',
                 'ru-RU' : 'Авто перемотка',
-                'zh-CN' : '自动倒带'},
+                'zh-CN' : '循环播放'},
 
     'QCameraSource.module_title':{
                 'en-US' : 'Camera source',
@@ -300,12 +300,12 @@ class Localization:
     'QFaceDetector.detected_faces':{
                 'en-US' : 'Detected faces',
                 'ru-RU' : 'Обнаруженные лица',
-                'zh-CN' : '检测到的人脸数量'},
+                'zh-CN' : '检测到的人脸'},
 
     'QFaceAligner.module_title':{
                 'en-US' : 'Face aligner',
                 'ru-RU' : 'Выравниватель лица',
-                'zh-CN' : '人脸对齐方式'},
+                'zh-CN' : '人脸对齐器'},
 
     'QFaceAligner.face_coverage':{
                 'en-US' : 'Face coverage',
@@ -485,7 +485,7 @@ class Localization:
     'QFaceMerger.module_title':{
                 'en-US' : 'Face merger',
                 'ru-RU' : 'Склейка лица',
-                'zh-CN' : '使用双立方降采样模糊整个画面'},
+                'zh-CN' : '人脸融合器'},
 
     'QFaceMerger.device':{
                 'en-US' : 'Device',
@@ -520,12 +520,12 @@ class Localization:
     'QFaceMerger.face_mask_erode':{
                 'en-US' : 'Face mask erode',
                 'ru-RU' : 'Укорочение маски',
-                'zh-CN' : '人脸遮罩向内缩边'},
+                'zh-CN' : '遮罩向内缩边'},
 
     'QFaceMerger.face_mask_blur':{
                 'en-US' : 'Face mask blur',
                 'ru-RU' : 'Размытие маски',
-                'zh-CN' : '人脸遮罩边缘羽化'},
+                'zh-CN' : '遮罩边缘羽化'},
 
     'QFaceMerger.face_opacity':{
                 'en-US' : 'Face opacity',
@@ -555,7 +555,7 @@ class Localization:
     'QStreamOutput.show_hide_window':{
                 'en-US' : 'window',
                 'ru-RU' : 'окно',
-                'zh-CN' : '窗口'},
+                'zh-CN' : '窗口显示'},
 
     'QStreamOutput.aligned_face_id':{
                 'en-US' : 'Face ID',
@@ -570,7 +570,7 @@ class Localization:
     'QStreamOutput.target_delay':{
                 'en-US' : 'Target delay',
                 'ru-RU' : 'Целев. задержка',
-                'zh-CN' : '目标延迟'},
+                'zh-CN' : '音画延迟'},
 
     'QStreamOutput.help.target_delay':{
                 'en-US' : 'Target delay in milliseconds between input frame and output frame.\nMatch this value with audio delay in your stream software to get syncronized stream.',
@@ -590,7 +590,7 @@ class Localization:
     'QStreamOutput.save_fill_frame_gap':{
                 'en-US' : 'Fill frame gap',
                 'ru-RU' : 'Заполнить пустоты',
-                'zh-CN' : '填充帧间隙'},
+                'zh-CN' : '补帧'},
 
     'QStreamOutput.help.save_fill_frame_gap':{
                 'en-US' : 'Fill frame drops by duplicating last frame.',
@@ -615,7 +615,7 @@ class Localization:
     'QBCFinalFrameViewer.title':{
                 'en-US' : 'Final frame',
                 'ru-RU' : 'Финальный кадр',
-                'zh-CN' : '最终画面'},
+                'zh-CN' : '结果'},
 
     'FileSource.image_folder':{
                 'en-US' : 'Image folder',
