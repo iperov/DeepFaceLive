@@ -615,7 +615,7 @@ class Localization:
     'QBCFinalFrameViewer.title':{
                 'en-US' : 'Final frame',
                 'ru-RU' : 'Финальный кадр',
-                'zh-CN' : '结果，商务合作联系dfldata.xyz滚石'},
+                'zh-CN' : '结果'},
 
     'FileSource.image_folder':{
                 'en-US' : 'Image folder',
