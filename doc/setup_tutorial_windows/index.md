@@ -13,6 +13,13 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
+### Set total virtual memory to 32Gb or more.
+
+<img src="virtual_memory.jpg"></img>
+
+</td></tr>
+<tr><td colspan=2 align="center">
+
 ### Download Windows build exe from one of the sources.
 
 <img src="download_build.jpg"></img>
