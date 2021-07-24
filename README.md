@@ -63,7 +63,7 @@ Windows 10
 </td></tr>
 <tr><td align="right">
 
-<a href="https://mega.nz/folder/DsknAAZR#5QHzS2wGwLUu0ascNTBxbQ">Windows 10 x64 (mega.nz)</a>
+<a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
 
 </td><td align="center">Contains new and prev releases.</td></tr>
 
