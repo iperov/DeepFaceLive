@@ -441,7 +441,27 @@ class ImageProcessor:
 
         self._img = img
         return self
-
+    
+    def to_grayscale(self) -> 'ImageProcessor':
+        """
+        Converts 3 ch bgr to grayscale.
+        """
+        img, xp = self._img, self._xp
+        _,_,_,C = img.shape
+        if C != 1:
+            dtype = self.get_dtype()
+                    
+            if C == 2:
+                img = img[...,:1]
+            elif C >= 3:
+                img = img[...,:3]
+                
+                img = xp.dot(img, xp.array([0.1140, 0.5870, 0.2989], xp.float32)) [...,None]
+            img = img.astype(dtype)
+            self._img = img
+        
+        return self
+        
     def resize(self, size : Tuple, interpolation : 'ImageProcessor.Interpolation' = None, new_ip=False ) -> 'ImageProcessor':
         """
         resize to (W,H)
