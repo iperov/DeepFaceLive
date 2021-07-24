@@ -22,8 +22,7 @@ class WindowsFolderBuilder:
     URL_7ZIP    = r'https://github.com/iperov/DeepFaceLive/releases/download/7za/7za.zip'
     URL_MSVC    = r'https://github.com/iperov/DeepFaceLive/releases/download/msvc/msvc.zip'
 
-    URLS_PYTHON = {'3.6.8' : r'https://www.python.org/ftp/python/3.6.8/python-3.6.8-embed-amd64.zip',
-                   '3.7.9' : r'https://www.python.org/ftp/python/3.7.9/python-3.7.9-embed-amd64.zip',
+    URLS_PYTHON = {'3.7.9' : r'https://www.python.org/ftp/python/3.7.9/python-3.7.9-embed-amd64.zip',
                    '3.8.10' : r'https://www.python.org/ftp/python/3.8.10/python-3.8.10-embed-amd64.zip',
                    }
 
@@ -461,7 +460,7 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9'):
                                    cache_path=Path(cache_dir),
                                    python_ver=python_ver,
                                    clear_release_path=True)
-    builder.install_pip_package('numpy==1.21.1')#1.19.5
+    builder.install_pip_package('numpy==1.21.1')
     builder.install_pip_package('scipy==1.5.4')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.3.56')
