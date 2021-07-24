@@ -41,10 +41,9 @@ NVIDIA  GTX 750 or higher (AMD is not supported yet)
 
 Modern CPU with AVX instructions
 
-4GB RAM
+4GB RAM, 32GB+ paging file
 
 Windows 10
-
 
 </td></tr>
 <tr><td colspan=2 align="center">
