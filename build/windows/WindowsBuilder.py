@@ -465,6 +465,7 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.6.8'):
     builder.install_pip_package('scipy==1.5.4')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.3.56')
+    builder.install_pip_package('opencv-contrib-python==4.5.1.48')
     builder.install_pip_package('pyqt6==6.1.1')
     builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
     builder.install_pip_package('onnxruntime-gpu==1.8.1')
