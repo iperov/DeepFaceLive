@@ -456,12 +456,12 @@ pause
 """)
 
 
-def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.6.8'):
+def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9'):
     builder = WindowsFolderBuilder(release_path=Path(release_dir),
                                    cache_path=Path(cache_dir),
                                    python_ver=python_ver,
                                    clear_release_path=True)
-    builder.install_pip_package('numpy==1.19.5')
+    builder.install_pip_package('numpy==1.21.1')#1.19.5
     builder.install_pip_package('scipy==1.5.4')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.3.56')
@@ -520,7 +520,7 @@ if __name__ == '__main__':
     p.add_argument('--build-type', required=True, choices=['dfl-windows'])#,'dfl-windows-installer'])
     p.add_argument('--release-dir', action=fixPathAction, default=None)
     p.add_argument('--cache-dir', action=fixPathAction, default=None)
-    p.add_argument('--python-ver', default="3.6.8")
+    p.add_argument('--python-ver', default="3.7.9")
     args = p.parse_args()
 
     if args.build_type == 'dfl-windows':
