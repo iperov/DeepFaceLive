@@ -93,9 +93,10 @@ class FaceULandmarks:
         return FaceULandmarks.create(type=self._type, ulmrks=ulmrks)
 
 
-    def calc_cut(self, w_h, coverage : float, output_size : int, exclude_moving_parts : bool):
+    def calc_cut(self, w_h, coverage : float, output_size : int, exclude_moving_parts : bool, x_offset : float = 0, y_offset : float = 0):
         """
         Calculates affine mat for face cut.
+
 
         returns
              mat,       matrix to transform img space to face_image space
@@ -103,8 +104,6 @@ class FaceULandmarks:
         """
 
         lmrks = (self._ulmrks * w_h ).astype(np.float32)
-
-        ulmrks_count = self.get_count()
         type = self._type
 
         # estimate landmarks transform from global space to local aligned space with bounds [0..1]
@@ -116,7 +115,7 @@ class FaceULandmarks:
             if exclude_moving_parts:
                 src_lmrks = np.delete(src_lmrks, landmarks_468_moving_parts_indexes, 0)
                 dst_lmrks = np.delete(dst_lmrks, landmarks_468_moving_parts_indexes, 0)
-            
+
             mat = Affine2DMat.umeyama(src_lmrks, dst_lmrks)
         else:
             raise NotImplementedError()
@@ -136,10 +135,10 @@ class FaceULandmarks:
         mod = (1.0 / scale)* ( npla.norm(g_p[0]-g_p[2])*( coverage * 0.5) )
 
         # adjust vertical offset to cover more forehead
-        vec = (g_p[0]-g_p[3]).astype(np.float32)
-        vec_len = npla.norm(vec)
-        vec /= vec_len
-        g_c += vec*vec_len*0.08
+        h_vec = (g_p[1]-g_p[0]).astype(np.float32)
+        v_vec = (g_p[3]-g_p[0]).astype(np.float32)
+
+        g_c += h_vec*x_offset + v_vec*(y_offset-0.08)
 
         l_t = np.array( [ g_c - tb_diag_vec*mod,
                           g_c + bt_diag_vec*mod,
@@ -152,7 +151,7 @@ class FaceULandmarks:
         return mat, uni_mat
 
 
-    def cut(self, img : np.ndarray, coverage : float, output_size : int, exclude_moving_parts=False) -> Tuple[Affine2DMat, Affine2DUniMat]:
+    def cut(self, img : np.ndarray, coverage : float, output_size : int, exclude_moving_parts=False, x_offset : float = 0, y_offset : float = 0) -> Tuple[Affine2DMat, Affine2DUniMat]:
         """
         Cut the face to square of output_size from img using landmarks with given parameters
 
@@ -163,15 +162,18 @@ class FaceULandmarks:
             coverage        float
 
             output_size     int
-            
+
             exclude_moving_parts(False)     exclude moving parts of the face, such as eyebrows and jaw
+
+            v_offset
+            h_offset    float   uniform h/v offset
 
         returns face_image,
                 uni_mat         uniform affine matrix to transform uniform img space to uniform face_image space
         """
         h,w = img.shape[0:2]
 
-        mat, uni_mat = self.calc_cut( (w,h), coverage, output_size, exclude_moving_parts)
+        mat, uni_mat = self.calc_cut( (w,h), coverage, output_size, exclude_moving_parts, x_offset=x_offset, y_offset=y_offset)
 
         face_image = cv2.warpAffine(img, mat, (output_size, output_size), cv2.INTER_CUBIC )
         return face_image, uni_mat
@@ -1198,7 +1200,7 @@ uni_landmarks_468 = np.array(
 
 # for i in sel:
 #     selected[i] = True
-    
+
 
 
 # select_holding = False
@@ -1206,27 +1208,27 @@ uni_landmarks_468 = np.array(
 # def onMouse(event, x, y, flags, _):
 #     global select_holding
 #     global unselect_holding
-    
-#     if event == cv2.EVENT_LBUTTONDOWN: 
+
+#     if event == cv2.EVENT_LBUTTONDOWN:
 #         select_holding = True
-#     elif event == cv2.EVENT_LBUTTONUP: 
+#     elif event == cv2.EVENT_LBUTTONUP:
 #         select_holding = False
-#     elif event == cv2.EVENT_RBUTTONDOWN: 
+#     elif event == cv2.EVENT_RBUTTONDOWN:
 #         unselect_holding = True
-#     elif event == cv2.EVENT_RBUTTONUP: 
-#         unselect_holding = False    
+#     elif event == cv2.EVENT_RBUTTONUP:
+#         unselect_holding = False
 #     elif event == cv2.EVENT_MBUTTONDOWN:
-        
+
 #         print([ i for i, x in enumerate(selected) if x == True ])
-        
+
 #     pt_idx = np.argsort( np.linalg.norm(pts - [x,y], axis=1) )[0]
-        
+
 #     if select_holding:
 #         selected[pt_idx] = True
 #     if unselect_holding:
 #         selected[pt_idx] = False
-   
-    
+
+
 # cv2.namedWindow(wnd_name)
 # cv2.setMouseCallback(wnd_name, onMouse)
 
@@ -1236,9 +1238,9 @@ uni_landmarks_468 = np.array(
 #             color = (255,0,0)
 #         else:
 #             color = (255,255,255)
-        
+
 #         cv2.circle(img, (x,y), 1, color, 1 )
-        
+
 #     cv2.imshow(wnd_name,img)
 #     cv2.waitKey(5)
 
@@ -1250,29 +1252,29 @@ uni_landmarks_468 = np.array(
 # def proc1(ev = multiprocessing.Event()):
 #     while True:
 #         ev.wait(timeout=0.001)
-    
+
 # # def proc2(obj : ClassWithEvent):
 # #     print('before wait')
 # #     obj.ev.wait(timeout=0.005)
 # #     print('after wait')
-    
+
 # if __name__ == '__main__':
-    
+
 
 #     multiprocessing.set_start_method('spawn', force=True)
-    
+
 #     ev = multiprocessing.Event()
 #     ev.set()
 
 #     p = multiprocessing.Process(target=proc1, args=(ev,), daemon=True)
-    
+
 #     threading.Thread(target=lambda: p.start(), daemon=True).start()
 #     time.sleep(1.0)
 
 #     p.terminate()
 #     p.join()
 #     del p
-    
+
 #     # p = multiprocessing.Process(target=proc2, args=(obj,), daemon=True)
 #     # threading.Thread(target=lambda: p.start(), daemon=True).start()
 #     # time.sleep(1.0)

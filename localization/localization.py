@@ -337,6 +337,16 @@ class Localization:
                 'ru-RU' : 'Улучшить стабилизацию исключением лицевых точек\nдвижущихся частей лица, таких как рот и других.',
                 'zh-CN' : '通过排除面部移动部分（例如嘴巴和其他你懂的）的特征点来提高稳定性。'},
 
+    'QFaceAligner.x_offset':{
+                'en-US' : 'X offset',
+                'ru-RU' : 'Смещение по X',
+                'zh-CN' : 'X方向偏移'},
+
+    'QFaceAligner.y_offset':{
+                'en-US' : 'Y offset',
+                'ru-RU' : 'Смещение по Y',
+                'zh-CN' : 'Y方向偏移'},
+
     'QFaceMarker.module_title':{
                 'en-US' : 'Face marker',
                 'ru-RU' : 'Маркер лица',
@@ -681,7 +691,7 @@ class Localization:
                 'en-US' : 'Swapped face',
                 'ru-RU' : 'Заменённое лицо',
                 'zh-CN' : '换后的脸'},
-                
+
     'StreamOutput.SourceType.MERGED_FRAME':{
                 'en-US' : 'Merged frame',
                 'ru-RU' : 'Склеенный кадр',

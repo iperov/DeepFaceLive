@@ -37,6 +37,8 @@ class FaceAlignerWorker(BackendWorker):
         cs.face_coverage.call_on_number(self.on_cs_face_coverage)
         cs.resolution.call_on_number(self.on_cs_resolution)
         cs.exclude_moving_parts.call_on_flag(self.on_cs_exclude_moving_parts)
+        cs.x_offset.call_on_number(self.on_cs_x_offset)
+        cs.y_offset.call_on_number(self.on_cs_y_offset)
 
         cs.face_coverage.enable()
         cs.face_coverage.set_config(lib_csw.Number.Config(min=0.1, max=4.0, step=0.1, decimals=1, allow_instant_update=True))
@@ -47,8 +49,16 @@ class FaceAlignerWorker(BackendWorker):
         cs.resolution.set_number(state.resolution if state.resolution is not None else 224)
 
         cs.exclude_moving_parts.enable()
-
         cs.exclude_moving_parts.set_flag(state.exclude_moving_parts if state.exclude_moving_parts is not None else True)
+
+        cs.x_offset.enable()
+        cs.x_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
+        cs.x_offset.set_number(state.x_offset if state.x_offset is not None else 0)
+
+        cs.y_offset.enable()
+        cs.y_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
+        cs.y_offset.set_number(state.y_offset if state.y_offset is not None else 0)
+
 
     def on_cs_face_coverage(self, face_coverage):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -72,6 +82,22 @@ class FaceAlignerWorker(BackendWorker):
         self.save_state()
         self.reemit_frame_signal.send()
 
+    def on_cs_x_offset(self, x_offset):
+        state, cs = self.get_state(), self.get_control_sheet()
+        cfg = cs.x_offset.get_config()
+        x_offset = state.x_offset = float(np.clip(x_offset, cfg.min, cfg.max))
+        cs.x_offset.set_number(x_offset)
+        self.save_state()
+        self.reemit_frame_signal.send()
+
+    def on_cs_y_offset(self, y_offset):
+        state, cs = self.get_state(), self.get_control_sheet()
+        cfg = cs.y_offset.get_config()
+        y_offset = state.y_offset = float(np.clip(y_offset, cfg.min, cfg.max))
+        cs.y_offset.set_number(y_offset)
+        self.save_state()
+        self.reemit_frame_signal.send()
+
     def on_tick(self):
         state, cs = self.get_state(), self.get_control_sheet()
 
@@ -92,7 +118,10 @@ class FaceAlignerWorker(BackendWorker):
                             face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_2D_68)
 
                         if face_ulmrks is not None:
-                            face_image, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution, exclude_moving_parts=state.exclude_moving_parts)
+                            face_image, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
+                                                                  exclude_moving_parts=state.exclude_moving_parts,
+                                                                  x_offset=state.x_offset,
+                                                                  y_offset=state.y_offset)
 
                             face_align_image_name = f'{frame_name}_{face_id}_aligned'
 
@@ -126,6 +155,8 @@ class Sheet:
             self.face_coverage = lib_csw.Number.Client()
             self.resolution = lib_csw.Number.Client()
             self.exclude_moving_parts = lib_csw.Flag.Client()
+            self.x_offset = lib_csw.Number.Client()
+            self.y_offset = lib_csw.Number.Client()
 
     class Worker(lib_csw.Sheet.Worker):
         def __init__(self):
@@ -133,8 +164,12 @@ class Sheet:
             self.face_coverage = lib_csw.Number.Host()
             self.resolution = lib_csw.Number.Host()
             self.exclude_moving_parts = lib_csw.Flag.Host()
+            self.x_offset = lib_csw.Number.Host()
+            self.y_offset = lib_csw.Number.Host()
 
 class WorkerState(BackendWorkerState):
     face_coverage : float = None
     resolution    : int = None
     exclude_moving_parts : bool = None
+    x_offset : float = None
+    y_offset : float = None
