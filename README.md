@@ -12,24 +12,21 @@
 <tr><td colspan=2 align="center">
 
 
-
 ## Available celebrities
 
--- coming soon --
-
-<!--
 </td></tr>
+
+<tr><td align="center">
+Rowan Atkinson 
+
+<img src="doc/celebs/Rowan_Atkinson.jpg" width=128></img>
+
+</td><td align="center">
+in training...
+</td></tr>
+
 <tr><td colspan=2 align="center">
-
-
-# 
-
-<img src="doc/Tom_Cruise.jpg"></img>
-
--->
-
 You can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
-
 </td></tr>
 
 <tr><td colspan=2 align="center">
