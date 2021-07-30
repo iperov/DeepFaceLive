@@ -11,8 +11,7 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-
-## Available celebrities
+## Available ready-to-use face models:
 
 </td></tr>
 
@@ -52,16 +51,17 @@ Windows 10
 
 <a href="doc/setup_tutorial_windows/index.md">Windows 10 x64</a>
 
+## Documentation
+
+<a href="doc/faq/faq.md">Frequently Asked Questions</a>
+
 </td></tr>
 <tr><td colspan=2 align="center">
 
 ## Releases
 
 </td></tr>
-<tr><td align="right">
-
-<a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
-
+<tr><td align="right"> <a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
 </td><td align="center">Contains new and prev releases.</td></tr>
 
 </td></tr>
@@ -75,7 +75,7 @@ Windows 10
 
 <tr><td align="right">
 <a href="https://mrdeepfakes.com/forums/">mrdeepfakes</a>
-</td><td align="center">the biggest NSFW English community</td></tr>
+</td><td align="center">the biggest NSFW English deepfake community</td></tr>
 
 
 </td></tr>
