@@ -406,7 +406,7 @@ fr'''{{
         "python.linting.enabled": false,
         "python.linting.pylamaEnabled": false,
         "python.linting.pydocstyleEnabled": false,
-        "python.pythonPath": "${{env:PYTHON_EXECUTABLE}}",
+        "python.defaultInterpreterPath": "${{env:PYTHON_EXECUTABLE}}",
 		"workbench.editor.tabCloseButton": "off",
 		"workbench.editor.tabSizing": "shrink",
 		"workbench.editor.highlightModifiedTabs": true,
