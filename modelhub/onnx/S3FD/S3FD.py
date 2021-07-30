@@ -7,6 +7,7 @@ from xlib.image import ImageProcessor
 from xlib.onnxruntime import (InferenceSession_with_device, ORTDeviceInfo,
                               get_available_devices_info)
 
+from xlib.file import SplittedFile
 
 class S3FD:
 
@@ -19,6 +20,8 @@ class S3FD:
             raise Exception(f'device_info {device_info} is not in available devices for S3FD')
 
         path = Path(__file__).parent / 'S3FD.onnx'
+        SplittedFile.merge(path, delete_parts=False)
+        
         self._sess = sess = InferenceSession_with_device(str(path), device_info)
         self._input_name = sess.get_inputs()[0].name
 

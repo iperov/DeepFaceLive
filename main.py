@@ -18,7 +18,6 @@ def main():
     subparsers = parser.add_subparsers()
 
     run_parser = subparsers.add_parser( "run", help="Run the application.")
-
     run_subparsers = run_parser.add_subparsers()
 
     def run_DeepFaceLive(args):
@@ -30,6 +29,17 @@ def main():
     p = run_subparsers.add_parser('DeepFaceLive')
     p.add_argument('--userdata-dir', default=None, action=fixPathAction, help="Workspace directory.")
     p.set_defaults(func=run_DeepFaceLive)
+
+
+    misc_parser = subparsers.add_parser("misc")
+    misc_subparsers = misc_parser.add_subparsers()
+    
+    def run_split_large_files(args):
+        from misc.split_large_files import split_large_files
+        split_large_files()
+    
+    p = misc_subparsers.add_parser('split_large_files')
+    p.set_defaults(func=run_split_large_files)
 
     def bad_args(arguments):
         parser.print_help()

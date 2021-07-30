@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from xlib import math as lib_math
+from xlib.file import SplittedFile
 from xlib.image import ImageProcessor
 from xlib.torch import TorchDeviceInfo, get_cpu_device
 
@@ -15,9 +16,12 @@ class S3FD:
         if device_info is None:
             device_info = get_cpu_device()
         self.device_info = device_info
-
+        
+        path = Path(__file__).parent / 'S3FD.pth'
+        SplittedFile.merge(path, delete_parts=False)
+        
         net = self.net = S3FDNet()
-        net.load_state_dict( torch.load(str(Path(__file__).parent / 's3fd.pth')) )
+        net.load_state_dict( torch.load(str(path) ))
         net.eval()
 
         if not device_info.is_cpu():

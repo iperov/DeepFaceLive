@@ -2,6 +2,8 @@ import time
 from enum import IntEnum
 import numpy as np
 from modelhub import onnx as onnx_models
+from modelhub import cv as cv_models
+
 from xlib import cv as lib_cv
 from xlib import os as lib_os
 from xlib.facemeta import FaceULandmarks
@@ -87,7 +89,7 @@ class FaceMarkerWorker(BackendWorker):
             marker_state = state.get_marker_state()
 
             if state.marker_type == MarkerType.OPENCV_LBF:
-                self.opencv_lbf = lib_cv.FaceMarkerLBF()
+                self.opencv_lbf = cv_models.FaceMarkerLBF()
             elif state.marker_type == MarkerType.GOOGLE_FACEMESH:
                 self.google_facemesh = onnx_models.FaceMesh(state.google_facemesh_state.device)
 
