@@ -31,15 +31,23 @@ def main():
     p.set_defaults(func=run_DeepFaceLive)
 
 
-    misc_parser = subparsers.add_parser("misc")
-    misc_subparsers = misc_parser.add_subparsers()
+    dev_parser = subparsers.add_parser("dev")
+    dev_subparsers = dev_parser.add_subparsers()
     
     def run_split_large_files(args):
-        from misc.split_large_files import split_large_files
-        split_large_files()
+        from scripts import dev
+        dev.split_large_files()
     
-    p = misc_subparsers.add_parser('split_large_files')
+    p = dev_subparsers.add_parser('split_large_files')
     p.set_defaults(func=run_split_large_files)
+    
+    def run_merge_large_files(args):
+        from scripts import dev
+        dev.merge_large_files(delete_parts=args.delete_parts)
+    
+    p = dev_subparsers.add_parser('merge_large_files')
+    p.add_argument('--delete-parts', action="store_true", default=False)
+    p.set_defaults(func=run_merge_large_files)
 
     def bad_args(arguments):
         parser.print_help()

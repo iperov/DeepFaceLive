@@ -348,6 +348,11 @@ cmd
     def install_pip_package(self, pkg_name):
         subprocess.Popen(args=f'python.exe -m pip install {pkg_name}', cwd=str(self.python_path), shell=True, env=self.env).wait()
 
+    def run_python(self, argsline, cwd=None):
+        if cwd is None:
+            cwd = self.python_path
+        subprocess.Popen(args=f'python.exe {argsline}', cwd=str(cwd), shell=True, env=self.env).wait()
+
     def install_ffmpeg_binaries(self):
         print('Installing ffmpeg binaries.')
         self.ffmpeg_path.mkdir(exist_ok=True, parents=True)
@@ -407,9 +412,11 @@ fr'''{{
         "python.linting.pylamaEnabled": false,
         "python.linting.pydocstyleEnabled": false,
         "python.defaultInterpreterPath": "${{env:PYTHON_EXECUTABLE}}",
+        "telemetry.enableTelemetry": false,
 		"workbench.editor.tabCloseButton": "off",
 		"workbench.editor.tabSizing": "shrink",
 		"workbench.editor.highlightModifiedTabs": true,
+        "workbench.enableExperiments": false,
 		"editor.mouseWheelScrollSensitivity": 3,
 		"editor.folding": false,
 		"editor.glyphMargin": false,
@@ -486,9 +493,11 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9'):
         print (f'Moving {target}')
         shutil.move (str(file), str(target) )
 
+    deepfacelive_path = builder.get_internal_path() / 'DeepFaceLive'
+
     print('Copying DeepFaceLive repository.')
-    builder.copyfiletree(Path(__file__).parent.parent.parent, builder.get_internal_path() / 'DeepFaceLive')
-    builder.rmdir_in_all_subdirs(builder.get_internal_path() / 'DeepFaceLive', '.git')
+    builder.copyfiletree(Path(__file__).parent.parent.parent, deepfacelive_path)
+    builder.rmdir_in_all_subdirs(deepfacelive_path, '.git')
 
     builder.install_vscode(project_internal_dir='DeepFaceLive')
 
@@ -505,6 +514,8 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9'):
     builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata')
     builder.create_internal_run_python_script('build DeepFaceLive.bat','DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive --cache-dir _cache' )
 
+    builder.run_python('main.py dev merge_large_files --delete-parts', cwd=deepfacelive_path)
+
     builder.cleanup()
 
     builder.pack_sfx_release(f'DeepFaceLive_build_{datetime.now().strftime("%m_%d_%Y")}')
@@ -516,7 +527,7 @@ class fixPathAction(argparse.Action):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
-    p.add_argument('--build-type', required=True, choices=['dfl-windows'])#,'dfl-windows-installer'])
+    p.add_argument('--build-type', required=True, choices=['dfl-windows'])
     p.add_argument('--release-dir', action=fixPathAction, default=None)
     p.add_argument('--cache-dir', action=fixPathAction, default=None)
     p.add_argument('--python-ver', default="3.7.9")

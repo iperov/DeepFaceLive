@@ -51,8 +51,6 @@ class SplittedFile:
         ...
         merged to filename.ext
         """
-        if filepath.exists():
-            return
         
         parts : List[Path] = []
         for n in itertools.count(start=0):
@@ -63,13 +61,14 @@ class SplittedFile:
                 break
         
         if len(parts) != 0:
-            bytes_parts = []
-            for part_filepath in parts:
-                bytes_parts.append( part_filepath.read_bytes() )
-            
-            b = b''.join(bytes_parts)
-            
-            filepath.write_bytes(b)
+            if not filepath.exists():
+                bytes_parts = []
+                for part_filepath in parts:
+                    bytes_parts.append( part_filepath.read_bytes() )
+                
+                b = b''.join(bytes_parts)
+                
+                filepath.write_bytes(b)
             
             if delete_parts:
                 for part_filepath in parts:
