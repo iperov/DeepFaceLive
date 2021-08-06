@@ -37,11 +37,7 @@ class QProgressBarCSWProgress(QCSWControl):
     def _on_csw_config(self, config : lib_csw.Progress.Config):
         title = config.get_title()
         if title is not None:
-
-            if len(title) != 0 and title[0] == '@':
-                title = L(title[1:])
-
-            self._label_title.setText(title)
+            self._label_title.setText(L(title))
             self._label_title.show()
         else:
             self._label_title.hide()
