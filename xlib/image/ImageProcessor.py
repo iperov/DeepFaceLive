@@ -152,7 +152,7 @@ class ImageProcessor:
             else:
                 img = sp.ndimage.zoom(img, (scale, scale, 1.0), order=1)
 
-            H,W,_ = img.shape
+            H,W = img.shape[0:2]
             img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
 
         if pad_to_target:
