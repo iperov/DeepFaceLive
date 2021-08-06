@@ -156,9 +156,6 @@ class FaceSwapperWorker(BackendWorker):
 
 
 
-
-
-
     def on_tick(self):
         state, cs = self.get_state(), self.get_control_sheet()
 
@@ -166,12 +163,15 @@ class FaceSwapperWorker(BackendWorker):
             events = self.dfm_model_initializer.process_events()
 
             if events.prev_status_downloading:
+                self.set_busy(True)
                 cs.model_dl_progress.disable()
 
             if events.new_status_downloading:
+                self.set_busy(False)
                 cs.model_dl_progress.enable()
                 cs.model_dl_progress.set_config( lib_csw.Progress.Config(title='@FaceSwapper.downloading_model') )
                 cs.model_dl_progress.set_progress(0)
+                
             elif events.new_status_initialized:
                 self.dfm_model = events.dfm_model
                 self.dfm_model_initializer = None
