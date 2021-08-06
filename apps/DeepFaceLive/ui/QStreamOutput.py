@@ -36,7 +36,7 @@ class QStreamOutput(QBackendPanel):
         q_target_delay       = QSpinBoxCSWNumber(cs.target_delay, reflect_state_widgets=[q_target_delay_label])
 
         q_save_sequence_path_label = QLabelPopupInfo(label=L('@QStreamOutput.save_sequence_path'), popup_info_text=L('@QStreamOutput.help.save_sequence_path'))
-        q_save_sequence_path       = QPathEditCSWPaths(cs.save_sequence_path, reflect_state_widgets=[q_target_delay_label])
+        q_save_sequence_path       = QPathEditCSWPaths(cs.save_sequence_path, reflect_state_widgets=[q_target_delay_label, q_save_sequence_path_label])
         q_save_sequence_path_error = QErrorCSWError(cs.save_sequence_path_error)
 
         q_save_fill_frame_gap_label = QLabelPopupInfo(label=L('@QStreamOutput.save_fill_frame_gap'), popup_info_text=L('@QStreamOutput.help.save_fill_frame_gap'))

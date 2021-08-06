@@ -41,7 +41,7 @@ class SourceType(IntEnum):
     MERGED_FRAME = 3
     SOURCE_N_MERGED_FRAME = 4
 
-ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME', '@StreamOutput.SourceType.ALIGNED_FACE', '@StreamOutput.SourceType.SWAPPED_FACE', 
+ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME', '@StreamOutput.SourceType.ALIGNED_FACE', '@StreamOutput.SourceType.SWAPPED_FACE',
                  '@StreamOutput.SourceType.MERGED_FRAME', '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME']
 
 
@@ -200,7 +200,7 @@ class StreamOutputWorker(BackendWorker):
                 buffered_frames = self.buffered_frames
 
                 view_image = None
-                
+
                 if source_type == SourceType.SOURCE_FRAME:
                     view_image = bcd.get_image(bcd.get_frame_name())
                 elif source_type == SourceType.MERGED_FRAME:
@@ -223,13 +223,14 @@ class StreamOutputWorker(BackendWorker):
                             if face_swap is not None:
                                 view_image = bcd.get_image(face_swap.get_image_name())
                                 break
-                            
+
                 elif source_type == SourceType.SOURCE_N_MERGED_FRAME:
-                    source_frame = ImageProcessor(bcd.get_image(bcd.get_frame_name())).to_ufloat32().get_image('HWC')
+                    source_frame = bcd.get_image(bcd.get_frame_name())
                     merged_frame = bcd.get_image(bcd.get_merged_frame_name())
-                    
-                    view_image = np.concatenate( (source_frame, merged_frame), 1 )
-                    
+                    if source_frame is not None and merged_frame is not None:
+                        source_frame = ImageProcessor(source_frame).to_ufloat32().get_image('HWC')
+                        view_image = np.concatenate( (source_frame, merged_frame), 1 )
+
 
                 if view_image is not None:
                     buffered_frames.add_buffer( bcd.get_frame_timestamp(), view_image )
