@@ -681,6 +681,11 @@ class Localization:
                 'en-US' : 'Source*Celeb',
                 'ru-RU' : 'Исходный*Знаменитость',
                 'zh-CN' : '源脸*目标脸'},
+                
+    'StreamOutput.SourceType.SOURCE_FRAME':{
+                'en-US' : 'Source frame',
+                'ru-RU' : 'Исходный кадр',
+                'zh-CN' : 'Source frame(没有翻译)'},
 
     'StreamOutput.SourceType.ALIGNED_FACE':{
                 'en-US' : 'Aligned face',
@@ -697,4 +702,9 @@ class Localization:
                 'ru-RU' : 'Склеенный кадр',
                 'zh-CN' : '合成后的画面'},
 
+    'StreamOutput.SourceType.SOURCE_N_MERGED_FRAME':{
+                'en-US' : 'Source and merged frame',
+                'ru-RU' : 'Исходный и склеенный кадр',
+                'zh-CN' : 'Source and merged frame(没有翻译)'},
+    
     }

@@ -35,11 +35,14 @@ class StreamOutput(BackendHost):
     def get_control_sheet(self) -> 'Sheet.Host': return super().get_control_sheet()
 
 class SourceType(IntEnum):
-    ALIGNED_FACE = 0
-    SWAPPED_FACE = 1
-    MERGED_FRAME = 2
+    SOURCE_FRAME = 0
+    ALIGNED_FACE = 1
+    SWAPPED_FACE = 2
+    MERGED_FRAME = 3
+    SOURCE_N_MERGED_FRAME = 4
 
-ViewModeNames = ['@StreamOutput.SourceType.ALIGNED_FACE', '@StreamOutput.SourceType.SWAPPED_FACE', '@StreamOutput.SourceType.MERGED_FRAME']
+ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME', '@StreamOutput.SourceType.ALIGNED_FACE', '@StreamOutput.SourceType.SWAPPED_FACE', 
+                 '@StreamOutput.SourceType.MERGED_FRAME', '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME']
 
 
 class StreamOutputWorker(BackendWorker):
@@ -197,8 +200,10 @@ class StreamOutputWorker(BackendWorker):
                 buffered_frames = self.buffered_frames
 
                 view_image = None
-
-                if source_type == SourceType.MERGED_FRAME:
+                
+                if source_type == SourceType.SOURCE_FRAME:
+                    view_image = bcd.get_image(bcd.get_frame_name())
+                elif source_type == SourceType.MERGED_FRAME:
                     view_image = bcd.get_image(bcd.get_merged_frame_name())
 
                 elif source_type == SourceType.ALIGNED_FACE:
@@ -218,6 +223,13 @@ class StreamOutputWorker(BackendWorker):
                             if face_swap is not None:
                                 view_image = bcd.get_image(face_swap.get_image_name())
                                 break
+                            
+                elif source_type == SourceType.SOURCE_N_MERGED_FRAME:
+                    source_frame = ImageProcessor(bcd.get_image(bcd.get_frame_name())).to_ufloat32().get_image('HWC')
+                    merged_frame = bcd.get_image(bcd.get_merged_frame_name())
+                    
+                    view_image = np.concatenate( (source_frame, merged_frame), 1 )
+                    
 
                 if view_image is not None:
                     buffered_frames.add_buffer( bcd.get_frame_timestamp(), view_image )
