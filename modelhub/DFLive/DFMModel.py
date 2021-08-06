@@ -34,8 +34,7 @@ class DFMModelInfo:
 def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
     # predefined list of celebs with urls
     dfm_models = [
-            #DFMModelInfo(name='Tom Cruise', model_path=models_path / f'Tom Cruise.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/test/TOM_CRISE.onnx'),#TODO https://github.com/iperov/DeepFaceLive/releases/download/dfm/TOM_CRUISE.dfm'),
-            #DFMModelInfo(name='Vladimir Putin', model_path=models_path / f'Vladimir Putin.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/dfm/VLADIMIR_PUTIN.dfm'),
+            DFMModelInfo(name='Margot Robbie', model_path=models_path / f'Margot_Robbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MARGOT_ROBBIE/Margot_Robbie.dfm'),
         ]
 
     # scan additional models in directory

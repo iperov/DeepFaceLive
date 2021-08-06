@@ -15,10 +15,28 @@
 
 </td></tr>
 
+
+<tr><td align="center">
+Margot Robbie
+
+<img src="doc/celebs/Margot_Robbie/Margot_Robbie.png" width=128></img>
+
+</td><td align="center">
+
+[Twitch example 1](doc\celebs\Margot_Robbie\Margot_Robbie_twitch_example_1.mp4) 
+
+[Twitch example 2](doc\celebs\Margot_Robbie\Margot_Robbie_twitch_example_2.mp4)
+
+[Twitch example 3](doc\celebs\Margot_Robbie\Margot_Robbie_twitch_example_3.mp4)
+
+[Twitch example 4](doc\celebs\Margot_Robbie\Margot_Robbie_twitch_example_4.mp4)
+
+</td></tr>
+
 <tr><td align="center">
 Rowan Atkinson 
 
-<img src="doc/celebs/Rowan_Atkinson.jpg" width=128></img>
+<img src="doc/celebs/Rowan_Atkinson/Rowan_Atkinson.jpg" width=128></img>
 
 </td><td align="center">
 in training...
