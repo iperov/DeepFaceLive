@@ -33,10 +33,23 @@ Src faceset is celebrity. Must be diverse enough.
 
 Dst faceset is RTM WF faceset from the torrent.
 
-AMP model settings: 
-224 res, WF, AE 256, inter 1024, e_dims 64, d_dims 64, d_mask_dims 22, morph factor 0.5, batch 8. Others by default.
-
 Make a backup before every stage !
+
+> Using SAEHD model.
+
+res:224, WF, ae_dims:256, e_dims:64, d_dims:64, d_mask_dims 22, eyes_mouth_prio:Y, batch 8. Others are default.
+1) enable pretrain mode. Train to 1kk
+2) disable pretrain mode. Train to 1kk
+3) lrd:N uniform_yaw:True, color_transfer:lct, train +500..800k
+4) lrd:Y train +500..800k iters
+5) disable random warp +500..800k iters
+6) enable gan 0.1 gan_dims:32, train +100..300k iters
+
+You can reuse this model to train new src faceset. In this case you should to delete inter_AB.npy from model folder, and train from stage 3.
+
+> Using AMP model.
+
+res:224, WF, ae_dims:256, inter_dims:1024, e_dims:64, d_dims:64, d_mask_dims:22, morph factor:0.5, batch 8. Others are default.
 
 1) lrd:Y, train src-src for 1kk iters
 2) delete inter_dst, lrd:N, color_transfer:lct, train +1kk
