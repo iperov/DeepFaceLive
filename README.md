@@ -15,33 +15,34 @@
 
 </td></tr>
 
+</table>
+<table align="center" border="0">
 
 <tr><td align="center">
 Margot Robbie
 
 <img src="doc/celebs/Margot_Robbie/Margot_Robbie.png" width=128></img>
 
-</td><td align="center">
-
 <a href="doc/celebs/Margot_Robbie/examples.md">examples</a>
+</td>
 
-</td></tr>
-
-<tr><td align="center">
+<td align="center">
 Rowan Atkinson 
 
 <img src="doc/celebs/Rowan_Atkinson/Rowan_Atkinson.jpg" width=128></img>
 
-</td><td align="center">
 in training...
+
 </td></tr>
 
 <tr><td colspan=2 align="center">
-You can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
+If you want higher quality or face matching, you can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
 </td></tr>
 
-<tr><td colspan=2 align="center">
+</table>
+<table align="center" border="0">
 
+<tr><td colspan=2 align="center">
 
 ## Minimum system requirements
 
