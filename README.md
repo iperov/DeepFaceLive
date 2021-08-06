@@ -23,13 +23,7 @@ Margot Robbie
 
 </td><td align="center">
 
-[Twitch example 1](doc/celebs/Margot_Robbie/Margot_Robbie_twitch_example_1.mp4) 
-
-[Twitch example 2](doc/celebs/Margot_Robbie/Margot_Robbie_twitch_example_2.mp4)
-
-[Twitch example 3](doc/celebs/Margot_Robbie/Margot_Robbie_twitch_example_3.mp4)
-
-[Twitch example 4](doc/celebs/Margot_Robbie/Margot_Robbie_twitch_example_4.mp4)
+<a href="doc/celebs/Margot_Robbie/examples.md">examples</a>
 
 </td></tr>
 
