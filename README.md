@@ -9,14 +9,14 @@
 ![](doc/logo_python.png)
 
 </td></tr>
+</table>
+<table align="center" border="0">
+
 <tr><td colspan=2 align="center">
 
 ## Available ready-to-use face models:
 
 </td></tr>
-
-</table>
-<table align="center" border="0">
 
 <tr><td align="center">
 Margot Robbie
