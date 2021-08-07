@@ -139,7 +139,7 @@ class Localization:
     'QFileSource.is_realtime':{
                 'en-US' : 'Real time',
                 'ru-RU' : 'Реальное время',
-                'zh-CN' : '--'},
+                'zh-CN' : '实时'},
 
     'QFileSource.help.is_realtime':{
                 'en-US' : 'Whether to play in real-time FPS or as fast as possible.',
@@ -500,7 +500,7 @@ class Localization:
     'QFrameAdjuster.help.degrade_bicubic_per':{
                 'en-US' : 'Degrade whole frame using bicubic resize.',
                 'ru-RU' : 'Ухудшить весь кадр, используя бикубическое изменение размера.',
-                'zh-CN' : '--'},
+                'zh-CN' : '缩小整个帧'},
 
     'QFaceMerger.module_title':{
                 'en-US' : 'Face merger',
@@ -695,7 +695,7 @@ class Localization:
     'StreamOutput.SourceType.SOURCE_FRAME':{
                 'en-US' : 'Source frame',
                 'ru-RU' : 'Исходный кадр',
-                'zh-CN' : 'Source frame(没有翻译)'},
+                'zh-CN' : '源帧'},
 
     'StreamOutput.SourceType.ALIGNED_FACE':{
                 'en-US' : 'Aligned face',
@@ -715,6 +715,6 @@ class Localization:
     'StreamOutput.SourceType.SOURCE_N_MERGED_FRAME':{
                 'en-US' : 'Source and merged frame',
                 'ru-RU' : 'Исходный и склеенный кадр',
-                'zh-CN' : 'Source and merged frame(没有翻译)'},
+                'zh-CN' : '源和融合后的帧'},
     
     }
