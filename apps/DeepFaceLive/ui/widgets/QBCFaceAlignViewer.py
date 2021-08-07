@@ -57,9 +57,9 @@ class QBCFaceAlignViewer(lib_qt.QXCollapsibleSection):
                         if all_is_not_None(face_align_image_name):
                             face_image = bcd.get_image(face_align_image_name).copy()
 
-                            face_ulmrks = face_align.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_2D_468)
+                            face_ulmrks = face_align.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_468)
                             if face_ulmrks is None:
-                                face_ulmrks = face_align.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_2D_68)
+                                face_ulmrks = face_align.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_68)
 
                             if face_ulmrks is not None:
                                 lmrks_layer = np.zeros( (self._preview_width, self._preview_width, 4), dtype=np.uint8)

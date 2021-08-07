@@ -15,9 +15,9 @@ FaceMark - (mean single face data referencing any image)
            .FaceURect        - a rectangle of the face in source image space
            .list[FaceULandmarks] - a list of unique types of landmarks of the face in source image space
                                     types:
-                                        LANDMARKS_2D_5
-                                        LANDMARKS_2D_68
-                                        LANDMARKS_2D_468
+                                        LANDMARKS_5
+                                        LANDMARKS_68
+                                        LANDMARKS_468
            
            .FaceAlign -  an aligned face from FaceMark
            
@@ -44,5 +44,5 @@ FaceMark - (mean single face data referencing any image)
 
 """
 
-from .face import FaceMark, FaceAlign, FaceSwap, FaceMask, FaceURect, FaceULandmarks
+from .face import FaceMark, FaceAlign, FaceSwap, FaceMask, FaceURect, FaceULandmarks, FacePose
 from .Faceset import Faceset

@@ -37,6 +37,7 @@ class FaceAlignerWorker(BackendWorker):
         cs.face_coverage.call_on_number(self.on_cs_face_coverage)
         cs.resolution.call_on_number(self.on_cs_resolution)
         cs.exclude_moving_parts.call_on_flag(self.on_cs_exclude_moving_parts)
+        cs.head_mode.call_on_flag(self.on_cs_head_mode)
         cs.x_offset.call_on_number(self.on_cs_x_offset)
         cs.y_offset.call_on_number(self.on_cs_y_offset)
 
@@ -50,6 +51,9 @@ class FaceAlignerWorker(BackendWorker):
 
         cs.exclude_moving_parts.enable()
         cs.exclude_moving_parts.set_flag(state.exclude_moving_parts if state.exclude_moving_parts is not None else True)
+    
+        cs.head_mode.enable()
+        cs.head_mode.set_flag(state.head_mode if state.head_mode is not None else False)
 
         cs.x_offset.enable()
         cs.x_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
@@ -82,6 +86,12 @@ class FaceAlignerWorker(BackendWorker):
         self.save_state()
         self.reemit_frame_signal.send()
 
+    def on_cs_head_mode(self, head_mode):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.head_mode = head_mode
+        self.save_state()
+        self.reemit_frame_signal.send()
+    
     def on_cs_x_offset(self, x_offset):
         state, cs = self.get_state(), self.get_control_sheet()
         cfg = cs.x_offset.get_config()
@@ -113,13 +123,20 @@ class FaceAlignerWorker(BackendWorker):
 
                 if all_is_not_None(state.face_coverage, state.resolution, frame_name, frame_image):
                     for face_id,face_mark in enumerate( bcd.get_face_mark_list() ):
-                        face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_2D_468)
+                        face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_468)
                         if face_ulmrks is None:
-                            face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_2D_68)
-
+                            face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_68)
+                        
+                        head_yaw = None
+                        if state.head_mode:
+                            face_pose = face_mark.get_face_pose()
+                            if face_pose is not None:
+                                head_yaw = face_pose.as_radians()[1]
+                                
                         if face_ulmrks is not None:
                             face_image, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
                                                                   exclude_moving_parts=state.exclude_moving_parts,
+                                                                  head_yaw=head_yaw,
                                                                   x_offset=state.x_offset,
                                                                   y_offset=state.y_offset)
 
@@ -155,6 +172,7 @@ class Sheet:
             self.face_coverage = lib_csw.Number.Client()
             self.resolution = lib_csw.Number.Client()
             self.exclude_moving_parts = lib_csw.Flag.Client()
+            self.head_mode = lib_csw.Flag.Client()
             self.x_offset = lib_csw.Number.Client()
             self.y_offset = lib_csw.Number.Client()
 
@@ -164,6 +182,7 @@ class Sheet:
             self.face_coverage = lib_csw.Number.Host()
             self.resolution = lib_csw.Number.Host()
             self.exclude_moving_parts = lib_csw.Flag.Host()
+            self.head_mode = lib_csw.Flag.Host()
             self.x_offset = lib_csw.Number.Host()
             self.y_offset = lib_csw.Number.Host()
 
@@ -171,5 +190,6 @@ class WorkerState(BackendWorkerState):
     face_coverage : float = None
     resolution    : int = None
     exclude_moving_parts : bool = None
+    head_mode : bool = None
     x_offset : float = None
     y_offset : float = None

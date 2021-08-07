@@ -4,9 +4,8 @@ import numpy as np
 from modelhub import onnx as onnx_models
 from modelhub import cv as cv_models
 
-from xlib import cv as lib_cv
 from xlib import os as lib_os
-from xlib.facemeta import FaceULandmarks
+from xlib.facemeta import FaceULandmarks, FacePose
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
@@ -14,7 +13,6 @@ from xlib.python import all_is_not_None
 from .BackendBase import (BackendConnection, BackendDB, BackendHost,
                           BackendSignal, BackendWeakHeap, BackendWorker,
                           BackendWorkerState)
-
 
 class MarkerType(IntEnum):
     OPENCV_LBF = 0
@@ -175,9 +173,7 @@ class FaceMarkerWorker(BackendWorker):
                                 if is_opencv_lbf:
                                     lmrks = self.opencv_lbf.extract(face_image)[0]
                                 elif is_google_facemesh:
-                                    lmrks = self.google_facemesh.extract(face_image)[0][...,0:2]
-
-                                lmrks /= (W,H)
+                                    lmrks = self.google_facemesh.extract(face_image)[0]
 
                                 if marker_state.temporal_smoothing != 1:
                                     if not is_frame_reemitted or len(self.temporal_lmrks[face_id]) == 0:
@@ -186,11 +182,21 @@ class FaceMarkerWorker(BackendWorker):
 
                                     lmrks = np.mean(self.temporal_lmrks[face_id],0 )
 
-                                face_ulmrks = FaceULandmarks.create (FaceULandmarks.Type.LANDMARKS_2D_68 if is_opencv_lbf else \
-                                                                        FaceULandmarks.Type.LANDMARKS_2D_468 if is_google_facemesh else None, lmrks)
+                                if is_google_facemesh:
+                                    face_mark.set_face_pose(FacePose.from_3D_468_landmarks(lmrks))
+
+                                if is_opencv_lbf:
+                                    lmrks /= (W,H)
+                                elif is_google_facemesh:
+                                    lmrks = lmrks[...,0:2] / (W,H)
+
+                                face_ulmrks = FaceULandmarks.create (FaceULandmarks.Type.LANDMARKS_68 if is_opencv_lbf else \
+                                                                     FaceULandmarks.Type.LANDMARKS_468 if is_google_facemesh else None, lmrks)
 
                                 face_ulmrks = face_ulmrks.transform(face_uni_mat, invert=True)
                                 face_mark.add_face_ulandmarks (face_ulmrks)
+                                
+                               
 
                     self.stop_profile_timing()
                     self.pending_bcd = bcd

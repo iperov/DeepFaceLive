@@ -336,6 +336,16 @@ class Localization:
                 'en-US' : 'Increase stabilization by excluding landmarks of moving parts of the face, such as mouth and other.',
                 'ru-RU' : 'Улучшить стабилизацию исключением лицевых точек\nдвижущихся частей лица, таких как рот и других.',
                 'zh-CN' : '通过排除面部移动部分（例如嘴巴和其他你懂的）的特征点来提高稳定性。'},
+    
+    'QFaceAligner.head_mode':{
+                'en-US' : 'Head mode',
+                'ru-RU' : 'Режим головы',
+                'zh-CN' : 'Head mode(没有翻译)'},
+
+    'QFaceAligner.help.head_mode':{
+                'en-US' : 'Head mode. Used with HEAD model.',
+                'ru-RU' : 'Режим головы. Используется с HEAD моделью.',
+                'zh-CN' : 'Head mode. Used with HEAD model.(没有翻译)'},
 
     'QFaceAligner.x_offset':{
                 'en-US' : 'X offset',

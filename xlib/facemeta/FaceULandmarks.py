@@ -9,13 +9,13 @@ from xlib.math import Affine2DMat, Affine2DUniMat
 
 class FaceULandmarks:
     """
-    Describes face landmarks in uniform coordinates
+    Describes 2D face landmarks in uniform coordinates
     """
 
     class Type(IntEnum):
-        LANDMARKS_2D_5 = 0
-        LANDMARKS_2D_68 = 1
-        LANDMARKS_2D_468 = 2
+        LANDMARKS_5 = 0
+        LANDMARKS_68 = 1
+        LANDMARKS_468 = 2
 
     def __init__(self):
         self._type : FaceULandmarks.Type = None
@@ -32,7 +32,7 @@ class FaceULandmarks:
     def create( type : 'FaceULandmarks.Type', ulmrks : np.ndarray):
         """
 
-         ulmrks np.ndarray  (*,2)
+         ulmrks np.ndarray  (*,2|3)
         """
 
         if not isinstance(type, FaceULandmarks.Type):
@@ -41,17 +41,18 @@ class FaceULandmarks:
         ulmrks = np.float32(ulmrks)
         if len(ulmrks.shape) != 2:
             raise ValueError('ulmrks shape must have rank 2')
-        if type in [FaceULandmarks.Type.LANDMARKS_2D_5, FaceULandmarks.Type.LANDMARKS_2D_68, FaceULandmarks.Type.LANDMARKS_2D_468]:
-            if ulmrks.shape[1] != 2:
-                raise ValueError('ulmrks dim must be == 2')
+
+        if ulmrks.shape[1] != 2:
+            raise ValueError('ulmrks dim must be == 2')
+
         ulmrks_count = ulmrks.shape[0]
-        if type == FaceULandmarks.Type.LANDMARKS_2D_5:
+        if type == FaceULandmarks.Type.LANDMARKS_5:
             if ulmrks_count != 5:
                 raise ValueError('ulmrks_count must be == 5')
-        elif type == FaceULandmarks.Type.LANDMARKS_2D_68:
+        elif type == FaceULandmarks.Type.LANDMARKS_68:
             if ulmrks_count != 68:
                 raise ValueError('ulmrks_count must be == 68')
-        elif type == FaceULandmarks.Type.LANDMARKS_2D_468:
+        elif type == FaceULandmarks.Type.LANDMARKS_468:
             if ulmrks_count != 468:
                 raise ValueError('ulmrks_count must be == 468')
 
@@ -87,13 +88,18 @@ class FaceULandmarks:
 
         if invert:
             mat = cv2.invertAffineTransform (mat)
+
         ulmrks = self._ulmrks.copy()
         ulmrks = np.expand_dims(ulmrks, axis=1)
         ulmrks = cv2.transform(ulmrks, mat, ulmrks.shape).squeeze()
+
         return FaceULandmarks.create(type=self._type, ulmrks=ulmrks)
 
 
-    def calc_cut(self, w_h, coverage : float, output_size : int, exclude_moving_parts : bool, x_offset : float = 0, y_offset : float = 0):
+    def calc_cut(self, w_h, coverage : float, output_size : int,
+                       exclude_moving_parts : bool,
+                       head_yaw : float = None,
+                       x_offset : float = 0, y_offset : float = 0):
         """
         Calculates affine mat for face cut.
 
@@ -102,14 +108,13 @@ class FaceULandmarks:
              mat,       matrix to transform img space to face_image space
              uni_mat    matrix to transform uniform img space to uniform face_image space
         """
-
-        lmrks = (self._ulmrks * w_h ).astype(np.float32)
         type = self._type
+        lmrks = (self._ulmrks * w_h).astype(np.float32)
 
         # estimate landmarks transform from global space to local aligned space with bounds [0..1]
-        if type == FaceULandmarks.Type.LANDMARKS_2D_68:
+        if type == FaceULandmarks.Type.LANDMARKS_68:
             mat = Affine2DMat.umeyama( np.concatenate ([ lmrks[17:49] , lmrks[54:55] ]), uni_landmarks_68)
-        elif type == FaceULandmarks.Type.LANDMARKS_2D_468:
+        elif type == FaceULandmarks.Type.LANDMARKS_468:
             src_lmrks = lmrks
             dst_lmrks = uni_landmarks_468
             if exclude_moving_parts:
@@ -138,6 +143,10 @@ class FaceULandmarks:
         h_vec = (g_p[1]-g_p[0]).astype(np.float32)
         v_vec = (g_p[3]-g_p[0]).astype(np.float32)
 
+        if head_yaw is not None:
+            # Damp near zero
+            x_offset += -(head_yaw * np.abs(np.tanh(head_yaw*2)) ) * 0.5
+
         g_c += h_vec*x_offset + v_vec*(y_offset-0.08)
 
         l_t = np.array( [ g_c - tb_diag_vec*mod,
@@ -151,7 +160,13 @@ class FaceULandmarks:
         return mat, uni_mat
 
 
-    def cut(self, img : np.ndarray, coverage : float, output_size : int, exclude_moving_parts=False, x_offset : float = 0, y_offset : float = 0) -> Tuple[Affine2DMat, Affine2DUniMat]:
+    def cut(self, img : np.ndarray,
+                  coverage : float,
+                  output_size : int,
+                  exclude_moving_parts : bool = False,
+                  head_yaw : float = None,
+                  x_offset : float = 0,
+                  y_offset : float = 0) -> Tuple[Affine2DMat, Affine2DUniMat]:
         """
         Cut the face to square of output_size from img using landmarks with given parameters
 
@@ -165,15 +180,17 @@ class FaceULandmarks:
 
             exclude_moving_parts(False)     exclude moving parts of the face, such as eyebrows and jaw
 
-            v_offset
-            h_offset    float   uniform h/v offset
+            head_yaw(None)    float     fit the head in center using provided yaw radian value.
+
+            x_offset
+            y_offset    float   uniform x/y offset
 
         returns face_image,
                 uni_mat         uniform affine matrix to transform uniform img space to uniform face_image space
         """
         h,w = img.shape[0:2]
 
-        mat, uni_mat = self.calc_cut( (w,h), coverage, output_size, exclude_moving_parts, x_offset=x_offset, y_offset=y_offset)
+        mat, uni_mat = self.calc_cut( (w,h), coverage, output_size, exclude_moving_parts, head_yaw=head_yaw, x_offset=x_offset, y_offset=y_offset)
 
         face_image = cv2.warpAffine(img, mat, (output_size, output_size), cv2.INTER_CUBIC )
         return face_image, uni_mat

@@ -4,7 +4,7 @@ from xlib import math as lib_math
 
 from .FaceULandmarks import FaceULandmarks
 from .FaceURect import FaceURect
-
+from .FacePose import FacePose
 
 class _part_picklable_expandable:
     def __getstate__(self):
@@ -135,6 +135,16 @@ class _part_face_swap:
             raise ValueError('face_swap must be an instance of FaceSwap')
         self._face_swap = face_swap
 
+class _part_face_pose:
+    def __init__(self):
+        self._face_pose : Union['FacePose', None] = None
+
+    def get_face_pose(self) -> Union['FacePose', None]: return self._face_pose
+    def set_face_pose(self, face_pose : 'FacePose'):
+        if not isinstance(face_pose, FacePose):
+            raise ValueError('face_pose must be an instance of FacePose')
+        self._face_pose = face_pose
+
 
 class FaceMark(_part_picklable_expandable,
                 _part_image_name,
@@ -142,6 +152,7 @@ class FaceMark(_part_picklable_expandable,
                 _part_face_urect,
                 _part_face_ulandmarks_list,
                 _part_face_align,
+                _part_face_pose,
                 ):
     """
     Describes meta data of single face.
@@ -154,6 +165,7 @@ class FaceMark(_part_picklable_expandable,
         _part_face_urect.__init__(self)
         _part_face_ulandmarks_list.__init__(self)
         _part_face_align.__init__(self)
+        _part_face_pose.__init__(self)
 
 class FaceAlign(_part_picklable_expandable,
                 _part_image_name,
