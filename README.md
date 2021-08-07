@@ -36,7 +36,7 @@ in training...
 </td></tr>
 
 <tr><td colspan=2 align="center">
-If you want higher quality or face matching, you can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
+If you want a higher quality or better face match, you can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
 </td></tr>
 
 </table>
