@@ -144,8 +144,8 @@ class FileSourceWorker(BackendWorker):
                         state.fp_state = FPState()
                         target_width  = state.fp_state.target_width  = fp.get_target_width()
                         fps           = state.fp_state.fps           = fp.get_fps()
-                        is_realtime   = state.fp_state.is_realtime   = fp.get_is_realtime()
-                        is_autorewind = state.fp_state.is_autorewind = fp.get_is_autorewind()
+                        is_realtime   = state.fp_state.is_realtime   = fp.set_is_realtime(True)
+                        is_autorewind = state.fp_state.is_autorewind = fp.set_is_autorewind(True)
 
                     cs.target_width.enable()
                     cs.target_width.set_config(lib_csw.Number.Config(min=0, max=4096, step=4, decimals=0, zero_is_auto=True, allow_instant_update=True))
