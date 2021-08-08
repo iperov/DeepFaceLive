@@ -15,6 +15,13 @@ Depends on <a href="https://github.com/microsoft/onnxruntime">microsoft/onnxrunt
 </td></tr>
 <tr><td colspan=2 align="center">
 
+## I want to have more control when changing faces in a video. Will the new functionality be implemented?
+
+No. DeepFaceLive is designed for face swapping in streams. The ability to change faces in the videos - only for test purposes.
+
+</td></tr>
+<tr><td colspan=2 align="center">
+
 ## I want to swap my face to a particular celebrity. What I need to do?
 
 This is the normal deepfake training process, where src faceset is the celebrity and dst faceset is your faceset. Train the deepfake model as usual with DeepFaceLab, then export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
