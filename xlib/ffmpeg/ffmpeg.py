@@ -14,7 +14,7 @@ def run(args, pipe_stdin=False, pipe_stdout=False, pipe_stderr=False, quiet_std_
     stdout_stream = subprocess.PIPE if pipe_stdout else None
     stderr_stream = subprocess.PIPE if pipe_stderr else None
 
-    if quiet_std_err:
+    if quiet_std_err and not pipe_stderr:
         stderr_stream = subprocess.DEVNULL
 
     try:

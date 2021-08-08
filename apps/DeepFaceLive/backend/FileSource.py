@@ -112,7 +112,7 @@ class FileSourceWorker(BackendWorker):
 
     def on_cs_input_paths(self, paths, prev_paths):
         state, cs = self.get_state(), self.get_control_sheet()
-        cs.input_paths_error.set_error(None)
+        cs.error.set_error(None)
 
         input_type = state.input_type
         input_path = paths[0] if len(paths) != 0 else None
@@ -174,7 +174,7 @@ class FileSourceWorker(BackendWorker):
                     cs.seek_begin.enable()
                     cs.seek_end.enable()
                 else:
-                    cs.input_paths_error.set_error(err)
+                    cs.error.set_error(err)
                     cs.input_paths.set_paths(prev_paths, block_event=True)
         self.save_state()
 
@@ -263,6 +263,9 @@ class FileSourceWorker(BackendWorker):
                         cs.seek_backward.enable()
                         cs.seek_forward.enable()
 
+                if pr.new_error is not None:
+                    cs.error.set_error(pr.new_error)
+
                 if pr.new_frame_idx is not None:
                     cs.frame_index.set_number(pr.new_frame_idx, block_event=True)
 
@@ -284,15 +287,10 @@ class FileSourceWorker(BackendWorker):
                     bcd.set_frame_num(p_frame.frame_num)
                     bcd.set_frame_fps(p_frame.fps)
                     bcd.set_frame_timestamp(p_frame.timestamp)
-
                     bcd.set_frame_name(p_frame.name)
 
                     image = ImageProcessor(p_frame.image).to_uint8().get_image('HWC')
-
                     bcd.set_image(p_frame.name, image)
-
-                    if p_frame.error is not None:
-                        bcd.add_error(p_frame.error)
 
                     self.stop_profile_timing()
                     self.pending_bcd = bcd
@@ -325,7 +323,7 @@ class Sheet:
             super().__init__()
             self.input_type = lib_csw.DynamicSingleSwitch.Client()
             self.input_paths = lib_csw.Paths.Client()
-            self.input_paths_error = lib_csw.Error.Client()
+            self.error = lib_csw.Error.Client()
 
             self.target_width = lib_csw.Number.Client()
             self.fps = lib_csw.Number.Client()
@@ -348,7 +346,7 @@ class Sheet:
             super().__init__()
             self.input_type = lib_csw.DynamicSingleSwitch.Host()
             self.input_paths = lib_csw.Paths.Host()
-            self.input_paths_error = lib_csw.Error.Host()
+            self.error = lib_csw.Error.Host()
 
             self.target_width = lib_csw.Number.Host()
             self.fps = lib_csw.Number.Host()

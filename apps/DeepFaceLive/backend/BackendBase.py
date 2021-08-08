@@ -24,8 +24,6 @@ class BackendConnectionData:
         self._weak_heap_refs = {}
         self._weak_heap_image_infos = {}
 
-        self._errors = []
-
         self._uid = uid
         self._is_frame_reemitted = None
 
@@ -75,9 +73,6 @@ class BackendConnectionData:
             shape, dtype = image_info
             return np.ndarray(shape, dtype=dtype, buffer=buffer)
         return None
-
-    def add_error(self, err : str):
-        self._errors.append(err)
 
     def get_uid(self) -> int: return self._uid
 

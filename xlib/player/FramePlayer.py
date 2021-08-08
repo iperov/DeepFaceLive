@@ -14,13 +14,12 @@ class FramePlayer(Disposable):
     class Frame:
         __slots__ = ['image','timestamp','fps','frame_num','frame_count','name','error']
 
-        image       : np.ndarray     # if none - error during loading frame
+        image       : np.ndarray
         timestamp   : float
         fps         : float
         frame_num   : int
         frame_count : int
         name        : str
-        error       : str
 
         def __init__(self):
             self.image       = None
@@ -29,7 +28,6 @@ class FramePlayer(Disposable):
             self.frame_num   = None
             self.frame_count = None
             self.name = None
-            self.error = None
 
     def __init__(self, default_fps, frame_count):
         if frame_count == 0:
@@ -142,12 +140,13 @@ class FramePlayer(Disposable):
         self._req_is_playing = False
 
     class ProcessResult:
-        __slots__ = ['new_is_playing','new_frame_idx','new_frame']
+        __slots__ = ['new_is_playing','new_frame_idx','new_frame','new_error']
 
         def __init__(self):
             self.new_is_playing = None
             self.new_frame_idx = None
             self.new_frame = None
+            self.new_error : str = None
 
     def process(self) -> 'FramePlayer.ProcessResult':
         """
@@ -225,18 +224,10 @@ class FramePlayer(Disposable):
             update_frame = True
 
         if update_frame:
-
             # Frame changed, construct Frame() with current values
             _frame_idx = self._frame_idx
             _cached_frames = self._cached_frames
             _cached_frames_idxs = self._cached_frames_idxs
-
-            p_frame = result.new_frame = FramePlayer.Frame()
-            p_frame.fps = fps
-            p_frame.timestamp = self._frame_timestamp
-
-            p_frame.frame_num = _frame_idx
-            p_frame.frame_count = self._frame_count
 
             frame_tuple = _cached_frames.get(_frame_idx, None)
             if frame_tuple is None:
@@ -249,11 +240,18 @@ class FramePlayer(Disposable):
             frame_image, name_or_err = frame_tuple
 
             if frame_image is None:
-                # frame is not provided, stop playing, but return p_frame without an image
+                # frame is not provided, stop playing
                 new_is_playing = False
-                p_frame.error = name_or_err
+                result.new_error = name_or_err
             else:
                 # frame is provided.
+                p_frame = result.new_frame = FramePlayer.Frame()
+                p_frame.fps = fps
+                p_frame.timestamp = self._frame_timestamp
+
+                p_frame.frame_num = _frame_idx
+                p_frame.frame_count = self._frame_count
+
                 ip = ImageProcessor(frame_image)
                 if self._target_width != 0:
                     ip.fit_in(TW=self._target_width)
@@ -261,7 +259,6 @@ class FramePlayer(Disposable):
 
                 p_frame.image = frame_image
                 p_frame.name = name_or_err
-
 
         if new_is_playing is not None and self._is_playing and not new_is_playing:
             # Stop playing

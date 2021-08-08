@@ -22,32 +22,32 @@ class QFileSource(QBackendPanel):
     def __init__(self, backend : FileSource):
         cs = backend.get_control_sheet()
 
-        q_input_type = self._q_input_type = QButtonCSWDynamicSingleSwitch(cs.input_type, horizontal=True, radio_buttons=True)
-        q_input_paths = self._q_input_paths = QPathEditCSWPaths(cs.input_paths)
-        q_input_paths_error = self._q_input_paths_error = QErrorCSWError(cs.input_paths_error)
+        q_input_type  = QButtonCSWDynamicSingleSwitch(cs.input_type, horizontal=True, radio_buttons=True)
+        q_input_paths = QPathEditCSWPaths(cs.input_paths)
+        q_error       = QErrorCSWError(cs.error)
 
         q_target_width_label = QLabelPopupInfo(label=L('@QFileSource.target_width'), popup_info_text=L('@QFileSource.help.target_width') )
-        q_target_width = self._q_target_width = QSpinBoxCSWNumber(cs.target_width, reflect_state_widgets=[q_target_width_label])
+        q_target_width       = QSpinBoxCSWNumber(cs.target_width, reflect_state_widgets=[q_target_width_label])
 
         q_fps_label = QLabelPopupInfo(label=L('@QFileSource.fps'), popup_info_text=L('@QFileSource.help.fps') )
-        q_fps = self._q_fps = QSpinBoxCSWNumber(cs.fps, reflect_state_widgets=[q_fps_label])
+        q_fps       = QSpinBoxCSWNumber(cs.fps, reflect_state_widgets=[q_fps_label])
 
         q_is_realtime_label = QLabelPopupInfo(label=L('@QFileSource.is_realtime'), popup_info_text=L('@QFileSource.help.is_realtime') )
-        q_is_realtime = self._q_is_realtime = QCheckBoxCSWFlag(cs.is_realtime, reflect_state_widgets=[q_is_realtime_label])
+        q_is_realtime       = QCheckBoxCSWFlag(cs.is_realtime, reflect_state_widgets=[q_is_realtime_label])
 
         q_is_autorewind_label = QLabelPopupInfo(label=L('@QFileSource.is_autorewind'))
-        q_is_autorewind = self._q_is_autorewind = QCheckBoxCSWFlag(cs.is_autorewind, reflect_state_widgets=[q_is_autorewind_label])
+        q_is_autorewind       = QCheckBoxCSWFlag(cs.is_autorewind, reflect_state_widgets=[q_is_autorewind_label])
 
         btn_size=(32,32)
         btn_color= '#E01010'
-        btn_play          = self._btn_play          = QXPushButtonCSWSignal(cs.play,          image=QXImageDB.play_circle_outline(btn_color),              button_size=btn_size )
-        btn_pause         = self._btn_pause         = QXPushButtonCSWSignal(cs.pause,         image=QXImageDB.pause_circle_outline(btn_color),             button_size=btn_size )
-        btn_seek_backward = self._btn_seek_backward = QXPushButtonCSWSignal(cs.seek_backward, image=QXImageDB.play_back_circle_outline(btn_color),         button_size=btn_size )
-        btn_seek_forward  = self._btn_seek_forward  = QXPushButtonCSWSignal(cs.seek_forward,  image=QXImageDB.play_forward_circle_outline(btn_color),      button_size=btn_size )
-        btn_seek_begin    = self._btn_seek_begin    = QXPushButtonCSWSignal(cs.seek_begin,    image=QXImageDB.play_skip_back_circle_outline(btn_color),    button_size=btn_size )
-        btn_seek_end      = self._btn_seek_end      = QXPushButtonCSWSignal(cs.seek_end,      image=QXImageDB.play_skip_forward_circle_outline(btn_color), button_size=btn_size )
+        btn_play          = QXPushButtonCSWSignal(cs.play,          image=QXImageDB.play_circle_outline(btn_color),              button_size=btn_size )
+        btn_pause         = QXPushButtonCSWSignal(cs.pause,         image=QXImageDB.pause_circle_outline(btn_color),             button_size=btn_size )
+        btn_seek_backward = QXPushButtonCSWSignal(cs.seek_backward, image=QXImageDB.play_back_circle_outline(btn_color),         button_size=btn_size )
+        btn_seek_forward  = QXPushButtonCSWSignal(cs.seek_forward,  image=QXImageDB.play_forward_circle_outline(btn_color),      button_size=btn_size )
+        btn_seek_begin    = QXPushButtonCSWSignal(cs.seek_begin,    image=QXImageDB.play_skip_back_circle_outline(btn_color),    button_size=btn_size )
+        btn_seek_end      = QXPushButtonCSWSignal(cs.seek_end,      image=QXImageDB.play_skip_forward_circle_outline(btn_color), button_size=btn_size )
 
-        q_frame_slider = self._q_frame_slider = QSliderCSWNumbers(cs.frame_index, cs.frame_count)
+        q_frame_slider = QSliderCSWNumbers(cs.frame_index, cs.frame_count)
 
         grid_l = lib_qt.QXGridLayout(spacing=5)
         row = 0
@@ -68,7 +68,7 @@ class QFileSource(QBackendPanel):
 
         main_l = lib_qt.QXVBoxLayout([q_input_type,
                                       q_input_paths,
-                                      q_input_paths_error,
+                                      q_error,
                                       grid_l
                                       ], spacing=5)
 

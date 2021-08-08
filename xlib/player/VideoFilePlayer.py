@@ -50,16 +50,13 @@ class VideoFilePlayer(FramePlayer):
 
         probe_info = lib_ffmpeg.probe (str(filepath))
         # Analize probe_info
-        stream_idx = None
+        stream_v_idx = None
         stream_fps = None
         stream_width = None
         stream_height = None
         for stream in probe_info['streams']:
-            if stream_idx is None and stream['codec_type'] == 'video':
-                #print(stream)
-                stream_idx = stream.get('index',None)
-                if stream_idx is not None:
-                    stream_idx = int(stream_idx)
+            if stream_v_idx is None and stream['codec_type'] == 'video':
+                stream_v_idx = 0
                 stream_width = stream.get('width', None)
                 if stream_width is not None:
                     stream_width = int(stream_width)
@@ -75,12 +72,12 @@ class VideoFilePlayer(FramePlayer):
                     stream_fps = eval(stream_fps)
                 break
 
-        if any( x is None for x in [stream_idx, stream_width, stream_height, stream_start_time, stream_duration, stream_fps] ):
+        if any( x is None for x in [stream_v_idx, stream_width, stream_height, stream_start_time, stream_duration, stream_fps] ):
             raise Exception(f'Incorrect video file.')
 
         stream_frame_count = round( ( float(stream_duration)-float(stream_start_time) ) / (1.0/stream_fps) )
 
-        self._stream_idx = stream_idx
+        self._stream_idx = stream_v_idx
         self._stream_width = stream_width
         self._stream_height = stream_height
         self._stream_fps = stream_fps
@@ -128,7 +125,7 @@ class VideoFilePlayer(FramePlayer):
                 '-map', f'0:v:{self._stream_idx}',
                 'pipe:']
 
-        self._ffmpeg_proc = lib_ffmpeg.run (args, pipe_stdout=True, quiet_std_err=True)
+        self._ffmpeg_proc = lib_ffmpeg.run (args, pipe_stdout=True, pipe_stderr=True)
         return self._ffmpeg_proc is not None
 
     def _ffmpeg_next_frame(self, frames_idx_offset=1):
@@ -137,15 +134,20 @@ class VideoFilePlayer(FramePlayer):
         while frames_idx_offset != 0:
             frame_buffer = self._ffmpeg_proc.stdout.read(self._ffmpeg_height*self._ffmpeg_width*3)
             if len(frame_buffer) == 0:
+                err = self._ffmpeg_proc.stderr.read()
+                err_lines =  err.decode('utf-8').split('\r\n')
+                err = '\r\n'.join(err_lines[-5:])
+
                 # End reached
                 self._ffmpeg_stop()
-                return None
+
+                return None, err
             frames_idx_offset -= 1
 
         if frame_buffer is not None:
             frame_image = np.ndarray( (self._ffmpeg_height, self._ffmpeg_width, 3), dtype=np.uint8, buffer=frame_buffer).copy()
-            return frame_image
-        return None
+            return frame_image, None
+        return None, None
 
     def _on_target_width_changed(self):
         self._ffmpeg_need_restart = True
@@ -168,9 +170,9 @@ class VideoFilePlayer(FramePlayer):
             frame_diff = max(1, frame_diff)
 
         #frame_diff += 1
-        image = self._ffmpeg_next_frame(frame_diff)
+        image, err = self._ffmpeg_next_frame(frame_diff)
         if image is None:
-            return (None, 'Unpredicted end of stream.')
+            return (None, f'ffmpeg error: {err}')
 
         return (image, f'{self._filepath.name}_{idx:06}')
 
