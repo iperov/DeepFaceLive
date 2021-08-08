@@ -61,7 +61,7 @@ res:224, WF, ae_dims:256, inter_dims:1024, e_dims:64, d_dims:64, d_mask_dims:22,
 1) lrd:Y, train src-src for 1kk iters
 2) delete inter_dst, lrd:N, color_transfer:lct, train +1kk
 3) lrd:Y, train +1kk
-4) enable GAN 1.0, train +200k
+4) enable gan 0.1 gan_dims:32, train +100..300k iters
 
 </td></tr>
 </table>
