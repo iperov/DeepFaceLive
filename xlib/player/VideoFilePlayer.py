@@ -3,9 +3,9 @@ from typing import Tuple
 
 import numpy as np
 from xlib import ffmpeg as lib_ffmpeg
+from xlib import io as lib_io
 
 from .FramePlayer import FramePlayer
-
 
 class VideoFilePlayer(FramePlayer):
     """
@@ -125,22 +125,23 @@ class VideoFilePlayer(FramePlayer):
                 '-map', f'0:v:{self._stream_idx}',
                 'pipe:']
 
-        self._ffmpeg_proc = lib_ffmpeg.run (args, pipe_stdout=True, pipe_stderr=True)
-        return self._ffmpeg_proc is not None
+        self._ffmpeg_proc = ffmpeg_proc = lib_ffmpeg.run (args, pipe_stdout=True, pipe_stderr=True)
+        self._ffmpeg_proc_stderr_lines = None
+        if ffmpeg_proc is not None:
+            self._ffmpeg_proc_stderr_lines = lib_io.IOThreadLinesReader(ffmpeg_proc.stderr, max_lines=5)
+            return True
+        return False
 
     def _ffmpeg_next_frame(self, frames_idx_offset=1):
         frame_buffer = None
 
         while frames_idx_offset != 0:
             frame_buffer = self._ffmpeg_proc.stdout.read(self._ffmpeg_height*self._ffmpeg_width*3)
+
             if len(frame_buffer) == 0:
-                err = self._ffmpeg_proc.stderr.read()
-                err_lines =  err.decode('utf-8').split('\r\n')
-                err = '\r\n'.join(err_lines[-5:])
-
-                # End reached
+                # unpredicted end reached
+                err = '\r\n'.join(self._ffmpeg_proc_stderr_lines.get_lines(till_eof=True)[-5:])
                 self._ffmpeg_stop()
-
                 return None, err
             frames_idx_offset -= 1
 

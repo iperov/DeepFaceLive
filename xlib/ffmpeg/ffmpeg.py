@@ -1,8 +1,8 @@
 import json
 import subprocess
+from typing import Union
 
-
-def run(args, pipe_stdin=False, pipe_stdout=False, pipe_stderr=False, quiet_std_err=False):
+def run(args, pipe_stdin=False, pipe_stdout=False, pipe_stderr=False, quiet_stderr=False) -> Union[subprocess.Popen,None]:
     """
     run ffmpeg process
 
@@ -10,11 +10,12 @@ def run(args, pipe_stdin=False, pipe_stdout=False, pipe_stderr=False, quiet_std_
     otherwise None
     """
     args = ['ffmpeg'] + args
+
     stdin_stream = subprocess.PIPE if pipe_stdin else None
     stdout_stream = subprocess.PIPE if pipe_stdout else None
     stderr_stream = subprocess.PIPE if pipe_stderr else None
 
-    if quiet_std_err and not pipe_stderr:
+    if quiet_stderr and not pipe_stderr:
         stderr_stream = subprocess.DEVNULL
 
     try:
@@ -53,20 +54,3 @@ def probe(filename):
         raise Exception('ffprobe', out, err)
     return json.loads(out.decode('utf-8'))
 
-
-def run_play():
-    args = ['ffplay',
-            '-f', 'rawvideo',
-            '-pix_fmt', 'bgr24',
-            '-s', '256x144',
-            '-'
-            ]
-    stdin_stream = subprocess.PIPE
-    stdout_stream = None
-    stderr_stream = None#subprocess.DEVNULL
-
-    try:
-        return subprocess.Popen(args, stdin=stdin_stream, stdout=stdout_stream, stderr=stderr_stream)
-    except Exception as e:
-        print('ffplay exception: ', e)
-    return None

@@ -1,1 +1,1 @@
-from .ffmpeg import probe, run, run_play
+from .ffmpeg import probe, run
