@@ -56,7 +56,7 @@ Assuming 1kk iters with batch 8. If the batch is higher, iters is possible less.
 5) disable random warp +500..800k iters
 6) enable gan 0.1 gan_dims:32, train +100..300k iters
 
-You can reuse this model to train new src faceset. In this case you should to delete inter_AB.npy from model folder, and train from stage 3.
+You can reuse this model to train new src faceset. In this case you must delete the file inter_AB.npy from the model folder, and train from stage 3.
 
 > Using AMP model.
 
