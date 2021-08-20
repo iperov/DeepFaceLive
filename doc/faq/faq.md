@@ -60,20 +60,8 @@ You can reuse this model to train new src faceset. In this case you should to de
 
 > Using AMP model.
 
+-- coming soon --
 
-Do not mix different ages of people in the src dataset, otherwise the model will approximate age and make the celebrity older/younger depending on the input person.
-
-res:224, WF, ae_dims:256, inter_dims:1024, e_dims:64, d_dims:64, d_mask_dims:22, morph factor:0.5, batch more is better. Others by default.
-
-Make a backup before every stage !
-
-Assuming 1kk iters with batch 8. If the batch is higher, iters is possible less.
-
-1) lrd:Y, train src-src for 1kk iters
-2) delete inter_dst, lrd:N, uniform_yaw:True, color_transfer:lct, train +500..1kk
-3) color_transfer:none, lrd:Y, train +500..1kk
-4) random_warp:False, train +500..1kk
-5) enable gan 0.1 gan_dims:32, train +100..300k iters
 
 </td></tr>
 </table>
