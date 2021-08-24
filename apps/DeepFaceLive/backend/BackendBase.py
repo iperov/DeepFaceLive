@@ -132,8 +132,8 @@ class BackendConnection:
     def is_full_read(self, buffer_size=0) -> bool:
         """
         if fully readed by receiver side minus buffer_size
-        """
-        return self._rd.get_read_id() == self._rd.get_write_id()
+        """ 
+        return self._rd.get_read_id() >= (self._rd.get_write_id() - buffer_size)
 
 
 class BackendSignal:
