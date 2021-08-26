@@ -15,7 +15,7 @@ class QBCFaceSwapViewer(lib_qt.QXCollapsibleSection):
                         bc : backend.BackendConnection,
                         preview_width=256,):
         self._preview_width = preview_width
-        self._timer = lib_qt.QXTimer(interval=8, timeout=self._on_timer_8ms, start=True)
+        self._timer = lib_qt.QXTimer(interval=16, timeout=self._on_timer_16ms, start=True)
 
         self._backed_weak_heap = backed_weak_heap
         self._bc = bc
@@ -31,7 +31,7 @@ class QBCFaceSwapViewer(lib_qt.QXCollapsibleSection):
         super().__init__(title=L('@QBCFaceSwapViewer.title'), content_layout=main_l)
 
 
-    def _on_timer_8ms(self):
+    def _on_timer_16ms(self):
         top_qx = self.get_top_QXWindow()
         if not self.is_opened() or (top_qx is not None and top_qx.is_minimized() ):
             return

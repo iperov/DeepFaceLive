@@ -1,8 +1,10 @@
+import numpy as np
 from localization import L
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
+from xlib import image as lib_image
 from xlib import qt as lib_qt
 
 from ... import backend
@@ -12,7 +14,7 @@ class QBCFinalFrameViewer(lib_qt.QXCollapsibleSection):
     def __init__(self,  backed_weak_heap : backend.BackendWeakHeap,
                         bc : backend.BackendConnection,
                         preview_width=256):
-        self._timer = lib_qt.QXTimer(interval=8, timeout=self._on_timer_8ms, start=True)
+        self._timer = lib_qt.QXTimer(interval=16, timeout=self._on_timer_16ms, start=True)
 
         self._backed_weak_heap = backed_weak_heap
         self._bc = bc
@@ -27,7 +29,7 @@ class QBCFinalFrameViewer(lib_qt.QXCollapsibleSection):
                                      ], spacing=0)
         super().__init__(title=L('@QBCFinalFrameViewer.title'), content_layout=main_l)
 
-    def _on_timer_8ms(self):
+    def _on_timer_16ms(self):
         top_qx = self.get_top_QXWindow()
         if not self.is_opened() or (top_qx is not None and top_qx.is_minimized() ):
             return
@@ -42,18 +44,15 @@ class QBCFinalFrameViewer(lib_qt.QXCollapsibleSection):
                 self._layered_images.clear_images()
 
                 merged_frame_name = bcd.get_merged_frame_name()
-
                 merged_frame_image = bcd.get_image(merged_frame_name)
 
-                if merged_frame_name is not None and merged_frame_image is not None:
+                if merged_frame_image is not None:
+                    if merged_frame_image.dtype != np.uint8:
+                        merged_frame_image = lib_image.ImageProcessor(merged_frame_image).to_uint8().get_image('HWC')
+
                     self._layered_images.add_image(merged_frame_image)
-
                     h,w = merged_frame_image.shape[0:2]
-
-                    if merged_frame_name is not None:
-                        self._info_label.setText(f'{merged_frame_name} {w}x{h}')
-                    else:
-                        self._info_label.setText(f'{w}x{h}')
+                    self._info_label.setText(f'{merged_frame_name} {w}x{h}')
 
 
     def clear(self):

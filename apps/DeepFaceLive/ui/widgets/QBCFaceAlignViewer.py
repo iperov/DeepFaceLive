@@ -19,7 +19,7 @@ class QBCFaceAlignViewer(lib_qt.QXCollapsibleSection):
                         preview_width=256,):
 
         self._preview_width = preview_width
-        self._timer = lib_qt.QXTimer(interval=8, timeout=self._on_timer_8ms, start=True)
+        self._timer = lib_qt.QXTimer(interval=16, timeout=self._on_timer_16ms, start=True)
         self._backed_weak_heap = backed_weak_heap
         self._bc = bc
         self._bcd_id = None
@@ -33,7 +33,7 @@ class QBCFaceAlignViewer(lib_qt.QXCollapsibleSection):
                                           (info_label, Qt.AlignmentFlag.AlignCenter),
                                           ])  )
 
-    def _on_timer_8ms(self):
+    def _on_timer_16ms(self):
         top_qx = self.get_top_QXWindow()
         if not self.is_opened() or (top_qx is not None and top_qx.is_minimized() ):
             return
@@ -50,12 +50,12 @@ class QBCFaceAlignViewer(lib_qt.QXCollapsibleSection):
                 for face_mark in bcd.get_face_mark_list():
                     face_align = face_mark.get_face_align()
                     if face_align is not None:
-                        face_align_image_name = face_align.get_image_name()
+                        face_image = bcd.get_image (face_align.get_image_name())
+                        if face_image is not None:
+                            source_to_aligned_uni_mat = face_align.get_source_to_aligned_uni_mat()
 
-                        source_to_aligned_uni_mat = face_align.get_source_to_aligned_uni_mat()
-
-                        if all_is_not_None(face_align_image_name):
-                            face_image = bcd.get_image(face_align_image_name).copy()
+                            h,w = face_image.shape[:2]
+                            self._layered_images.add_image(face_image)
 
                             face_ulmrks = face_align.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_468)
                             if face_ulmrks is None:
@@ -71,11 +71,8 @@ class QBCFaceAlignViewer(lib_qt.QXCollapsibleSection):
                                     aligned_uni_rect = face_mark_rect.transform(source_to_aligned_uni_mat)
                                     aligned_uni_rect.draw(lmrks_layer, (0,0,255,255) )
 
-
-                                self._layered_images.add_image(face_image)
                                 self._layered_images.add_image(lmrks_layer)
 
-                                h,w = face_image.shape[0:2]
 
                                 self._info_label.setText(f'{w}x{h}')
 

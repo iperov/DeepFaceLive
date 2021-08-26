@@ -1,3 +1,4 @@
+import numpy as np
 from localization import L
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
@@ -12,7 +13,7 @@ class QBCFrameViewer(lib_qt.QXCollapsibleSection):
     def __init__(self,  backed_weak_heap : backend.BackendWeakHeap,
                         bc : backend.BackendConnection,
                         preview_width=256):
-        self._timer = lib_qt.QXTimer(interval=8, timeout=self._on_timer_8ms, start=True)
+        self._timer = lib_qt.QXTimer(interval=16, timeout=self._on_timer_16ms, start=True)
 
         self._backed_weak_heap = backed_weak_heap
         self._bc = bc
@@ -26,7 +27,7 @@ class QBCFrameViewer(lib_qt.QXCollapsibleSection):
                                      ])
         super().__init__(title=L('@QBCFrameViewer.title'), content_layout=main_l)
 
-    def _on_timer_8ms(self):
+    def _on_timer_16ms(self):
         top_qx = self.get_top_QXWindow()
         if not self.is_opened() or (top_qx is not None and top_qx.is_minimized() ):
             return
@@ -45,10 +46,8 @@ class QBCFrameViewer(lib_qt.QXCollapsibleSection):
                 frame_image = bcd.get_image(frame_name)
 
                 if frame_image is not None:
-                    self._layered_images.add_image(frame_image)
-
-                    h,w = frame_image.shape[0:2]
-
+                    self._layered_images.add_image (frame_image)
+                    h,w = frame_image.shape[:2]
                     if frame_name is not None:
                         self._info_label.setText(f'{frame_name} {w}x{h}')
                     else:

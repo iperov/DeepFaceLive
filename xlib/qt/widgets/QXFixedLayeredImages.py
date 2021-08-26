@@ -1,47 +1,46 @@
-from typing import List
+from typing import List, Union
 
 import numpy as np
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
-from ...image import ImageProcessor
-from ..gui.from_np import QPixmap_from_np
+from ..gui.from_np import QImage_from_np
 from .QXWidget import QXWidget
 
 
 class QXFixedLayeredImages(QXWidget):
     """
     A widget to show multiple stacked images in fixed area
+
+    all images must have the same aspect ratio
     """
     def __init__(self, fixed_width, fixed_height):
         super().__init__()
         self._fixed_width = fixed_width
         self._fixed_height = fixed_height
         self._qp = QPainter()
-        self._pixmaps : List[QPixmap] = []
+        self._images : List = []
 
     def clear_images(self):
-        self._pixmaps : List[QPixmap] = []
+        self._images : List = []
         self.update()
 
     def add_image(self, image, name=None):
         """
-         image  np.ndarray
+         image  QImage
                 QPixmap
-
-        all images must have the same aspect ratio
+                np.ndarray  of uint8 dtype
         """
-        if isinstance(image, np.ndarray):
-            ip = ImageProcessor(image)
-            ip.fit_in(self._fixed_width, self._fixed_height)
-            image = ip.get_image('HWC')
-            q_pixmap = QPixmap_from_np(image)
-        elif isinstance(image, QPixmap):
-            q_pixmap = image
-        else:
-            raise ValueError(f'Unsupported type of image {image.__class__}')
+        saved_ref = None
 
-        self._pixmaps.append(q_pixmap)
+        if not isinstance(image, QImage) and not isinstance(image, QPixmap):
+            if isinstance(image, np.ndarray):
+                saved_ref = image
+                image = QImage_from_np(image)
+            else:
+                raise ValueError(f'Unsupported type of image {image.__class__}')
+
+        self._images.append( (image, saved_ref) )
         self.update()
 
     def sizeHint(self):
@@ -52,7 +51,6 @@ class QXFixedLayeredImages(QXWidget):
 
         qp = self._qp
         qp.begin(self)
-        #qp.setRenderHint(QPainter.RenderHint.Antialiasing)
         qp.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
         w = self._fixed_width
@@ -62,8 +60,9 @@ class QXFixedLayeredImages(QXWidget):
         h_half = h /2
         a = w/h
 
-        for pixmap in self._pixmaps:
-            size = pixmap.size()
+        for image, _ in self._images:
+
+            size = image.size()
             ap = size.width() / size.height()
 
             if ap > a:
@@ -75,6 +74,9 @@ class QXFixedLayeredImages(QXWidget):
             else:
                 rect = self.rect()
 
-            qp.drawPixmap(rect, pixmap, pixmap.rect())
+            if isinstance(image, QImage):
+                qp.drawImage(rect, image, image.rect())
+            elif isinstance(image, QPixmap):
+                qp.drawPixmap(rect, image, image.rect())
 
         qp.end()
