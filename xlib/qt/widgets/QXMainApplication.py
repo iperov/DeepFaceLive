@@ -3,8 +3,8 @@ from pathlib import Path
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
-from xlib.db import KeyValueDB
+from ..core.QXTimer import QXTimer
+from ...db import KeyValueDB
 
 from .forward_declarations import forward_declarations
 
@@ -84,7 +84,7 @@ QRadioButton::disabled {{
         self.setPalette(pal)
 
         self._reinitialize = False
-        self._timer = lib_qt.QXTimer(interval=10, timeout=self._on_10ms_timer, start=True)
+        self._timer = QXTimer(interval=10, timeout=self._on_10ms_timer, start=True)
 
     def _on_10ms_timer(self):
         self._app_db.process_messages()

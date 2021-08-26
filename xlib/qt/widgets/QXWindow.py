@@ -1,7 +1,7 @@
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
-from xlib.python import EventListener
+from ...python import EventListener
 
 from .forward_declarations import forward_declarations
 from .QXMainApplication import QXMainApplication

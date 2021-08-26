@@ -1,6 +1,6 @@
 import numpy as np
 from PyQt6.QtGui import *
-from xlib.image import ImageProcessor
+from ...image import ImageProcessor
 
 
 def QPixmap_from_np(image : np.ndarray):

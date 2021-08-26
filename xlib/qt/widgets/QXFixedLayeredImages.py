@@ -4,7 +4,7 @@ import numpy as np
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
-from xlib.image import ImageProcessor
+from ...image import ImageProcessor
 from ..gui.from_np import QPixmap_from_np
 from .QXWidget import QXWidget
 
