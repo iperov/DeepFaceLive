@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
-from xlib import cv as lib_cv
-from xlib import path as lib_path
+from .. import cv as lib_cv
+from .. import path as lib_path
 
 from .FramePlayer import FramePlayer
 

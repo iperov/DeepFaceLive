@@ -4,8 +4,8 @@ import time
 import traceback
 from enum import IntEnum
 
-from xlib import db as lib_db
-from xlib.python import Disposable, EventListener
+from ... import db as lib_db
+from ...python import Disposable, EventListener
 
 from ..PMPI import PMPI
 

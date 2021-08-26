@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from xlib import math as lib_math
+from .. import math as lib_math
 
 from .FaceULandmarks import FaceULandmarks
 from .FaceURect import FaceURect

@@ -4,7 +4,7 @@ from typing import Tuple
 import cv2
 import numpy as np
 import numpy.linalg as npla
-from xlib.math import Affine2DMat, Affine2DUniMat
+from ..math import Affine2DMat, Affine2DUniMat
 
 
 class FaceULandmarks:

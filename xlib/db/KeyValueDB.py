@@ -2,7 +2,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-from xlib.io import FormattedFileIO
+from ..io import FormattedFileIO
 
 
 class KeyValueDB:

@@ -5,8 +5,8 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 import numpy.linalg as npla
-from xlib import math as lib_math
-from xlib.math import Affine2DMat, Affine2DUniMat
+from .. import math as lib_math
+from ..math import Affine2DMat, Affine2DUniMat
 
 
 class FaceURect:

@@ -1,6 +1,6 @@
 from typing import Tuple
 import numpy as np
-from xlib import math as lib_math
+from .. import math as lib_math
 
 
 class FacePose:

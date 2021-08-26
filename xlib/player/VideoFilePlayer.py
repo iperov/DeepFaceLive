@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import Tuple
 
 import numpy as np
-from xlib import ffmpeg as lib_ffmpeg
-from xlib import io as lib_io
+from .. import ffmpeg as lib_ffmpeg
+from .. import io as lib_io 
 
 from .FramePlayer import FramePlayer
 

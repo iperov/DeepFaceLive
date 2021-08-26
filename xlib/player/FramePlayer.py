@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Tuple
 
 import numpy as np
-from xlib.image import ImageProcessor
-from xlib.python import Disposable
+from ..image import ImageProcessor
+from ..python import Disposable
 
 
 class FramePlayer(Disposable):

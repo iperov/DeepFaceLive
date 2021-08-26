@@ -1,4 +1,4 @@
-from xlib.python import EventListener
+from ...python import EventListener
 
 from .CSWBase import ControlClient, ControlHost
 

@@ -2,9 +2,9 @@ from pathlib import Path
 from typing import Tuple
 
 import cv2
-from xlib import cv as lib_cv
-from xlib import path as lib_path
-from xlib.io import FormattedFileIO
+from .. import cv as lib_cv
+from .. import path as lib_path
+from ..io import FormattedFileIO
 
 from .face import FaceMark
 
