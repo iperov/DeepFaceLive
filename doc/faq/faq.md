@@ -1,6 +1,22 @@
 <table align="center" border="0">
 <tr><td colspan=2 align="center">
 
+## How to increase the quality of the picture?
+
+Play with different program settings, try different lighting in the room, a different camera angle.
+
+## How to increase the performance of face replacement?
+
+Play with different program settings. Any module put on the CPU will consume a lot of CPU time, which is not enough to run a game, for example. If the motherboard allows, you can install additional video cards and distribute the load on them.
+
+## Will DeepFake detectors be able to detect a fake in my streams?
+
+depends on final quality of your picture. Flickering face, abruptly clipping face mask, irregular color will increase chance to detect the fake.
+
+deepware.io detects no fakes in the example video of the fake Margot Robbie.
+
+<img src="deepware_result.png"></img>
+
 ## Do I need to train the model from scratch?
 
 No you don't. There are public face models that can swap any face without training.
