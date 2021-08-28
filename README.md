@@ -69,7 +69,9 @@ Windows 10
 
 ## Documentation
 
-<a href="doc/faq/faq.md">Frequently Asked Questions</a>
+<a href="doc/faq/faq.md">User FAQ</a>
+
+<a href="doc/developer_faq/developer_faq.md">Developer FAQ</a>
 
 </td></tr>
 <tr><td colspan=2 align="center">
