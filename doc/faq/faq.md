@@ -13,7 +13,7 @@ Play with different program settings. Any module put on the CPU will consume a l
 
 depends on final quality of your picture. Flickering face, abruptly clipping face mask, irregular color will increase chance to detect the fake.
 
-deepware.io detects no fakes in the example video of the fake Margot Robbie.
+deepware.ai detects no fakes in the example video of the fake Margot Robbie.
 
 <img src="deepware_result.png"></img>
 
