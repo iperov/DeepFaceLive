@@ -95,11 +95,22 @@ Windows 10
 <a href="https://mrdeepfakes.com/forums/">mrdeepfakes</a>
 </td><td align="center">the biggest NSFW English deepfake community</td></tr>
 
+</td></tr>
+<tr><td colspan=2 align="center">
+
+## How can I help the project?
 
 </td></tr>
 <tr><td colspan=2 align="center">
 
-## Donate
+I need the computing power to train models. 
+
+If you have a free computer with 2080TI or better card with 12GB+ VRAM, you can give me remote access to it. I will train 1 model in a month. Contact me(iperov#6528) in Discord channel.
+
+</td></tr>
+<tr><td colspan=2 align="center">
+
+### Register github account and push "Star" button.
 
 </td></tr>
 <tr><td colspan=2 align="center">
