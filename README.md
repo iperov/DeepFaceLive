@@ -102,16 +102,12 @@ Windows 10
 
 </td></tr>
 <tr><td colspan=2 align="center">
-
 I need the computing power to train models. 
 
 If you have a free computer with 2080TI or better card with 12GB+ VRAM, you can give me remote access to it. I will train 1 model in a month. Contact me(iperov#6528) in Discord channel.
-
 </td></tr>
 <tr><td colspan=2 align="center">
-
-### Register github account and push "Star" button.
-
+Register github account and push "Star" button.
 </td></tr>
 <tr><td colspan=2 align="center">
 <a href="https://www.paypal.com/paypalme/DeepFaceLab">Donate via Paypal</a>
