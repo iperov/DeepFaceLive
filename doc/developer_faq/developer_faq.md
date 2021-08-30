@@ -7,6 +7,8 @@ All CPU-intensive tasks are done by native libraries compiled for Python, such a
 
 ## What does the internal architecture look like?
 
+<img src="architecture.png"></img>
+
 It consists of backend modules that work in separate processes. The modules work like a conveyor belt. CameraSource(FileSource) generates the frame and sends it to the next module for processing. The final output module outputs the stream to the screen with the desired delay. Backend modules manage the abstract controls that are implemented in the UI. Thus, the Model-View-Controller pattern is implemented. To reduce latency, some custom interprocess communication elements are implemented.
 
 ## What are the current problems for implementation for AMD ?
