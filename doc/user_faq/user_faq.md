@@ -9,6 +9,10 @@ Play with different program settings, try different lighting in the room, a diff
 
 Play with different program settings. Any module put on the CPU will consume a lot of CPU time, which is not enough to run a game, for example. If the motherboard allows, you can install additional video cards and distribute the load on them.
 
+## Why doesn't the replaced face look like a celebrity?
+
+It depends on how much your face fits the shape of the celebrity's face.
+
 ## Will DeepFake detectors be able to detect a fake in my streams?
 
 depends on final quality of your picture. Flickering face, abruptly clipping face mask, irregular color will increase chance to detect the fake.

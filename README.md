@@ -69,7 +69,7 @@ Windows 10
 
 ## Documentation
 
-<a href="doc/faq/faq.md">User FAQ</a>
+<a href="doc/user_faq/user_faq.md">User FAQ</a>
 
 <a href="doc/developer_faq/developer_faq.md">Developer FAQ</a>
 
