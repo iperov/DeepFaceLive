@@ -5,13 +5,19 @@
 
 Play with different program settings, try different lighting in the room, a different camera angle.
 
+## Why doesn't the replaced face look like a celebrity?
+
+It depends on how much your face fits the shape of the celebrity's face.
+
+## Why is the swapped face blurrier than the rest of the image?
+
+It depends on how big the face in the frame, as well as the resolution of the model. The public models have a resolution of 224x224 to work on most PC configurations. For high face resolution, you need to train your own model. Public models are suitable for game streamers that have their face in a small window in the corner of the screen.
+
 ## How to increase the performance of face replacement?
 
 Play with different program settings. Any module put on the CPU will consume a lot of CPU time, which is not enough to run a game, for example. If the motherboard allows, you can install additional video cards and distribute the load on them.
 
-## Why doesn't the replaced face look like a celebrity?
 
-It depends on how much your face fits the shape of the celebrity's face.
 
 ## Will DeepFake detectors be able to detect a fake in my streams?
 
