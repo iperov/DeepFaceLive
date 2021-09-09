@@ -531,14 +531,18 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     elif backend == 'directml':
         builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata --no-cuda')
 
-    builder.create_internal_run_python_script('build DeepFaceLive CUDA.bat',     'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive --cache-dir _cache --backend cuda')
-    builder.create_internal_run_python_script('build DeepFaceLive DirectML.bat', 'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive --cache-dir _cache --backend directml')
+    builder.create_internal_run_python_script('build DeepFaceLive NVIDIA.bat',    'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive_NVIDIA --cache-dir _cache --backend cuda')
+    builder.create_internal_run_python_script('build DeepFaceLive DirectX12.bat', 'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive_DirectX12 --cache-dir _cache --backend directml')
 
     builder.run_python('main.py dev merge_large_files --delete-parts', cwd=deepfacelive_path)
 
     builder.cleanup()
 
-    builder.pack_sfx_release(f'DeepFaceLive_build_{datetime.now().strftime("%m_%d_%Y")}')
+    if backend == 'cuda':
+        build_name = f'DeepFaceLive_NVIDIA_build_{datetime.now().strftime("%m_%d_%Y")}'
+    elif backend == 'directml':
+        build_name = f'DeepFaceLive_DirectX12_build_{datetime.now().strftime("%m_%d_%Y")}'
+    builder.pack_sfx_release(build_name)
 
 class fixPathAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
