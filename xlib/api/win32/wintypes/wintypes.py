@@ -15,16 +15,21 @@ def dll_import(dll_name):
             dll = ctypes.cdll.LoadLibrary(find_library(dll_name))
         except:
             pass
-        if dll is None:
-            raise RuntimeError(f'Unable to load {dll_name} library.')
+        
         dlls_by_name[dll_name] = dll
     
     def decorator(func):
-        dll_func = getattr(dll, func.__name__)
-        anno = list(func.__annotations__.values())
-        dll_func.argtypes = anno[:-1]
-        dll_func.restype = anno[-1]
+        if dll is not None:
+            dll_func = getattr(dll, func.__name__)
+            anno = list(func.__annotations__.values())
+            dll_func.argtypes = anno[:-1]
+            dll_func.restype = anno[-1]
+        else:
+            dll_func = None
+        
         def wrapper(*args):
+            if dll_func is None: 
+                raise RuntimeError(f'Unable to load {dll_name} library.')
             return dll_func(*args)
         return wrapper
     return decorator
