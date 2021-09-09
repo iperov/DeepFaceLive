@@ -12,7 +12,7 @@ from typing import List
 
 class WindowsFolderBuilder:
     """
-    Builds standalone python folder for Windows with the project from scratch.
+    Builds stand-alone portable all-in-one python folder for Windows with the project from scratch.
     """
 
     # Constants
@@ -462,36 +462,51 @@ pause
 """)
 
 
-def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9'):
+def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backend='cuda'):
+
     builder = WindowsFolderBuilder(release_path=Path(release_dir),
                                    cache_path=Path(cache_dir),
                                    python_ver=python_ver,
                                    clear_release_path=True)
-    builder.install_pip_package('numpy==1.21.1')
+
+    # PIP INSTALLATIONS
+
+    builder.install_pip_package('numpy==1.21.2')
     builder.install_pip_package('scipy==1.5.4')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.3.56')
     builder.install_pip_package('opencv-contrib-python==4.5.3.56')
     builder.install_pip_package('pyqt6==6.1.1')
-    builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
-    builder.install_pip_package('onnxruntime-gpu==1.8.1')
-    builder.install_pip_package('cupy-cuda111===9.0.0')
+    builder.install_pip_package('onnx==1.10.1')
+
+    if backend == 'cuda':
+        builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
+        builder.install_pip_package('onnxruntime-gpu==1.8.1')
+        builder.install_pip_package('cupy-cuda111===9.0.0')
+    elif backend == 'directml':
+        if python_ver[:3] == '3.7':
+            builder.install_pip_package('https://github.com/iperov/DeepFaceLive/releases/download/ort-dml/onnxruntime_directml-1.8.2-cp37-cp37m-win_amd64.whl')
+        else:
+            raise Exception(f'no onnxruntime_directml wheel for python {python_ver}')
 
     builder.install_ffmpeg_binaries()
 
-    print('Moving CUDA dlls from Torch to shared directory')
-    cuda_bin_path = builder.cuda_bin_path
-    torch_lib_path = builder.python_site_packages_path / 'torch' / 'lib'
+    #
 
-    for cu_file in torch_lib_path.glob("**/cu*64*.dll"):
-        target = cuda_bin_path / cu_file.name
-        print (f'Moving {target}')
-        shutil.move (str(cu_file), str(target) )
+    if backend == 'cuda':
+        print('Moving CUDA dlls from Torch to shared directory')
+        cuda_bin_path = builder.cuda_bin_path
+        torch_lib_path = builder.python_site_packages_path / 'torch' / 'lib'
 
-    for file in torch_lib_path.glob("**/nvrtc*.dll"):
-        target = cuda_bin_path / file.name
-        print (f'Moving {target}')
-        shutil.move (str(file), str(target) )
+        for cu_file in torch_lib_path.glob("**/cu*64*.dll"):
+            target = cuda_bin_path / cu_file.name
+            print (f'Moving {target}')
+            shutil.move (str(cu_file), str(target) )
+
+        for file in torch_lib_path.glob("**/nvrtc*.dll"):
+            target = cuda_bin_path / file.name
+            print (f'Moving {target}')
+            shutil.move (str(file), str(target) )
 
     deepfacelive_path = builder.get_internal_path() / 'DeepFaceLive'
 
@@ -511,8 +526,13 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9'):
     print('Copying samples.')
     shutil.copytree( str(Path(__file__).parent.parent / 'samples'), str(userdata_path / 'samples') )
 
-    builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata')
-    builder.create_internal_run_python_script('build DeepFaceLive.bat','DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive --cache-dir _cache' )
+    if backend == 'cuda':
+        builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata')
+    elif backend == 'directml':
+        builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata --no-cuda')
+
+    builder.create_internal_run_python_script('build DeepFaceLive CUDA.bat',     'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive --cache-dir _cache --backend cuda')
+    builder.create_internal_run_python_script('build DeepFaceLive DirectML.bat', 'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive --cache-dir _cache --backend directml')
 
     builder.run_python('main.py dev merge_large_files --delete-parts', cwd=deepfacelive_path)
 
@@ -531,12 +551,15 @@ if __name__ == '__main__':
     p.add_argument('--release-dir', action=fixPathAction, default=None)
     p.add_argument('--cache-dir', action=fixPathAction, default=None)
     p.add_argument('--python-ver', default="3.7.9")
+    p.add_argument('--backend', choices=['cuda', 'directml'], default='cuda')
+
     args = p.parse_args()
 
     if args.build_type == 'dfl-windows':
         build_deepfacelive_windows(release_dir=args.release_dir,
                                    cache_dir=args.cache_dir,
-                                   python_ver=args.python_ver)
+                                   python_ver=args.python_ver,
+                                   backend=args.backend)
 
 
 

@@ -1,6 +1,6 @@
 from typing import List
 
-
+from .. import appargs as lib_appargs
 
 
 class CuPyDeviceInfo:
@@ -53,7 +53,11 @@ def get_available_devices() -> List[CuPyDeviceInfo]:
     """
     returns a list of available CuPyDeviceInfo
     """
+    if lib_appargs.get_arg_bool('NO_CUDA'):
+        return []
+    
     global _cupy_devices
+    
     if _cupy_devices is None:
         import cupy as cp # BUG eats 1.8Gb paging file per process, so import on demand
         devices = []
