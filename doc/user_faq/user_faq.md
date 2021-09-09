@@ -1,6 +1,10 @@
 <table align="center" border="0">
 <tr><td colspan=2 align="center">
 
+## Why does it require a graphic accelerator to work?
+
+The program is based on machine learning models. For example, face detection in the frame, facial point detection, face replacement. These models require intensive computations, which graphical accelerator can handle tens of times faster than on an ordinary processor. 
+
 ## How to increase the quality of the picture?
 
 Play with different program settings, try different lighting in the room, a different camera angle.
@@ -13,9 +17,14 @@ It depends on how much your face fits the shape of the celebrity's face.
 
 It depends on how big the face in the frame, as well as the resolution of the model. The public models have a resolution of 224x224 to work on most PC configurations. For high face resolution, you need to train your own model. Public models are suitable for game streamers that have their face in a small window in the corner of the screen.
 
+## Can I play at the same time as DeepFaceLive is running?
+
+It depends on how powerful your computer and how demanding the game to resources. A multi-core processor and a separate graphics card for face replacement are recommended.
+
 ## How to increase the performance of face replacement?
 
-Play with different program settings. Any module put on the CPU will consume a lot of CPU time, which is not enough to run a game, for example. If the motherboard allows, you can install additional video cards and distribute the load on them.
+Play with different program settings. Any module put on the CPU will consume a lot of CPU time, which is not enough to run a game, for example. If the motherboard allows, you can install additional video cards and distribute the load on them. I also suggest watching the CPU load in Task Manager while experimenting with the settings.
+
 
 ## Will DeepFake detectors be able to detect a fake in my streams?
 
