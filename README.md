@@ -5,7 +5,7 @@
 ![](doc/deepfacelive_intro.png)
 
 ![](doc/logo_onnx.png)
-![](doc/logo_nvidia.png)
+![](doc/logo_directx.png)
 ![](doc/logo_python.png)
 
 </td></tr>
@@ -49,7 +49,7 @@ Here is an <a href="https://www.tiktok.com/@arnoldschwarzneggar/video/6995538782
 
 ## Minimum system requirements
 
-NVIDIA  GTX 750 or higher (AMD is not supported <a href="doc/faq/faq.md#when-will-amd-cards-be-supported">yet</a>)
+any DirectX12-compatible videocard or NVIDIA GTX 750+ 
 
 Modern CPU with AVX instructions
 
@@ -59,7 +59,6 @@ Windows 10
 
 </td></tr>
 <tr><td colspan=2 align="center">
-
 
 ## Setup tutorial
 
@@ -80,8 +79,10 @@ Windows 10
 
 </td></tr>
 <tr><td align="right"> <a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
-</td><td align="center">Contains new and prev releases.</td></tr>
+</td><td align="center">
+NVIDIA build : NVIDIA cards only
 
+DirectX12 build : NVIDIA, AMD, Intel cards.
 </td></tr>
 <tr><td colspan=2 align="center">
 

@@ -17,8 +17,6 @@ It depends on how big the face in the frame, as well as the resolution of the mo
 
 Play with different program settings. Any module put on the CPU will consume a lot of CPU time, which is not enough to run a game, for example. If the motherboard allows, you can install additional video cards and distribute the load on them.
 
-
-
 ## Will DeepFake detectors be able to detect a fake in my streams?
 
 depends on final quality of your picture. Flickering face, abruptly clipping face mask, irregular color will increase chance to detect the fake.
@@ -30,13 +28,6 @@ deepware.ai detects no fakes in the example video of the fake Margot Robbie.
 ## Do I need to train the model from scratch?
 
 No you don't. There are public face models that can swap any face without training.
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-## When will AMD cards be supported?
-
-Depends on <a href="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</a> library developers. AMD cards are supported through DirectML execution provider, which is currently raw and slow.
 
 </td></tr>
 <tr><td colspan=2 align="center">
