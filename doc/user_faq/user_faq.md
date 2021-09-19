@@ -71,18 +71,7 @@ Make a backup before every stage !
 
 > Using SAEHD model.
 
-res:224, WF, ae_dims:256, e_dims:64, d_dims:64, d_mask_dims 22, eyes_mouth_prio:Y, batch more is better. Others are default.
-
-Assuming 1kk iters with batch 8. If the batch is higher, iters is possible less.
-
-1) enable pretrain mode. Train to 1kk
-2) disable pretrain mode. Train to 1kk
-3) lrd:N uniform_yaw:True, color_transfer:lct, train +500..800k
-4) lrd:Y train +500..800k iters
-5) disable random warp +500..800k iters
-6) enable gan 0.1 gan_dims:32, train +100..300k iters
-
-You can reuse this model to train new src faceset. In this case you must delete the file inter_AB.npy from the model folder, and train from stage 3.
+-- coming soon --
 
 > Using AMP model.
 
