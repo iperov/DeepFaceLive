@@ -27,17 +27,17 @@ class QXFontDB():
 
         families_loaded = []
 
-        for filepath in filepaths:
-            id = QFontDatabase.addApplicationFont(str(filepath))
+        for filepath in filepaths:            
+            id = QFontDatabase.addApplicationFont(str(filepath))            
             families_loaded += QFontDatabase.applicationFontFamilies(id)
 
-        families_loaded = list(set(families_loaded))
+        # families_loaded = list(set(families_loaded))
+        
+        # if len(families_loaded) > 1:
+        #     raise Exception(f'More than one font family loaded from {dir}:\n{families_loaded}\nRemove unnecessary files.')
 
-        if len(families_loaded) > 1:
-            raise Exception(f'More than one font family loaded from {dir}:\n{families_loaded}\nRemove unnecessary files.')
-
-        if name != families_loaded[0]:
-            raise Exception(f'Loaded font family is different from requested: {name} != {families_loaded[0]}')
+        # if name != families_loaded[0]:
+        #     raise Exception(f'Loaded font family is different from requested: {name} != {families_loaded[0]}')
 
     @staticmethod
     def _get(name : str, size : int, weight=None, italic=False, bold=False):
