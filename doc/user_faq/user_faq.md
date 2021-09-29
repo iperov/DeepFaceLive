@@ -50,7 +50,16 @@ No. DeepFaceLive is designed for face swapping in streams. The ability to change
 
 ## I want to swap my face to a particular celebrity. What I need to do?
 
-This is the normal deepfake training process, where src faceset is the celebrity and dst faceset is your faceset. Train the deepfake model as usual with DeepFaceLab, then export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
+</td></tr>
+<tr><td colspan=2 align="left">
+
+1. If you are novice, learn all about DeepFaceLab https://mrdeepfakes.com/forums/thread-guide-deepfacelab-2-0-guide
+
+2. Gather 5000+ samples of your face with various conditions using webcam which will be used for Live. The conditions are as follows: different lighting, different facial expressions, head direction, eyes direction, being far or closer to the camera, etc. Sort faceset by best to 2000.
+
+3. Train the pretrained model, where src faceset is the celebrity and dst faceset is your faceset. 
+
+4. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
 
 </td></tr>
 <tr><td colspan=2 align="center">
