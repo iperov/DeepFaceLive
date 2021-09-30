@@ -284,11 +284,6 @@ class _MTOrderedDataClient:
 from xlib import time as lib_time
 import numpy as np
 import cv2
-import cupy as cp
-import cupyx.scipy.ndimage
-import scipy
-import scipy.ndimage
-
 from typing import Union, Tuple
 
 from xlib.image import ImageProcessor
@@ -1342,7 +1337,7 @@ class CLKernelHelper:
     """
     
     @staticmethod
-    def define_axes_accessor(axis_letter, shape, axes_symbols=None):
+    def define_tensor(axis_letter, shape, axes_symbols=None):
         """
         Returns a definitions of shape accesor
         
@@ -1355,7 +1350,7 @@ class CLKernelHelper:
             axes_symbols(None)  string of symbols. 
                                 None -> numeric symbols will be used
             
-         example for 'i', TensorAxes((4,512))
+         example for 'i', AAxes((4,512))
          
             #define I0 4
             #define I1 512            
