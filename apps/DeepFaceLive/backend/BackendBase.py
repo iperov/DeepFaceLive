@@ -1,6 +1,6 @@
 import multiprocessing
 import pickle
-from typing import List, Union
+from typing import List, Union, Tuple
 
 import numpy as np
 from xlib import mp as lib_mp
@@ -62,7 +62,19 @@ class BackendConnectionData:
         """
         self.set_file(name, image.data)
         self._weak_heap_image_infos[name] = (image.shape, image.dtype)
-
+    
+    def get_image_shape_dtype(self, name:str) -> Union[None, Tuple[List, np.dtype]]:
+        """
+        returns (image shape, dtype) or (None, None) if file does not exist
+        """
+        if name is None:
+            return None
+        image_info = self._weak_heap_image_infos.get(name, None)
+        if image_info is not None:
+            shape, dtype = image_info
+            return shape, dtype
+        return (None, None)
+        
     def get_image(self, name : str) -> Union[np.ndarray, None]:
         if name is None:
             return None
