@@ -17,6 +17,8 @@ class ImageProcessor:
 
     """
     def __init__(self, img : np.ndarray, copy=False):
+        if copy:
+            img = img.copy()
         ndim = img.ndim
         if ndim not in [2,3,4]:
             raise ValueError(f'img.ndim must be 2,3,4, not {ndim}.')
