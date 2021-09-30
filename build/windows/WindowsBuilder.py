@@ -472,7 +472,6 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     # PIP INSTALLATIONS
 
     builder.install_pip_package('numpy==1.21.2')
-    builder.install_pip_package('scipy==1.5.4')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.3.56')
     builder.install_pip_package('opencv-contrib-python==4.5.3.56')
@@ -482,7 +481,6 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     if backend == 'cuda':
         builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
         builder.install_pip_package('onnxruntime-gpu==1.9.0')
-        builder.install_pip_package('cupy-cuda111===9.0.0')
     elif backend == 'directml':
         if python_ver[:3] == '3.7':
             builder.install_pip_package('https://github.com/iperov/DeepFaceLive/releases/download/ort-dml/onnxruntime_directml-1.8.2-cp37-cp37m-win_amd64.whl')

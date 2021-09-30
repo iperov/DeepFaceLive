@@ -3,7 +3,7 @@ from enum import IntEnum
 
 import numexpr as ne
 import numpy as np
-from xlib import cupy as lib_cp
+from xlib import avecl as lib_cl
 from xlib import os as lib_os
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
@@ -57,12 +57,13 @@ class FaceMergerWorker(BackendWorker):
         cs.face_opacity.call_on_number(self.on_cs_face_opacity)
 
         cs.device.enable()
-        cs.device.set_choices( ['CPU'] + lib_cp.get_available_devices(), none_choice_name='@misc.menu_select')
+        
+        cs.device.set_choices( ['CPU'] + lib_cl.get_available_devices_info(), none_choice_name='@misc.menu_select')
 
         cs.device.select(state.device if state.device is not None else 'CPU')
 
 
-    def on_cs_device(self, idxs, device : lib_cp.CuPyDeviceInfo):
+    def on_cs_device(self, idxs, device : lib_cl.DeviceInfo):
         state, cs = self.get_state(), self.get_control_sheet()
         if device is not None and state.device == device:
             cs.face_x_offset.enable()
@@ -93,17 +94,6 @@ class FaceMergerWorker(BackendWorker):
             cs.face_opacity.enable()
             cs.face_opacity.set_config(lib_csw.Number.Config(min=0.0, max=1.0, step=0.01, decimals=2, allow_instant_update=True))
             cs.face_opacity.set_number(state.face_opacity if state.face_opacity is not None else 1.0)
-
-            if device != 'CPU':
-                self.is_gpu = True
-
-                global cp
-                import cupy as cp # BUG eats 1.8Gb paging file per process, so import on demand
-                cp.cuda.Device( device.get_index() ).use()
-
-                self.cp_mask_clip_kernel = cp.ElementwiseKernel('T x', 'T z', 'z = x < 0.004 ? 0 : x > 1.0 ? 1.0 : x', 'mask_clip_kernel')
-                self.cp_merge_kernel = cp.ElementwiseKernel('T bg, T face, T mask', 'T z', 'z = bg*(1.0-mask) + face*mask', 'merge_kernel')
-                self.cp_merge_kernel_opacity = cp.ElementwiseKernel('T bg, T face, T mask, T opacity', 'T z', 'z = bg*(1.0-mask) + bg*mask*(1.0-opacity) + face*mask*opacity',  'merge_kernel_opacity')
 
         else:
             state.device = device
@@ -164,7 +154,75 @@ class FaceMergerWorker(BackendWorker):
         cs.face_opacity.set_number(face_opacity)
         self.save_state()
         self.reemit_frame_signal.send()
+        
+    def _merge_on_cpu(self, frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
+        state = self.get_state()
+        
+        frame_image = ImageProcessor(frame_image).to_ufloat32().get_image('HWC')
+        face_align_mask_img = ImageProcessor(face_align_mask_img).to_ufloat32().get_image('HW')
+        face_swap_mask_img = ImageProcessor(face_swap_mask_img).to_ufloat32().get_image('HW')
 
+        
+        if state.face_mask_type == FaceMaskType.SRC:
+            face_mask = face_align_mask_img
+        elif state.face_mask_type == FaceMaskType.CELEB:
+            face_mask = face_swap_mask_img
+        elif state.face_mask_type == FaceMaskType.SRC_M_CELEB:
+            face_mask = face_align_mask_img*face_swap_mask_img
+
+        # Combine face mask
+        face_mask_ip = ImageProcessor(face_mask).erode_blur(state.face_mask_erode, state.face_mask_blur, fade_to_border=True) \
+                                                .warpAffine(aligned_to_source_uni_mat, frame_width, frame_height)
+        face_mask_ip.clip2( (1.0/255.0), 0.0, 1.0, 1.0)
+        frame_face_mask = face_mask_ip.get_image('HWC')
+
+        frame_face_swap_img = ImageProcessor(face_swap_img) \
+                                .to_ufloat32().warpAffine(aligned_to_source_uni_mat, frame_width, frame_height).get_image('HWC')
+
+        # Combine final frame
+        opacity = state.face_opacity
+        if opacity == 1.0:
+            frame_final = ne.evaluate('frame_image*(1.0-frame_face_mask) + frame_face_swap_img*frame_face_mask')
+        else:
+            frame_final = ne.evaluate('frame_image*(1.0-frame_face_mask) + frame_image*frame_face_mask*(1.0-opacity) + frame_face_swap_img*frame_face_mask*opacity')
+        
+        return frame_final
+        
+    def _merge_on_gpu(self, frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
+        state = self.get_state()
+        
+        if state.face_mask_type == FaceMaskType.SRC:
+            face_mask_t = lib_cl.Tensor.from_value(face_align_mask_img, device=state.device)
+            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I <= 128 ? 0 : 1);', dtype=np.uint8)
+        elif state.face_mask_type == FaceMaskType.CELEB:
+            face_mask_t = lib_cl.Tensor.from_value(face_swap_mask_img, device=state.device)
+            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I <= 128 ? 0 : 1);', dtype=np.uint8)
+            
+        elif state.face_mask_type == FaceMaskType.SRC_M_CELEB:
+            face_mask_t = lib_cl.any_wise('float X = (((float)I0) / 255.0) * (((float)I1) / 255.0); O = (X <= 0.5 ? 0 : 1);', 
+                                          lib_cl.Tensor.from_value(face_align_mask_img, device=state.device), 
+                                          lib_cl.Tensor.from_value(face_swap_mask_img, device=state.device), 
+                                          dtype=np.uint8).transpose( (2,0,1) )
+        
+        face_mask_t = lib_cl.binary_morph(face_mask_t, state.face_mask_erode, state.face_mask_blur, fade_to_border=True, dtype=np.float32)
+        
+        face_swap_img_t = lib_cl.Tensor.from_value(face_swap_img, device=state.device)
+        face_swap_img_t = face_swap_img_t.transpose( (2,0,1), op_text='O = ((O_TYPE)I) / 255.0', dtype=np.float32)
+        
+        frame_face_mask_t     = lib_cl.remap_np_affine(face_mask_t,     aligned_to_source_uni_mat, output_size=(frame_height, frame_width) )
+        frame_face_swap_img_t = lib_cl.remap_np_affine(face_swap_img_t, aligned_to_source_uni_mat, output_size=(frame_height, frame_width) )
+        
+        frame_image_t = lib_cl.Tensor.from_value(frame_image, device=state.device).transpose( (2,0,1) )
+        
+        opacity = state.face_opacity
+        if opacity == 1.0:
+            frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); I1 = (I1 <= (1.0/255.0) ? 0.0 : I1 > 1.0 ? 1.0 : I1); O = I0f*(1.0-I1) + I2*I1', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, dtype=np.float32)
+        else:
+            frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); I1 = (I1 <= (1.0/255.0) ? 0.0 : I1 > 1.0 ? 1.0 : I1); O = I0f*(1.0-I1) + I0f*I1*(1.0-I3) + I2*I1*I3', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, opacity, dtype=np.float32)
+        
+        return frame_final_t.transpose( (1,2,0) ).np()
+        
+        
     def on_tick(self):
         state, cs = self.get_state(), self.get_control_sheet()
 
@@ -189,72 +247,29 @@ class FaceMergerWorker(BackendWorker):
                                 face_swap_mask = face_swap.get_face_mask()
                                 if face_swap_mask is not None:
 
-                                    face_align_img = bcd.get_image(face_align.get_image_name())
-                                    face_swap_img = bcd.get_image(face_swap.get_image_name())
-
+                                    face_align_img_shape, _ = bcd.get_image_shape_dtype(face_align.get_image_name())
                                     face_align_mask_img = bcd.get_image(face_align_mask.get_image_name())
+                                    face_swap_img = bcd.get_image(face_swap.get_image_name())
                                     face_swap_mask_img = bcd.get_image(face_swap_mask.get_image_name())
                                     source_to_aligned_uni_mat = face_align.get_source_to_aligned_uni_mat()
 
-                                    face_mask_type = state.face_mask_type
-
-                                    if all_is_not_None(face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, face_mask_type):
-                                        face_height, face_width = face_align_img.shape[:2]
-
-                                        if self.is_gpu:
-                                            frame_image = cp.asarray(frame_image)
-                                            face_align_mask_img = cp.asarray(face_align_mask_img)
-                                            face_swap_mask_img = cp.asarray(face_swap_mask_img)
-                                            face_swap_img = cp.asarray(face_swap_img)
-
-                                        frame_image_ip = ImageProcessor(frame_image).to_ufloat32()
-                                        frame_image, (_, frame_height, frame_width, _) = frame_image_ip.get_image('HWC'), frame_image_ip.get_dims()
-                                        face_align_mask_img = ImageProcessor(face_align_mask_img).to_ufloat32().get_image('HW')
-                                        face_swap_mask_img = ImageProcessor(face_swap_mask_img).to_ufloat32().get_image('HW')
-
+                                    if all_is_not_None(face_align_img_shape, face_align_mask_img, face_swap_img, face_swap_mask_img):
+                                        face_height, face_width = face_align_img_shape[:2]
+                                        frame_height, frame_width = frame_image.shape[:2]
                                         aligned_to_source_uni_mat = source_to_aligned_uni_mat.invert()
                                         aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_translated(-state.face_x_offset, -state.face_y_offset)
                                         aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_scaled_around_center(state.face_scale,state.face_scale)
                                         aligned_to_source_uni_mat = aligned_to_source_uni_mat.to_exact_mat (face_width, face_height, frame_width, frame_height)
-
-                                        if face_mask_type == FaceMaskType.SRC:
-                                            face_mask = face_align_mask_img
-                                        elif face_mask_type == FaceMaskType.CELEB:
-                                            face_mask = face_swap_mask_img
-                                        elif face_mask_type == FaceMaskType.SRC_M_CELEB:
-                                            face_mask = face_align_mask_img*face_swap_mask_img
-
-                                        # Combine face mask
-                                        face_mask_ip = ImageProcessor(face_mask).erode_blur(state.face_mask_erode, state.face_mask_blur, fade_to_border=True) \
-                                                                                .warpAffine(aligned_to_source_uni_mat, frame_width, frame_height)
-                                        if self.is_gpu:
-                                            face_mask_ip.apply( lambda img: self.cp_mask_clip_kernel(img) )
+                                        
+                                        if state.device == 'CPU':
+                                            merged_frame = self._merge_on_cpu(frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
                                         else:
-                                            face_mask_ip.clip2( (1.0/255.0), 0.0, 1.0, 1.0)
-                                        frame_face_mask = face_mask_ip.get_image('HWC')
-
-                                        frame_face_swap_img = ImageProcessor(face_swap_img) \
-                                                              .to_ufloat32().warpAffine(aligned_to_source_uni_mat, frame_width, frame_height).get_image('HWC')
-
-                                        # Combine final frame
-                                        opacity = state.face_opacity
-                                        if self.is_gpu:
-                                            if opacity == 1.0:
-                                                frame_final = self.cp_merge_kernel(frame_image, frame_face_swap_img, frame_face_mask)
-                                            else:
-                                                frame_final = self.cp_merge_kernel_opacity(frame_image, frame_face_swap_img, frame_face_mask, opacity)
-                                            frame_final = cp.asnumpy(frame_final)
-                                        else:
-                                            if opacity == 1.0:
-                                                frame_final = ne.evaluate('frame_image*(1.0-frame_face_mask) + frame_face_swap_img*frame_face_mask')
-                                            else:
-                                                frame_final = ne.evaluate('frame_image*(1.0-frame_face_mask) + frame_image*frame_face_mask*(1.0-opacity) + frame_face_swap_img*frame_face_mask*opacity')
-
+                                            merged_frame = self._merge_on_gpu(frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
                                         # keep image in float32 in order not to extra load FaceMerger
-
+                                        
                                         merged_frame_name = f'{frame_name}_merged'
                                         bcd.set_merged_frame_name(merged_frame_name)
-                                        bcd.set_image(merged_frame_name, frame_final)
+                                        bcd.set_image(merged_frame_name, merged_frame)
                                 break
 
                 self.stop_profile_timing()
@@ -297,7 +312,7 @@ class Sheet:
             self.face_opacity = lib_csw.Number.Host()
 
 class WorkerState(BackendWorkerState):
-    device : lib_cp.CuPyDeviceInfo = None
+    device : lib_cl.DeviceInfo = None
     face_x_offset : float = None
     face_y_offset : float = None
     face_scale : float = None
@@ -305,3 +320,4 @@ class WorkerState(BackendWorkerState):
     face_mask_erode : int = None
     face_mask_blur : int = None
     face_opacity : float = None
+
