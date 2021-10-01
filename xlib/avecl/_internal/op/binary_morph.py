@@ -3,7 +3,7 @@ from .binary_dilate_circle import binary_dilate_circle
 from .binary_erode_circle import binary_erode_circle
 from .gaussian_blur import gaussian_blur
 from .pad import pad
-
+from .cast import cast
 
 def binary_morph(input_t : Tensor, erode_dilate : int, blur : float, fade_to_border : bool = False, dtype=None) -> Tensor:
     """
@@ -39,5 +39,7 @@ def binary_morph(input_t : Tensor, erode_dilate : int, blur : float, fade_to_bor
 
     if blur > 0:
         x = gaussian_blur(x, blur * 0.250, dtype=dtype)
-
+    else:
+        x = cast(x, dtype=dtype)
+        
     return x[...,H:-H,W:-W]

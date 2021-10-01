@@ -196,10 +196,10 @@ class FaceMergerWorker(BackendWorker):
 
         if state.face_mask_type == FaceMaskType.SRC:
             face_mask_t = lib_cl.Tensor.from_value(face_align_mask_img)
-            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I <= 128 ? 0 : 1);', dtype=np.uint8)
+            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I < 128 ? 0 : 1);', dtype=np.uint8)
         elif state.face_mask_type == FaceMaskType.CELEB:
             face_mask_t = lib_cl.Tensor.from_value(face_swap_mask_img)
-            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I <= 128 ? 0 : 1);', dtype=np.uint8)
+            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I < 128 ? 0 : 1);', dtype=np.uint8)
 
         elif state.face_mask_type == FaceMaskType.SRC_M_CELEB:
             face_mask_t = lib_cl.any_wise('float X = (((float)I0) / 255.0) * (((float)I1) / 255.0); O = (X <= 0.5 ? 0 : 1);',
@@ -214,7 +214,7 @@ class FaceMergerWorker(BackendWorker):
 
         frame_face_mask_t     = lib_cl.remap_np_affine(face_mask_t,     aligned_to_source_uni_mat, output_size=(frame_height, frame_width) )
         frame_face_swap_img_t = lib_cl.remap_np_affine(face_swap_img_t, aligned_to_source_uni_mat, output_size=(frame_height, frame_width) )
-
+            
         frame_image_t = lib_cl.Tensor.from_value(frame_image).transpose( (2,0,1) )
 
         opacity = state.face_opacity
