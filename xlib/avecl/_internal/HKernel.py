@@ -175,10 +175,7 @@ class HKernel:
         line = f'#define {name_upper}_IDX({HKernel.axes_seq_enum(name, ndim)}) '
 
         for i in range(ndim):
-            if i == 0:
-                line += f'( (size_t)({name_lower}{i}) )'
-            else:
-                line += f'( {name_lower}{i} )'
+            line += f'( (size_t)({name_lower}{i}) )'
 
             for j in range(i+1,ndim):
                 line += f'*{shape[j]} '
@@ -190,10 +187,7 @@ class HKernel:
         line = f'#define {name_upper}_IDX_MOD({HKernel.axes_seq_enum(name, ndim)}) '
 
         for i in range(ndim):
-            if i == 0:
-                line += f'( (size_t)({name_lower}{i}) % {shape[i]} )'
-            else:
-                line += f'( ({name_lower}{i}) % {shape[i]} )'
+            line += f'( (size_t)({name_lower}{i}) % {shape[i]} )'
 
             for j in range(i+1,ndim):
                 line += f'*{shape[j]} '

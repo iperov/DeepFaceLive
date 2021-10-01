@@ -7,6 +7,7 @@ Applicable for high-performance general purpose n-dim array computations for eve
 Works in python 3.5+. Dependencies: numpy.
 
 This lib uses relative import, thus you can place it in any subfolder.
+The lib is not thread-safe.
 
 made by @iperov from scratch.
 """
