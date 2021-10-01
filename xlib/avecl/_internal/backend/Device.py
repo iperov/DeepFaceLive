@@ -41,7 +41,7 @@ class Device:
         self._ctx = None            # CL context
 
         self._target_memory_usage = 0
-        
+
         self._total_memory_allocated = 0
         self._total_buffers_allocated = 0
         self._total_memory_pooled = 0
@@ -80,38 +80,6 @@ class Device:
                 raise Exception('Unable to create OpenCL CommandQueue.')
             self._ctx_q = ctx_q
         return self._ctx_q
-
-    def get_description(self) -> str:
-        return f"{self._device_info.get_name()} [{(self._device_info.get_total_memory() / 1024**3) :.3}Gb]"
-
-    def __str__(self):
-        return self.get_description()
-
-    def __repr__(self):
-        return f'{self.__class__.__name__} object: ' + self.__str__()
-
-    def set_cached_data(self, key, value):
-        """
-
-        All cached data will be freed with cleanup()
-        """
-        self._cached_data[key] = value
-
-    def get_cached_data(self, key):
-        return self._cached_data.get(key, None)
-
-    def get_total_allocated_memory(self):
-        """
-        get total bytes of used and pooled memory
-        """
-        return self._total_memory_allocated
-
-    def get_max_malloc_size(self) -> int:
-        size = CL.cl_ulong()
-        clr = CL.clGetDeviceInfo(self._device_id, CL.CL_DEVICE_MAX_MEM_ALLOC_SIZE, CL.sizeof(size), CL.byref(size), None)
-        if clr != CL.CLERROR.SUCCESS:
-            raise Exception(f'clGetDeviceInfo error: {clr}')
-        return size.value
 
     def _compile_kernel(self, key, kernel_text) -> CL.cl_kernel:
         """
@@ -161,7 +129,7 @@ class Device:
 
     def _cl_mem_alloc(self, size) -> CL.cl_mem:
         self._keep_target_memory_usage()
-        
+
         clr = CL.CLRESULT()
         mem = CL.clCreateBuffer(self._get_ctx(), CL.CL_MEM_READ_WRITE, size, None, clr)
         if clr == CL.CLERROR.SUCCESS:
@@ -181,7 +149,7 @@ class Device:
         if clr != CL.CLERROR.SUCCESS:
             raise Exception(f'clGetMemObjectInfo error: {clr}')
         size = size.value
-        
+
         self._total_memory_allocated -= size
         self._total_buffers_allocated -= 1
         clr = CL.clReleaseMemObject(mem)
@@ -193,7 +161,7 @@ class Device:
         allocate or get cl_mem from pool
         """
         self._keep_target_memory_usage()
-        
+
         pool = self._pooled_buffers
 
         # First try to get pooled buffer
@@ -207,21 +175,10 @@ class Device:
             while True:
                 mem = self._cl_mem_alloc(size)
                 if mem is None:
-                    # MemoryError. Finding largest pooled buffer to release
-                    buf_to_release = None
-                    for size_key in sorted(list(pool.keys()), reverse=True):
-                        ar = pool[size_key]
-                        if len(ar) != 0:
-                            buf_to_release = ar.pop()
-                            break
-
-                    if buf_to_release is not None:
-                        # Release pooled buffer and try to allocate again
-                        self._cl_mem_free(buf_to_release)
-                        continue
-
-                    raise Exception(f'Unable to allocate {size // 1024**2}Mb on {self.get_description()}')
-
+                    # MemoryError.
+                    if not self._free_random_pooled_buffers():
+                        raise Exception(f'Unable to allocate {size // 1024**2}Mb on {self.get_description()}')
+                    continue
                 break
 
         return mem
@@ -244,6 +201,104 @@ class Device:
 
         self._total_memory_pooled += size
         self._total_buffers_pooled += 1
+
+    def _free_random_pooled_buffers(self) -> bool:
+        """
+        remove random 25% of pooled boofers
+
+        returns True if something was released
+        """
+        pool = self._pooled_buffers
+        mems = [ (k,x) for k in pool.keys() for x in pool[k]  ]
+        mems = random.sample(mems, max(1,int(len(mems)*0.25)) )
+        for k, mem in mems:
+            self._cl_mem_free(mem)
+            pool[k].remove(mem)
+        return len(mems) != 0
+
+    def _keep_target_memory_usage(self):
+        targ = self._target_memory_usage
+        if targ != 0 and self.get_total_allocated_memory() >= targ:
+            self._free_random_pooled_buffers()
+
+    def __str__(self):
+        return self.get_description()
+
+    def __repr__(self):
+        return f'{self.__class__.__name__} object: ' + self.__str__()
+
+    def clear_pooled_memory(self):
+        """
+        frees pooled memory
+        """
+
+        pool = self._pooled_buffers
+        for size_key in pool.keys():
+            for mem in pool[size_key]:
+                self._cl_mem_free(mem)
+        self._pooled_buffers = {}
+        self._total_memory_pooled = 0
+        self._total_buffers_pooled = 0
+
+    def cleanup(self):
+        """
+        Frees all resources from this Device.
+        """
+        self._cached_data = {}
+
+        self.clear_pooled_memory()
+
+        if self._total_memory_allocated != 0:
+            raise Exception('Unable to cleanup CLDevice, while not all Buffers are deallocated.')
+
+        for kernel, prog in self._compiled_kernels.values():
+            clr = CL.clReleaseKernel(kernel)
+            if clr != CL.CLERROR.SUCCESS:
+                raise Exception(f'clReleaseKernel error: {clr}')
+
+            clr = CL.clReleaseProgram(prog)
+            if clr != CL.CLERROR.SUCCESS:
+                raise Exception(f'clReleaseProgram error: {clr}')
+        self._compiled_kernels = {}
+
+        if self._ctx_q is not None:
+            clr = CL.clReleaseCommandQueue(self._ctx_q)
+            if clr != CL.CLERROR.SUCCESS:
+                raise Exception(f'clReleaseCommandQueue error: {clr}')
+            self._ctx_q = None
+
+        if self._ctx is not None:
+            clr = CL.clReleaseContext(self._ctx)
+            if clr != CL.CLERROR.SUCCESS:
+                raise Exception(f'clReleaseContext error: {clr}')
+            self._ctx = None
+
+    def get_cached_data(self, key):
+        return self._cached_data.get(key, None)
+
+    def get_description(self) -> str:
+        return f"{self._device_info.get_name()} [{(self._device_info.get_total_memory() / 1024**3) :.3}Gb]"
+
+    def get_total_allocated_memory(self):
+        """
+        get total bytes of used and pooled memory
+        """
+        return self._total_memory_allocated
+
+    def set_cached_data(self, key, value):
+        """
+        All cached data will be freed with cleanup()
+        """
+        self._cached_data[key] = value
+
+    def set_target_memory_usage(self, mb : int):
+        """
+        keep memory usage at specified position
+
+        when total allocated memory reached the target and new allocation is performing,
+        random pooled memory will be freed
+        """
+        self._target_memory_usage = mb*1024*1024
 
     def print_stat(self):
         s = f'''
@@ -347,73 +402,7 @@ N of cacheddata:         {len(self._cached_data)}
         clr = CL.clFinish(self._get_ctx_q())
         if clr != CL.CLERROR.SUCCESS:
             raise Exception(f'clFinish error: {clr}')
-    
-    def set_target_memory_usage(self, mb : int):
-        """
-        keep memory usage at specified position
-        
-        when total allocated memory reached the target and new allocation is performing,        
-        random pooled memory will be freed
-        """
-        self._target_memory_usage = mb*1024*1024
-    
-    def _keep_target_memory_usage(self):
-        targ = self._target_memory_usage
-        if targ != 0 and self.get_total_allocated_memory() >= targ:
-            # remove random 25% of pooled boofers
-            print('remove random 25% of pooled boofers')
-            pool = self._pooled_buffers            
-            mems = [ (k,x) for k in pool.keys() for x in pool[k]  ]            
-            for k, mem in random.sample(mems, max(1,int(len(mems)*0.25)) ):
-                self._cl_mem_free(mem)        
-                pool[k].remove(mem)
-                    
-        
-    def clear_pooled_memory(self):
-        """
-        frees pooled memory
-        """
-        
-        pool = self._pooled_buffers
-        for size_key in pool.keys():
-            for mem in pool[size_key]:
-                self._cl_mem_free(mem)
-        self._pooled_buffers = {}
-        self._total_memory_pooled = 0
-        self._total_buffers_pooled = 0
-        
-    def cleanup(self):
-        """
-        Frees all resources from this Device.
-        """
-        self._cached_data = {}
 
-        self.clear_pooled_memory()
-
-        if self._total_memory_allocated != 0:
-            raise Exception('Unable to cleanup CLDevice, while not all Buffers are deallocated.')
-
-        for kernel, prog in self._compiled_kernels.values():
-            clr = CL.clReleaseKernel(kernel)
-            if clr != CL.CLERROR.SUCCESS:
-                raise Exception(f'clReleaseKernel error: {clr}')
-
-            clr = CL.clReleaseProgram(prog)
-            if clr != CL.CLERROR.SUCCESS:
-                raise Exception(f'clReleaseProgram error: {clr}')
-        self._compiled_kernels = {}
-
-        if self._ctx_q is not None:
-            clr = CL.clReleaseCommandQueue(self._ctx_q)
-            if clr != CL.CLERROR.SUCCESS:
-                raise Exception(f'clReleaseCommandQueue error: {clr}')
-            self._ctx_q = None
-
-        if self._ctx is not None:
-            clr = CL.clReleaseContext(self._ctx)
-            if clr != CL.CLERROR.SUCCESS:
-                raise Exception(f'clReleaseContext error: {clr}')
-            self._ctx = None
 
 def _get_opencl_device_ids() -> List[CL.cl_device_id]:
     global _opencl_device_ids
