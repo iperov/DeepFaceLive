@@ -210,10 +210,12 @@ class Device:
         """
         pool = self._pooled_buffers
         mems = [ (k,x) for k in pool.keys() for x in pool[k]  ]
-        mems = random.sample(mems, max(1,int(len(mems)*0.25)) )
-        for k, mem in mems:
-            self._cl_mem_free(mem)
-            pool[k].remove(mem)
+        
+        if len(mems) != 0:
+            mems = random.sample(mems, max(1,int(len(mems)*0.25)) )
+            for k, mem in mems:
+                self._cl_mem_free(mem)
+                pool[k].remove(mem)
         return len(mems) != 0
 
     def _keep_target_memory_usage(self):
