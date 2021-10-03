@@ -104,11 +104,11 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-<a href="streaming_setup.md">continue setup for streaming</a>
+<a href="setup_for_streaming.md">continue setup for streaming</a>
 
 or
 
-<a href="streaming_setup.md">continue setup for video calls</a>
+<a href="setup_for_video_calls.md">continue setup for video calls</a>
 
 </td></tr>
 </table>
