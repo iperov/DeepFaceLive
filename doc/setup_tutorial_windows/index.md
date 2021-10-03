@@ -97,65 +97,20 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### Run **_OBS Studio_**
-
-<img src="run_obs_studio.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-### add **_Window capture_**
-
-<img src="add_window_capture.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-### choose **_DeepFaceLive output_** window
-
-<img src="choose_dflive_output_window.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-### add **_Audio Input Capture_**
-
-<img src="add_audio_input_capture.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-### select your microphone device
-
-<img src="select_microphone_device.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-### open **_Advanced Audio Properties_** for **_Audio Input Capture_**
-
-<img src="advanced_audio_properties.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-### enter **_Sync Offset_** the same as **_Target Delay_** in **_Stream Output_**
-
-<img src="sync_offset.jpg"></img>
-
-</td></tr>
-<tr><td colspan=2 align="center">
-
-## DONE !
-
-### Now you can stream yourself using OBS studio or use OBS virtual camera to make video calls.
-
 ### You can play with various parameters of the modules to achieve the best performance and quality.
 
 <img src="deepfacelive_window.jpg"></img>
 
 </td></tr>
+<tr><td colspan=2 align="center">
 
+<a href="streaming_setup.md">continue setup for streaming</a>
+
+or
+
+<a href="streaming_setup.md">continue setup for video calls</a>
+
+</td></tr>
 </table>
 
 
