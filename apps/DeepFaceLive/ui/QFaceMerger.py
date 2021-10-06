@@ -36,6 +36,9 @@ class QFaceMerger(QBackendPanel):
 
         q_face_mask_blur_label = QLabelPopupInfo(label=L('@QFaceMerger.face_mask_blur') )
         q_face_mask_blur       = QSpinBoxCSWNumber(cs.face_mask_blur, reflect_state_widgets=[q_face_mask_blur_label])
+        
+        q_interpolation_label = QLabelPopupInfo(label=L('@QFaceMerger.interpolation') )
+        q_interpolation       = QComboBoxCSWDynamicSingleSwitch(cs.interpolation, reflect_state_widgets=[q_interpolation_label])
 
         q_face_opacity_label = QLabelPopupInfo(label=L('@QFaceMerger.face_opacity') )
         q_face_opacity       = QSliderCSWNumber(cs.face_opacity, reflect_state_widgets=[q_face_opacity_label])
@@ -56,6 +59,9 @@ class QFaceMerger(QBackendPanel):
         row += 1
         grid_l.addLayout(lib_qt.QXVBoxLayout([q_face_mask_erode_label,q_face_mask_blur_label]), row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
         grid_l.addLayout(lib_qt.QXHBoxLayout([q_face_mask_erode,q_face_mask_blur], spacing=3), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        row += 1
+        grid_l.addWidget(q_interpolation_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addWidget(q_interpolation, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
         row += 1
         grid_l.addWidget(q_face_opacity_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
         grid_l.addWidget(q_face_opacity, row, 1)

@@ -546,7 +546,12 @@ class Localization:
                 'en-US' : 'Face mask blur',
                 'ru-RU' : 'Размытие маски',
                 'zh-CN' : '遮罩边缘羽化'},
-
+                
+    'QFaceMerger.interpolation':{
+                'en-US' : 'Interpolation',
+                'ru-RU' : 'Интерполяция',
+                'zh-CN' : '插值 '},
+                
     'QFaceMerger.face_opacity':{
                 'en-US' : 'Face opacity',
                 'ru-RU' : 'Непрозрач. лица',
