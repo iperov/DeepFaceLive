@@ -60,6 +60,7 @@ def Tensor_as_shape(self : Tensor, shape) -> Tensor:
     return TensorRef(self, shape)
 Tensor.as_shape = Tensor_as_shape
 
+Tensor.cast = cast
 def Tensor_copy(self : Tensor) -> Tensor:
     return Tensor.from_value(self)
 Tensor.copy = Tensor_copy

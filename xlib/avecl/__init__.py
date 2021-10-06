@@ -18,6 +18,7 @@ from ._internal.backend import (Device, DeviceInfo, Kernel,
                                 get_available_devices_info, get_best_device,
                                 get_default_device, get_device,
                                 set_default_device)
+from ._internal.EInterpolation import EInterpolation
 from ._internal.HArgs import HArgs
 from ._internal.HKernel import HKernel
 from ._internal.HTensor import HTensor

@@ -41,5 +41,5 @@ def binary_morph(input_t : Tensor, erode_dilate : int, blur : float, fade_to_bor
         x = gaussian_blur(x, blur * 0.250, dtype=dtype)
     else:
         x = cast(x, dtype=dtype)
-        
+
     return x[...,H:-H,W:-W]
