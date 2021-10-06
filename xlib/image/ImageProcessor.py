@@ -374,7 +374,7 @@ class ImageProcessor:
 
         self._img = img
         return self
-    
+
     def to_grayscale(self) -> 'ImageProcessor':
         """
         Converts 3 ch bgr to grayscale.
@@ -383,18 +383,18 @@ class ImageProcessor:
         _,_,_,C = img.shape
         if C != 1:
             dtype = self.get_dtype()
-                    
+
             if C == 2:
                 img = img[...,:1]
             elif C >= 3:
                 img = img[...,:3]
-                
+
                 img = np.dot(img, np.array([0.1140, 0.5870, 0.2989], np.float32)) [...,None]
             img = img.astype(dtype)
             self._img = img
-        
+
         return self
-        
+
     def resize(self, size : Tuple, interpolation : 'ImageProcessor.Interpolation' = None, new_ip=False ) -> 'ImageProcessor':
         """
         resize to (W,H)
@@ -492,6 +492,9 @@ class ImageProcessor:
     class Interpolation(IntEnum):
         LINEAR = 0
         CUBIC = 1
+        LANCZOS4 = 4
 
 _cv_inter = { ImageProcessor.Interpolation.LINEAR : cv2.INTER_LINEAR,
-              ImageProcessor.Interpolation.CUBIC : cv2.INTER_CUBIC }
+              ImageProcessor.Interpolation.CUBIC : cv2.INTER_CUBIC,
+              ImageProcessor.Interpolation.LANCZOS4 : cv2.INTER_LANCZOS4,
+               }
