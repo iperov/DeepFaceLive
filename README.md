@@ -18,20 +18,23 @@
 
 </td></tr>
 
+<tr><td colspan=2 align="center">
+
+<table align="center" border="0">
 <tr><td align="center">
 Margot Robbie
 
 <img src="doc/celebs/Margot_Robbie/Margot_Robbie.png" width=128></img>
 
 <a href="doc/celebs/Margot_Robbie/examples.md">examples</a>
-</td>
+</td><td align="center">
+Tom Cruise
 
-<td align="center">
-Rowan Atkinson 
+<img src="doc/celebs/Tom_Cruise/Tom_Cruise.jpg" width=128></img>
 
-<img src="doc/celebs/Rowan_Atkinson/Rowan_Atkinson.jpg" width=128></img>
-
-in training...
+<a href="doc/celebs/Tom_Cruise/examples.md">examples</a>
+</td></tr>
+</table>
 
 </td></tr>
 
