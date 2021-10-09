@@ -41,7 +41,7 @@ Tom Cruise
 <tr><td colspan=2 align="center">
 If you want a higher quality or better face match, you can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
 
-Here is an <a href="https://www.tiktok.com/@arnoldschwarzneggar/video/6995538782204300545">example</a> of Arnold Schwarzneggar trained on a particular face and used in a video call.
+Here is an <a href="https://www.tiktok.com/@arnoldschwarzneggar/video/6995538782204300545">example</a> of Arnold Schwarzneggar trained on a particular face and used in a video call. Read the FAQ for more information.
 
 </td></tr>
 
@@ -52,7 +52,7 @@ Here is an <a href="https://www.tiktok.com/@arnoldschwarzneggar/video/6995538782
 
 ## Minimum system requirements
 
-any DirectX12-compatible videocard or NVIDIA GTX 750+ 
+any DirectX12 compatible graphics card
 
 Modern CPU with AVX instructions
 
@@ -83,9 +83,7 @@ Windows 10
 </td></tr>
 <tr><td align="right"> <a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
 </td><td align="center">
-NVIDIA build : NVIDIA cards only
-
-DirectX12 build : NVIDIA, AMD, Intel cards.
+DirectX12 build : NVIDIA, AMD, Intel videocards.
 </td></tr>
 <tr><td colspan=2 align="center">
 
