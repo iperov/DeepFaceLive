@@ -5,10 +5,32 @@ from typing import List, Union, Tuple
 import numpy as np
 from xlib import mp as lib_mp
 from xlib import time as lib_time
-from xlib.facemeta import FaceMark
 from xlib.mp import csw as lib_csw
 from xlib.python.EventListener import EventListener
 
+from xlib.facemeta import FRect, FLandmarks2D, FPose
+
+class BackendFaceSwapInfo:
+    def __init__(self):
+        self.image_name = None
+        self.face_urect : FRect = None
+        self.face_pose : FPose = None
+        self.face_ulmrks : FLandmarks2D = None
+
+        self.face_align_image_name : str = None
+        self.face_align_mask_name : str = None
+        self.face_swap_image_name : str = None
+        self.face_swap_mask_name : str = None
+
+        self.image_to_align_uni_mat = None
+        self.face_align_ulmrks : FLandmarks2D = None
+
+    def __getstate__(self):
+        return self.__dict__.copy()
+
+    def __setstate__(self, d):
+        self.__init__()
+        self.__dict__.update(d)
 
 class BackendConnectionData:
     """
@@ -27,13 +49,14 @@ class BackendConnectionData:
         self._uid = uid
         self._is_frame_reemitted = None
 
-        self._frame_name = None
+        self._frame_image_name = None
         self._frame_count = None
         self._frame_num = None
         self._frame_fps = None
         self._frame_timestamp = None
-        self._merged_frame_name = None
-        self._face_mark_list = []
+        self._merged_image_name = None
+
+        self._face_swap_info_list = []
 
     def __getstate__(self, ):
         d = self.__dict__.copy()
@@ -43,43 +66,43 @@ class BackendConnectionData:
     def assign_weak_heap(self, weak_heap : lib_mp.MPWeakHeap):
         self._weak_heap = weak_heap
 
-    def set_file(self, name : str, data : Union[bytes, bytearray, memoryview]):
-        self._weak_heap_refs[name] = self._weak_heap.add_data(data)
+    def set_file(self, key, data : Union[bytes, bytearray, memoryview]):
+        self._weak_heap_refs[key] = self._weak_heap.add_data(data)
 
-    def get_file(self, name : str) -> Union[bytes, None]:
-        ref = self._weak_heap_refs.get(name, None)
+    def get_file(self, key) -> Union[bytes, None]:
+        ref = self._weak_heap_refs.get(key, None)
         if ref is not None:
             return self._weak_heap.get_data(ref)
         return None
 
-    def set_image(self, name : str, image : np.ndarray):
+    def set_image(self, key, image : np.ndarray):
         """
         store image to weak heap
 
-            name   str
+            key
 
             image  np.ndarray
         """
-        self.set_file(name, image.data)
-        self._weak_heap_image_infos[name] = (image.shape, image.dtype)
-    
-    def get_image_shape_dtype(self, name:str) -> Union[None, Tuple[List, np.dtype]]:
+        self.set_file(key, image.data)
+        self._weak_heap_image_infos[key] = (image.shape, image.dtype)
+
+    def get_image_shape_dtype(self, key) -> Union[None, Tuple[List, np.dtype]]:
         """
         returns (image shape, dtype) or (None, None) if file does not exist
         """
-        if name is None:
-            return None
-        image_info = self._weak_heap_image_infos.get(name, None)
+        if key is None:
+            return (None, None)
+        image_info = self._weak_heap_image_infos.get(key, None)
         if image_info is not None:
             shape, dtype = image_info
             return shape, dtype
         return (None, None)
-        
-    def get_image(self, name : str) -> Union[np.ndarray, None]:
-        if name is None:
+
+    def get_image(self, key) -> Union[np.ndarray, None]:
+        if key is None:
             return None
-        image_info = self._weak_heap_image_infos.get(name, None)
-        buffer = self.get_file(name)
+        image_info = self._weak_heap_image_infos.get(key, None)
+        buffer = self.get_file(key)
 
         if image_info is not None and buffer is not None:
             shape, dtype = image_info
@@ -90,10 +113,6 @@ class BackendConnectionData:
 
     def get_is_frame_reemitted(self) -> Union[bool, None]: return self._is_frame_reemitted
     def set_is_frame_reemitted(self, is_frame_reemitted : bool): self._is_frame_reemitted = is_frame_reemitted
-
-    def get_frame_name(self) -> Union[str, None]: return self._frame_name
-    def set_frame_name(self, frame_name : str): self._frame_name = frame_name
-
     def get_frame_count(self) -> Union[int, None]: return self._frame_count
     def set_frame_count(self, frame_count : int): self._frame_count = frame_count
     def get_frame_num(self) -> Union[int, None]: return self._frame_num
@@ -103,14 +122,17 @@ class BackendConnectionData:
     def get_frame_timestamp(self) -> Union[float, None]: return self._frame_timestamp
     def set_frame_timestamp(self, frame_timestamp : float): self._frame_timestamp = frame_timestamp
 
-    def get_merged_frame_name(self) -> Union[str, None]: return self._merged_frame_name
-    def set_merged_frame_name(self, merged_frame_name : str): self._merged_frame_name = merged_frame_name
+    def get_frame_image_name(self) -> Union[str, None]: return self._frame_image_name
+    def set_frame_image_name(self, frame_image_name : str): self._frame_image_name = frame_image_name
+    def get_merged_image_name(self) -> Union[str, None]: return self._merged_image_name
+    def set_merged_image_name(self, merged_frame_name : str): self._merged_image_name = merged_frame_name
 
-    def get_face_mark_list(self) -> List[FaceMark]: return self._face_mark_list
-    def add_face_mark(self, face_mark : FaceMark):
-        if not isinstance(face_mark, FaceMark):
-            raise ValueError(f'face_mark must be an instance of FaceMark')
-        self._face_mark_list.append(face_mark)
+    def get_face_swap_info_list(self) -> List[BackendFaceSwapInfo]: return self._face_swap_info_list
+    def add_face_swap_info(self, fsi : BackendFaceSwapInfo):
+        if not isinstance(fsi, BackendFaceSwapInfo):
+            raise ValueError(f'fsi must be an instance of BackendFaceSwapInfo')
+        self._face_swap_info_list.append(fsi)
+
 
 
 class BackendConnection:
@@ -144,7 +166,7 @@ class BackendConnection:
     def is_full_read(self, buffer_size=0) -> bool:
         """
         if fully readed by receiver side minus buffer_size
-        """ 
+        """
         return self._rd.get_read_id() >= (self._rd.get_write_id() - buffer_size)
 
 
@@ -205,3 +227,4 @@ class BackendWorker(lib_csw.Worker):
 
     def stop_profile_timing(self):
         self.send_msg('_profile_timing', self._profile_timing_measurer.stop() )
+

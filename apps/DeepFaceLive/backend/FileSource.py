@@ -287,7 +287,7 @@ class FileSourceWorker(BackendWorker):
                     bcd.set_frame_num(p_frame.frame_num)
                     bcd.set_frame_fps(p_frame.fps)
                     bcd.set_frame_timestamp(p_frame.timestamp)
-                    bcd.set_frame_name(p_frame.name)
+                    bcd.set_frame_image_name(p_frame.name)
 
                     image = ImageProcessor(p_frame.image).to_uint8().get_image('HWC')
                     bcd.set_image(p_frame.name, image)

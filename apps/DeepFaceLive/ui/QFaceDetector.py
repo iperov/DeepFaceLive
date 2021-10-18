@@ -92,20 +92,18 @@ class QFaceDetector(QBackendPanel):
                 if bcd is not None:
                     bcd.assign_weak_heap(self._weak_heap)
 
-                    frame_name = bcd.get_frame_name()
-                    frame_image = bcd.get_image(frame_name)
+                    frame_image = bcd.get_image(bcd.get_frame_image_name())
                     frame_image_w_h = None
                     if frame_image is not None:
                         h,w = frame_image.shape[0:2]
                         frame_image_w_h = (w,h)
 
                     info = []
-                    for face_num,face_mark in enumerate(bcd.get_face_mark_list()):
-                        info_str = f'{face_num}: '
-
-                        rect = face_mark.get_face_urect()
-                        if rect is not None:
-                            l,t,r,b = rect.as_ltrb_bbox(frame_image_w_h).astype(np.int)
+                    for face_id, fsi in enumerate(bcd.get_face_swap_info_list()):
+                        info_str = f'{face_id}: '
+                        
+                        if fsi.face_urect is not None:
+                            l,t,r,b = fsi.face_urect.as_ltrb_bbox(frame_image_w_h).astype(np.int)
                             info_str += f'[{l},{t},{r},{b}]'
 
                         info.append(info_str)

@@ -5,7 +5,7 @@ from modelhub import onnx as onnx_models
 from modelhub import cv as cv_models
 
 from xlib import os as lib_os
-from xlib.facemeta import FaceULandmarks, FacePose
+from xlib.facemeta import ELandmarks2D, FLandmarks2D, FPose
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
@@ -153,20 +153,18 @@ class FaceMarkerWorker(BackendWorker):
                 is_google_facemesh = marker_type == MarkerType.GOOGLE_FACEMESH and self.google_facemesh is not None
 
                 if marker_type is not None:
-                    frame_name = bcd.get_frame_name()
-                    frame_image = bcd.get_image(frame_name)
+                    frame_image = bcd.get_image(bcd.get_frame_image_name())
 
-                    if all_is_not_None(frame_image) and (is_opencv_lbf or is_google_facemesh):
-                        face_mark_list = bcd.get_face_mark_list()
+                    if frame_image is not None and (is_opencv_lbf or is_google_facemesh):
+                        fsi_list = bcd.get_face_swap_info_list()
                         if marker_state.temporal_smoothing != 1 and \
-                            len(self.temporal_lmrks) != len(face_mark_list):
-                            self.temporal_lmrks = [ [] for _ in range(len(face_mark_list)) ]
+                            len(self.temporal_lmrks) != len(fsi_list):
+                            self.temporal_lmrks = [ [] for _ in range(len(fsi_list)) ]
 
-                        for face_id, face_mark in enumerate(face_mark_list):
-                            face_mark_rect = face_mark.get_face_urect()
-                            if face_mark_rect is not None:
+                        for face_id, fsi in enumerate(fsi_list):
+                            if fsi.face_urect is not None:
                                 # Cut the face to feed to the face marker
-                                face_image, face_uni_mat = face_mark_rect.cut(frame_image, marker_state.marker_coverage, 256 if is_opencv_lbf else \
+                                face_image, face_uni_mat = fsi.face_urect.cut(frame_image, marker_state.marker_coverage, 256 if is_opencv_lbf else \
                                                                                                                             192 if is_google_facemesh else 0 )
                                 _,H,W,_ = ImageProcessor(face_image).get_dims()
 
@@ -183,20 +181,17 @@ class FaceMarkerWorker(BackendWorker):
                                     lmrks = np.mean(self.temporal_lmrks[face_id],0 )
 
                                 if is_google_facemesh:
-                                    face_mark.set_face_pose(FacePose.from_3D_468_landmarks(lmrks))
+                                    fsi.face_pose = FPose.from_3D_468_landmarks(lmrks)
 
                                 if is_opencv_lbf:
                                     lmrks /= (W,H)
                                 elif is_google_facemesh:
                                     lmrks = lmrks[...,0:2] / (W,H)
 
-                                face_ulmrks = FaceULandmarks.create (FaceULandmarks.Type.LANDMARKS_68 if is_opencv_lbf else \
-                                                                     FaceULandmarks.Type.LANDMARKS_468 if is_google_facemesh else None, lmrks)
-
+                                face_ulmrks = FLandmarks2D.create (ELandmarks2D.L68 if is_opencv_lbf else \
+                                                                   ELandmarks2D.L468 if is_google_facemesh else None, lmrks)
                                 face_ulmrks = face_ulmrks.transform(face_uni_mat, invert=True)
-                                face_mark.add_face_ulandmarks (face_ulmrks)
-                                
-                               
+                                fsi.face_ulmrks = face_ulmrks
 
                     self.stop_profile_timing()
                     self.pending_bcd = bcd

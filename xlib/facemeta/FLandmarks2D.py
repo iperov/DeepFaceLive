@@ -1,24 +1,20 @@
-from enum import IntEnum
 from typing import Tuple
 
 import cv2
 import numpy as np
 import numpy.linalg as npla
+
 from ..math import Affine2DMat, Affine2DUniMat
+from .ELandmarks2D import ELandmarks2D
+from .FRect import FRect
 
 
-class FaceULandmarks:
-    """
-    Describes 2D face landmarks in uniform coordinates
-    """
-
-    class Type(IntEnum):
-        LANDMARKS_5 = 0
-        LANDMARKS_68 = 1
-        LANDMARKS_468 = 2
-
+class FLandmarks2D:
     def __init__(self):
-        self._type : FaceULandmarks.Type = None
+        """
+        Describes 2D face landmarks in uniform float coordinates
+        """
+        self._type : ELandmarks2D = None
         self._ulmrks : np.ndarray = None
 
     def __getstate__(self):
@@ -29,14 +25,13 @@ class FaceULandmarks:
         self.__dict__.update(d)
 
     @staticmethod
-    def create( type : 'FaceULandmarks.Type', ulmrks : np.ndarray):
+    def create( type : ELandmarks2D, ulmrks : np.ndarray):
         """
-
          ulmrks np.ndarray  (*,2|3)
         """
 
-        if not isinstance(type, FaceULandmarks.Type):
-            raise ValueError('type must be an FaceULandmarks.Type')
+        if not isinstance(type, ELandmarks2D):
+            raise ValueError('type must be ELandmarks2D')
 
         ulmrks = np.float32(ulmrks)
         if len(ulmrks.shape) != 2:
@@ -46,22 +41,22 @@ class FaceULandmarks:
             raise ValueError('ulmrks dim must be == 2')
 
         ulmrks_count = ulmrks.shape[0]
-        if type == FaceULandmarks.Type.LANDMARKS_5:
+        if type == ELandmarks2D.L5:
             if ulmrks_count != 5:
                 raise ValueError('ulmrks_count must be == 5')
-        elif type == FaceULandmarks.Type.LANDMARKS_68:
+        elif type == ELandmarks2D.L68:
             if ulmrks_count != 68:
                 raise ValueError('ulmrks_count must be == 68')
-        elif type == FaceULandmarks.Type.LANDMARKS_468:
+        elif type == ELandmarks2D.L468:
             if ulmrks_count != 468:
                 raise ValueError('ulmrks_count must be == 468')
 
-        face_ulmrks = FaceULandmarks()
+        face_ulmrks = FLandmarks2D()
         face_ulmrks._type = type
         face_ulmrks._ulmrks = ulmrks
         return face_ulmrks
 
-    def get_type(self) -> 'FaceULandmarks.Type': return self._type
+    def get_type(self) -> ELandmarks2D: return self._type
     def get_count(self) -> int: return self._ulmrks.shape[0]
 
     def as_numpy(self, w_h = None):
@@ -76,9 +71,9 @@ class FaceULandmarks:
 
         return ulmrks
 
-    def transform(self, mat, invert=False) -> 'FaceULandmarks':
+    def transform(self, mat, invert=False) -> 'FLandmarks2D':
         """
-        Tranforms FaceULandmarks using affine mat and returns new FaceULandmarks()
+        Tranforms FLandmarks2D using affine mat and returns new FLandmarks2D()
 
          mat : np.ndarray
         """
@@ -93,9 +88,20 @@ class FaceULandmarks:
         ulmrks = np.expand_dims(ulmrks, axis=1)
         ulmrks = cv2.transform(ulmrks, mat, ulmrks.shape).squeeze()
 
-        return FaceULandmarks.create(type=self._type, ulmrks=ulmrks)
+        return FLandmarks2D.create(type=self._type, ulmrks=ulmrks)
 
-
+    def get_FRect(self, coverage=1.6) -> FRect:
+        """
+        create FRect from landmarks with given coverage
+        """
+        _, uni_mat = self.calc_cut( (1,1), coverage, 1, exclude_moving_parts=False)
+        xlt, xlb, xrb, xrt = uni_mat.invert().transform_points([[0,0], [0,1], [1,1], [1,0]])
+        l = min(xlt[0], xlb[0])
+        t = min(xlt[1], xrt[1])
+        r = max(xrt[0], xrb[0])
+        b = max(xlb[1], xrb[1])
+        return FRect.from_ltrb( (l,t,r,b) )
+    
     def calc_cut(self, w_h, coverage : float, output_size : int,
                        exclude_moving_parts : bool,
                        head_yaw : float = None,
@@ -112,9 +118,9 @@ class FaceULandmarks:
         lmrks = (self._ulmrks * w_h).astype(np.float32)
 
         # estimate landmarks transform from global space to local aligned space with bounds [0..1]
-        if type == FaceULandmarks.Type.LANDMARKS_68:
+        if type == ELandmarks2D.L68:
             mat = Affine2DMat.umeyama( np.concatenate ([ lmrks[17:49] , lmrks[54:55] ]), uni_landmarks_68)
-        elif type == FaceULandmarks.Type.LANDMARKS_468:
+        elif type == ELandmarks2D.L468:
             src_lmrks = lmrks
             dst_lmrks = uni_landmarks_468
             if exclude_moving_parts:

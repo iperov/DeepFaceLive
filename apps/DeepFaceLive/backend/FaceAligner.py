@@ -2,7 +2,6 @@ import time
 
 import numpy as np
 from xlib import os as lib_os
-from xlib.facemeta import FaceAlign, FaceULandmarks
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
 
@@ -51,7 +50,7 @@ class FaceAlignerWorker(BackendWorker):
 
         cs.exclude_moving_parts.enable()
         cs.exclude_moving_parts.set_flag(state.exclude_moving_parts if state.exclude_moving_parts is not None else True)
-    
+
         cs.head_mode.enable()
         cs.head_mode.set_flag(state.head_mode if state.head_mode is not None else False)
 
@@ -91,7 +90,7 @@ class FaceAlignerWorker(BackendWorker):
         state.head_mode = head_mode
         self.save_state()
         self.reemit_frame_signal.send()
-    
+
     def on_cs_x_offset(self, x_offset):
         state, cs = self.get_state(), self.get_control_sheet()
         cfg = cs.x_offset.get_config()
@@ -118,21 +117,17 @@ class FaceAlignerWorker(BackendWorker):
             if bcd is not None:
                 bcd.assign_weak_heap(self.weak_heap)
 
-                frame_name = bcd.get_frame_name()
-                frame_image = bcd.get_image(frame_name)
+                frame_image_name = bcd.get_frame_image_name()
+                frame_image = bcd.get_image(frame_image_name)
 
-                if all_is_not_None(state.face_coverage, state.resolution, frame_name, frame_image):
-                    for face_id,face_mark in enumerate( bcd.get_face_mark_list() ):
-                        face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_468)
-                        if face_ulmrks is None:
-                            face_ulmrks = face_mark.get_face_ulandmarks_by_type(FaceULandmarks.Type.LANDMARKS_68)
-                        
+                if all_is_not_None(state.face_coverage, state.resolution, frame_image):
+                    for face_id, fsi in enumerate( bcd.get_face_swap_info_list() ):
                         head_yaw = None
                         if state.head_mode:
-                            face_pose = face_mark.get_face_pose()
-                            if face_pose is not None:
-                                head_yaw = face_pose.as_radians()[1]
-                                
+                            if fsi.face_pose is not None:
+                                head_yaw = fsi.face_pose.as_radians()[1]
+
+                        face_ulmrks = fsi.face_ulmrks
                         if face_ulmrks is not None:
                             face_image, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
                                                                   exclude_moving_parts=state.exclude_moving_parts,
@@ -140,19 +135,11 @@ class FaceAlignerWorker(BackendWorker):
                                                                   x_offset=state.x_offset,
                                                                   y_offset=state.y_offset)
 
-                            face_align_image_name = f'{frame_name}_{face_id}_aligned'
+                            fsi.face_align_image_name = f'{frame_image_name}_{face_id}_aligned'
+                            fsi.image_to_align_uni_mat = uni_mat
+                            fsi.face_align_ulmrks = face_ulmrks.transform(uni_mat)
 
-                            face_align = FaceAlign()
-                            face_align.set_image_name(face_align_image_name)
-                            face_align.set_coverage(state.face_coverage)
-                            face_align.set_source_face_ulandmarks_type(face_ulmrks.get_type())
-                            face_align.set_source_to_aligned_uni_mat(uni_mat)
-
-                            for face_ulmrks in face_mark.get_face_ulandmarks_list():
-                                face_align.add_face_ulandmarks( face_ulmrks.transform(uni_mat) )
-                            face_mark.set_face_align(face_align)
-
-                            bcd.set_image(face_align_image_name, face_image)
+                            bcd.set_image(fsi.face_align_image_name, face_image)
 
                 self.stop_profile_timing()
                 self.pending_bcd = bcd

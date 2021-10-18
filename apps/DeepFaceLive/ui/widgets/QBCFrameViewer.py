@@ -42,16 +42,13 @@ class QBCFrameViewer(lib_qt.QXCollapsibleSection):
 
                 self._layered_images.clear_images()
 
-                frame_name = bcd.get_frame_name()
-                frame_image = bcd.get_image(frame_name)
+                frame_image_name = bcd.get_frame_image_name()
+                frame_image = bcd.get_image(frame_image_name)
 
                 if frame_image is not None:
                     self._layered_images.add_image (frame_image)
                     h,w = frame_image.shape[:2]
-                    if frame_name is not None:
-                        self._info_label.setText(f'{frame_name} {w}x{h}')
-                    else:
-                        self._info_label.setText(f'{w}x{h}')
+                    self._info_label.setText(f'{frame_image_name} {w}x{h}')
 
 
     def clear(self):

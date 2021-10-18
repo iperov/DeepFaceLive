@@ -1,48 +1,61 @@
 """
-facemeta
+facemeta library
 
-Trying to standartize face description.
+Contains classes for effectively storing, manage, and transfering all face related data.
 
-It is not perfect structure, but enough for current tasks.
+All classes are picklable and expandable.
+All classes have noneable members accessed via get/set. No properties.
 
-FaceURect and FaceULandmarks mean uniform coordinates in order to apply them to any resolution.
+E-classes are enums.
+U-classes are unique, have uuid and can be saved in Faceset.
 
-Overall structure:
+ELandmarks2D    L5
+                L68
+                L468
+                
+EMaskType       UNDEFINED, ..., ...
 
-FaceMark - (mean single face data referencing any image)
-           .image_name       - image reference
-           .person_name      - optional name of person
-           .FaceURect        - a rectangle of the face in source image space
-           .list[FaceULandmarks] - a list of unique types of landmarks of the face in source image space
-                                    types:
-                                        LANDMARKS_5
-                                        LANDMARKS_68
-                                        LANDMARKS_468
-           
-           .FaceAlign -  an aligned face from FaceMark
-           
-                        .image_name         - image reference
-                        .person_name        - optional name of person
-                        .coverage           - coverage value used to align
-                        
-                        .source_source_face_ulandmarks_type     - type of FaceULandmarks from which this FaceAlign was produced
-                        .source_to_aligned_uni_mat   - uniform AffineMat to FaceMark image space to FaceAlign image space
-                        
-                        .FaceURect               - a rectangle of the face in aligned image space
-                        .list[FaceULandmarks]    - a list of unique types of landmarks of the face in aligned image space
-                        
-                        .FaceMask  - grayscale image to mask the face in FaceAlign image space
-                                     .image_name        - image reference
-                        
-                        .FaceSwap  - face image of other person in the same as FaceAlign image space
-                                     .image_name        - image reference
-                                     .person_name       - optional name of person
-                                     
-                                     .FaceMask - grayscale image to mask the swapped face in FaceSwap image space
-                                                 .image_name
+FRect           rectangle of the face in uniform float coordinates
+
+FLandmarks2D    2D landmarks of the face in uniform float coordinates
+
+FPose           pitch/yaw/roll values
+
+UPerson - person info
+    .uuid
+    .name
+    .age
+
+UImage  - image
+    .uuid
+    .name
+    .data   (H,W,C 1/3/4 ) of uint8[0..255]
 
 
+UFaceMark  - face mark info referencing UImage from which the face was detected
+    .uuid
+    .UImage_uuid     - reference to FImage
+    .UPerson_uuid    - reference to FPerson
+    .FRect           
+    .List[FLandmarks2D]
+    .FPose
+    
+    .List[ (EMaskType, FImage_uuid, uni_mat) ]   - list of FMask and AffineMat to transform mask image space to UFaceMark image space
+
+    
+Faceset
+        .List[UImage]
+        .List[UFaceMark]
+        .List[UPerson]
 """
 
-from .face import FaceMark, FaceAlign, FaceSwap, FaceMask, FaceURect, FaceULandmarks, FacePose
+from .ELandmarks2D import ELandmarks2D
+from .EMaskType import EMaskType
 from .Faceset import Faceset
+from .UImage import UImage
+from .FLandmarks2D import FLandmarks2D
+from .UFaceMark import UFaceMark
+from .FMask import FMask
+from .UPerson import UPerson
+from .FPose import FPose
+from .FRect import FRect

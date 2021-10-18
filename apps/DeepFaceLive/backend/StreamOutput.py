@@ -202,31 +202,26 @@ class StreamOutputWorker(BackendWorker):
                 view_image = None
 
                 if source_type == SourceType.SOURCE_FRAME:
-                    view_image = bcd.get_image(bcd.get_frame_name())
+                    view_image = bcd.get_image(bcd.get_frame_image_name())
                 elif source_type == SourceType.MERGED_FRAME:
-                    view_image = bcd.get_image(bcd.get_merged_frame_name())
+                    view_image = bcd.get_image(bcd.get_merged_image_name())
 
                 elif source_type == SourceType.ALIGNED_FACE:
                     aligned_face_id = state.aligned_face_id
-                    for i, face_mark in enumerate(bcd.get_face_mark_list()):
+                    for i, fsi in enumerate(bcd.get_face_swap_info_list()):
                         if aligned_face_id == i:
-                            face_align = face_mark.get_face_align()
-                            if face_align is not None:
-                                view_image = bcd.get_image(face_align.get_image_name())
+                            view_image = bcd.get_image(fsi.face_align_image_name)
                             break
 
                 elif source_type == SourceType.SWAPPED_FACE:
-                    for face_mark in bcd.get_face_mark_list():
-                        face_align = face_mark.get_face_align()
-                        if face_align is not None:
-                            face_swap = face_align.get_face_swap()
-                            if face_swap is not None:
-                                view_image = bcd.get_image(face_swap.get_image_name())
-                                break
+                    for fsi in bcd.get_face_swap_info_list():
+                        view_image = bcd.get_image(fsi.face_swap_image_name)
+                        if view_image is not None:
+                            break
 
                 elif source_type == SourceType.SOURCE_N_MERGED_FRAME:
-                    source_frame = bcd.get_image(bcd.get_frame_name())
-                    merged_frame = bcd.get_image(bcd.get_merged_frame_name())
+                    source_frame = bcd.get_image(bcd.get_frame_image_name())
+                    merged_frame = bcd.get_image(bcd.get_merged_image_name())
                     if source_frame is not None and merged_frame is not None:
                         source_frame = ImageProcessor(source_frame).to_ufloat32().get_image('HWC')
                         view_image = np.concatenate( (source_frame, merged_frame), 1 )

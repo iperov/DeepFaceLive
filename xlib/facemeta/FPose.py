@@ -3,7 +3,7 @@ import numpy as np
 from .. import math as lib_math
 
 
-class FacePose:
+class FPose:
     """
     Describes face pitch/yaw/roll
     """
@@ -33,7 +33,7 @@ class FacePose:
     def from_radians(pitch, yaw, roll):
         """
         """
-        face_rect = FacePose()
+        face_rect = FPose()
         face_rect._pyr = np.array([pitch, yaw, roll], np.float32)
         return face_rect
 
@@ -47,4 +47,4 @@ class FacePose:
         mat[2,:] = np.cross(mat[0, :], mat[1, :])
         pitch, yaw, roll = lib_math.rotation_matrix_to_euler(mat)
 
-        return FacePose.from_radians(pitch, yaw, roll)
+        return FPose.from_radians(pitch, yaw, roll)

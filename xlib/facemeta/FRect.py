@@ -8,8 +8,7 @@ import numpy.linalg as npla
 from .. import math as lib_math
 from ..math import Affine2DMat, Affine2DUniMat
 
-
-class FaceURect:
+class FRect:
     """
     Describes face rectangle in uniform float coordinates
     """
@@ -24,9 +23,9 @@ class FaceURect:
         self.__dict__.update(d)
 
     @staticmethod
-    def sort_by_area_size(rects : List['FaceURect']):
+    def sort_by_area_size(rects : List['FRect']):
         """
-        sort list of FaceURect by largest area descend
+        sort list of FRect by largest area descend
         """
         rects = [ (rect, rect.get_area()) for rect in rects ]
         rects = sorted(rects, key=operator.itemgetter(1), reverse=True )
@@ -34,9 +33,9 @@ class FaceURect:
         return rects
 
     @staticmethod
-    def sort_by_dist_from_center(rects : List['FaceURect']):
+    def sort_by_dist_from_center(rects : List['FRect']):
         """
-        sort list of FaceURect by nearest distance from center to center of rects descent
+        sort list of FRect by nearest distance from center to center of rects descent
         """
         c = np.float32([0.5,0.5])
 
@@ -48,7 +47,7 @@ class FaceURect:
     @staticmethod
     def from_4pts(pts : Iterable):
         """
-        Construct FaceURect from 4 pts
+        Construct FRect from 4 pts
          0--3
          |  |
          1--2
@@ -60,14 +59,14 @@ class FaceURect:
         if pts.shape != (4,2):
             raise ValueError('pts must have (4,2) shape')
 
-        face_rect = FaceURect()
+        face_rect = FRect()
         face_rect._pts = pts
         return face_rect
 
     @staticmethod
     def from_ltrb(ltrb : Iterable):
         """
-        Construct FaceURect from l,t,r,b list of float values
+        Construct FRect from l,t,r,b list of float values
            t
          l-|-r
            b
@@ -76,7 +75,7 @@ class FaceURect:
             raise ValueError('ltrb must be Iterable')
 
         l,t,r,b = ltrb
-        return FaceURect.from_4pts([ [l,t], [l,b], [r,b], [r,t] ])
+        return FRect.from_4pts([ [l,t], [l,b], [r,b], [r,t] ])
 
 
     def get_area(self, w_h = None) -> float:
@@ -124,9 +123,9 @@ class FaceURect:
             return self._pts * w_h
         return self._pts.copy()
 
-    def transform(self, mat, invert=False) -> 'FaceURect':
+    def transform(self, mat, invert=False) -> 'FRect':
         """
-        Tranforms FaceURect using affine mat and returns new FaceURect()
+        Tranforms FRect using affine mat and returns new FRect()
 
          mat : np.ndarray   should be uniform affine mat
         """
@@ -141,7 +140,7 @@ class FaceURect:
         pts = np.expand_dims(pts, axis=1)
         pts = cv2.transform(pts, mat, pts.shape).squeeze()
 
-        return FaceURect.from_4pts(pts)
+        return FRect.from_4pts(pts)
 
     def cut(self, img : np.ndarray, coverage : float, output_size : int) -> Tuple[Affine2DMat, Affine2DUniMat]:
         """

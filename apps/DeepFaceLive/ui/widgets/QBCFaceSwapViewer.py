@@ -45,17 +45,13 @@ class QBCFaceSwapViewer(lib_qt.QXCollapsibleSection):
 
                 self._layered_images.clear_images()
 
-                for face_mark in bcd.get_face_mark_list():
-                    face_align = face_mark.get_face_align()
-                    if face_align is not None:
-                        face_swap = face_align.get_face_swap()
-                        if face_swap is not None:
-                            face_swap_image = bcd.get_image(face_swap.get_image_name())
-                            if face_swap_image is not None:
-                                self._layered_images.add_image(face_swap_image)
-                                h,w = face_swap_image.shape[0:2]
-                                self._info_label.setText(f'{w}x{h}')
-                                return
+                for fsi in bcd.get_face_swap_info_list():
+                    face_swap_image = bcd.get_image(fsi.face_swap_image_name)
+                    if face_swap_image is not None:
+                        self._layered_images.add_image(face_swap_image)
+                        h,w = face_swap_image.shape[0:2]
+                        self._info_label.setText(f'{w}x{h}')
+                        return
 
     def clear(self):
         self._layered_images.clear_images()

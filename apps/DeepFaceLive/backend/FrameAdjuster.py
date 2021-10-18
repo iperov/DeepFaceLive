@@ -72,8 +72,8 @@ class FrameAdjusterWorker(BackendWorker):
             if bcd is not None:
                 bcd.assign_weak_heap(self.weak_heap)
 
-                frame_name = bcd.get_frame_name()
-                frame_image = bcd.get_image(frame_name)
+                frame_image_name = bcd.get_frame_image_name()
+                frame_image = bcd.get_image(frame_image_name)
 
                 if frame_image is not None:
                     frame_image_ip = ImageProcessor(frame_image)
@@ -81,7 +81,7 @@ class FrameAdjusterWorker(BackendWorker):
                     frame_image_ip.degrade_resize( state.degrade_bicubic_per / 100.0, interpolation=ImageProcessor.Interpolation.CUBIC)
 
                     frame_image = frame_image_ip.get_image('HWC')
-                    bcd.set_image(frame_name, frame_image)
+                    bcd.set_image(frame_image_name, frame_image)
 
                 self.stop_profile_timing()
                 self.pending_bcd = bcd

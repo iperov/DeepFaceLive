@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 from modelhub import DFLive
 from xlib import os as lib_os
-from xlib.facemeta import FaceMask, FaceSwap
 from xlib.image.ImageProcessor import ImageProcessor
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
@@ -171,7 +170,7 @@ class FaceSwapperWorker(BackendWorker):
                 cs.model_dl_progress.enable()
                 cs.model_dl_progress.set_config( lib_csw.Progress.Config(title='@FaceSwapper.downloading_model') )
                 cs.model_dl_progress.set_progress(0)
-                
+
             elif events.new_status_initialized:
                 self.dfm_model = events.dfm_model
                 self.dfm_model_initializer = None
@@ -239,47 +238,39 @@ class FaceSwapperWorker(BackendWorker):
                 if all_is_not_None(dfm_model, model_state):
                     face_id = model_state.face_id
                     if face_id is not None:
-                        for i, face_mark in enumerate(bcd.get_face_mark_list()):
-                            if face_id == i:
-                                face_align = face_mark.get_face_align()
-                                if face_align is not None:
-                                    face_align_image_name = face_align.get_image_name()
-                                    face_align_image = bcd.get_image(face_align_image_name)
-                                    if face_align_image is not None:
+                        for i, fsi in enumerate(bcd.get_face_swap_info_list()):
+                            if face_id != i:
+                                continue
 
-                                        pre_gamma_red = model_state.pre_gamma_red
-                                        pre_gamma_green = model_state.pre_gamma_green
-                                        pre_gamma_blue = model_state.pre_gamma_blue
+                            face_align_image = bcd.get_image(fsi.face_align_image_name)
+                            if face_align_image is not None:
 
-                                        fai_ip = ImageProcessor(face_align_image)
-                                        if model_state.presharpen_amount != 0:
-                                            fai_ip.sharpen(factor=model_state.presharpen_amount)
+                                pre_gamma_red = model_state.pre_gamma_red
+                                pre_gamma_green = model_state.pre_gamma_green
+                                pre_gamma_blue = model_state.pre_gamma_blue
 
-                                        if pre_gamma_red != 1.0 or pre_gamma_green != 1.0 or pre_gamma_blue != 1.0:
-                                            fai_ip.adjust_gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
-                                        face_align_image = fai_ip.get_image('HWC')
+                                fai_ip = ImageProcessor(face_align_image)
+                                if model_state.presharpen_amount != 0:
+                                    fai_ip.sharpen(factor=model_state.presharpen_amount)
 
-                                        celeb_face, celeb_face_mask_img, face_align_mask_img = dfm_model.convert(face_align_image, morph_factor=model_state.morph_factor)
-                                        celeb_face, celeb_face_mask_img, face_align_mask_img = celeb_face[0], celeb_face_mask_img[0], face_align_mask_img[0]
+                                if pre_gamma_red != 1.0 or pre_gamma_green != 1.0 or pre_gamma_blue != 1.0:
+                                    fai_ip.adjust_gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
+                                face_align_image = fai_ip.get_image('HWC')
 
-                                        if model_state.two_pass:
-                                            celeb_face, celeb_face_mask_img, _ = dfm_model.convert(celeb_face, morph_factor=model_state.morph_factor)
-                                            celeb_face, celeb_face_mask_img = celeb_face[0], celeb_face_mask_img[0]
+                                celeb_face, celeb_face_mask_img, face_align_mask_img = dfm_model.convert(face_align_image, morph_factor=model_state.morph_factor)
+                                celeb_face, celeb_face_mask_img, face_align_mask_img = celeb_face[0], celeb_face_mask_img[0], face_align_mask_img[0]
 
-                                        face_align_mask = FaceMask()
-                                        face_align_mask.set_image_name(f'{face_align_image_name}_mask')
-                                        face_align.set_face_mask(face_align_mask)
-                                        bcd.set_image(face_align_mask.get_image_name(), face_align_mask_img)
+                                if model_state.two_pass:
+                                    celeb_face, celeb_face_mask_img, _ = dfm_model.convert(celeb_face, morph_factor=model_state.morph_factor)
+                                    celeb_face, celeb_face_mask_img = celeb_face[0], celeb_face_mask_img[0]
 
-                                        face_swap = FaceSwap()
-                                        face_swap.set_image_name (f"{face_align_image_name}_swapped")
-                                        face_align.set_face_swap(face_swap)
-                                        bcd.set_image(face_swap.get_image_name(), celeb_face)
+                                fsi.face_align_mask_name = f'{fsi.face_align_image_name}_mask'
+                                fsi.face_swap_image_name = f'{fsi.face_align_image_name}_swapped'
+                                fsi.face_swap_mask_name  = f'{fsi.face_swap_image_name}_mask'
 
-                                        face_swap_mask = FaceMask()
-                                        face_swap_mask.set_image_name(f'{face_swap.get_image_name()}_mask')
-                                        face_swap.set_face_mask(face_swap_mask)
-                                        bcd.set_image(face_swap_mask.get_image_name(), celeb_face_mask_img)
+                                bcd.set_image(fsi.face_align_mask_name, face_align_mask_img)
+                                bcd.set_image(fsi.face_swap_image_name, celeb_face)
+                                bcd.set_image(fsi.face_swap_mask_name, celeb_face_mask_img)
 
                 self.stop_profile_timing()
                 self.pending_bcd = bcd

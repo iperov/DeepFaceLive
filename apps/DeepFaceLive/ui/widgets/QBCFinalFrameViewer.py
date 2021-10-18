@@ -43,16 +43,16 @@ class QBCFinalFrameViewer(lib_qt.QXCollapsibleSection):
 
                 self._layered_images.clear_images()
 
-                merged_frame_name = bcd.get_merged_frame_name()
-                merged_frame_image = bcd.get_image(merged_frame_name)
+                merged_image_name = bcd.get_merged_image_name()
+                merged_image = bcd.get_image(merged_image_name)
 
-                if merged_frame_image is not None:
-                    if merged_frame_image.dtype != np.uint8:
-                        merged_frame_image = lib_image.ImageProcessor(merged_frame_image).to_uint8().get_image('HWC')
+                if merged_image is not None:
+                    if merged_image.dtype != np.uint8:
+                        merged_image = lib_image.ImageProcessor(merged_image).to_uint8().get_image('HWC')
 
-                    self._layered_images.add_image(merged_frame_image)
-                    h,w = merged_frame_image.shape[0:2]
-                    self._info_label.setText(f'{merged_frame_name} {w}x{h}')
+                    self._layered_images.add_image(merged_image)
+                    h,w = merged_image.shape[0:2]
+                    self._info_label.setText(f'{merged_image_name} {w}x{h}')
 
 
     def clear(self):

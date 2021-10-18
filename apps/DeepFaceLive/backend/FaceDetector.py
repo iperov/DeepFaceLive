@@ -4,14 +4,14 @@ from enum import IntEnum
 import numpy as np
 from modelhub import onnx as onnx_models
 from xlib import os as lib_os
-from xlib.facemeta import FaceMark, FaceURect
+from xlib.facemeta import FRect
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
 
 from .BackendBase import (BackendConnection, BackendDB, BackendHost,
                           BackendSignal, BackendWeakHeap, BackendWorker,
-                          BackendWorkerState)
+                          BackendWorkerState, BackendFaceSwapInfo)
 
 
 class DetectorType(IntEnum):
@@ -213,10 +213,10 @@ class FaceDetectorWorker(BackendWorker):
 
                     detector_state = state.get_detector_state()
 
-                    frame_name = bcd.get_frame_name()
-                    frame_image = bcd.get_image(frame_name)
+                    frame_image_name = bcd.get_frame_image_name()
+                    frame_image = bcd.get_image(frame_image_name)
 
-                    if all_is_not_None(frame_image, frame_name):
+                    if frame_image is not None:
                         _,H,W,_ = ImageProcessor(frame_image).get_dims()
 
                         rects = []
@@ -228,13 +228,13 @@ class FaceDetectorWorker(BackendWorker):
                             rects = self.YoloV5Face.extract (frame_image, threshold=detector_state.threshold, fixed_window=detector_state.fixed_window_size)[0]
 
                         # to list of FaceURect
-                        rects = [ FaceURect.from_ltrb( (l/W, t/H, r/W, b/H) ) for l,t,r,b in rects ]
+                        rects = [ FRect.from_ltrb( (l/W, t/H, r/W, b/H) ) for l,t,r,b in rects ]
 
                         # sort
                         if detector_state.sort_by == FaceSortBy.LARGEST:
-                            rects = FaceURect.sort_by_area_size(rects)
+                            rects = FRect.sort_by_area_size(rects)
                         elif detector_state.sort_by == FaceSortBy.DIST_FROM_CENTER:
-                            rects = FaceURect.sort_by_dist_from_center(rects)
+                            rects = FRect.sort_by_dist_from_center(rects)
 
                         if len(rects) != 0:
                             max_faces = detector_state.max_faces
@@ -245,20 +245,20 @@ class FaceDetectorWorker(BackendWorker):
                                 if len(self.temporal_rects) != len(rects):
                                     self.temporal_rects = [ [] for _ in range(len(rects)) ]
 
-                            for face_id, face_rect in enumerate(rects):
+                            for face_id, face_urect in enumerate(rects):
                                 if detector_state.temporal_smoothing != 1:
                                     if not is_frame_reemitted or len(self.temporal_rects[face_id]) == 0:
-                                        self.temporal_rects[face_id].append( face_rect.as_4pts() )
+                                        self.temporal_rects[face_id].append( face_urect.as_4pts() )
 
                                     self.temporal_rects[face_id] = self.temporal_rects[face_id][-detector_state.temporal_smoothing:]
 
-                                    face_rect = FaceURect.from_4pts ( np.mean(self.temporal_rects[face_id],0 ) )
+                                    face_urect = FRect.from_4pts ( np.mean(self.temporal_rects[face_id],0 ) )
 
-                                if face_rect.get_area() != 0:
-                                    face_mark = FaceMark()
-                                    face_mark.set_image_name(frame_name)
-                                    face_mark.set_face_urect ( face_rect )
-                                    bcd.add_face_mark(face_mark)
+                                if face_urect.get_area() != 0:
+                                    fsi = BackendFaceSwapInfo()
+                                    fsi.image_name = frame_image_name
+                                    fsi.face_urect = face_urect
+                                    bcd.add_face_swap_info(fsi)
 
                     self.stop_profile_timing()
                     self.pending_bcd = bcd

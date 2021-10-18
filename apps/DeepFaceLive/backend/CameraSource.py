@@ -253,7 +253,7 @@ class CameraSourceWorker(BackendWorker):
 
                     bcd.assign_weak_heap(self.weak_heap)
                     frame_name = f'Camera_{state.device_idx}_{bcd_uid:06}'
-                    bcd.set_frame_name(frame_name)
+                    bcd.set_frame_image_name(frame_name)
                     bcd.set_frame_num(bcd_uid)
                     bcd.set_frame_timestamp(timestamp)
                     bcd.set_image(frame_name, img)
