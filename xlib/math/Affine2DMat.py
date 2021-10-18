@@ -23,6 +23,10 @@ class Affine2DMat(np.ndarray):
         super().__init__()
 
     @staticmethod
+    def identity():
+        return Affine2DMat([[1,0,0],[0,1,0]])
+
+    @staticmethod
     def umeyama(src, dst, estimate_scale=True):
         """
         Estimate N-D similarity transformation with or without scaling.
@@ -157,6 +161,9 @@ class Affine2DUniMat(Affine2DMat):
     """
 
     @staticmethod
+    def identity(): return Affine2DMat.identity().as_uni_mat()
+
+    @staticmethod
     def umeyama(src, dst, estimate_scale=True): return Affine2DMat.umeyama(src, dst, estimate_scale=estimate_scale).as_uni_mat()
 
     @staticmethod
@@ -188,10 +195,7 @@ class Affine2DUniMat(Affine2DMat):
         src_pts = np.float32([(0,0),(1,0),(0,1)])
         dst_pts = self.transform_points(src_pts)
         src_pts += (utw, uth)
-
         return Affine2DUniMat.from_3_pairs(src_pts, dst_pts)
-
-
 
     def to_exact_mat(self, sw : float, sh: float, tw: float, th: float) -> 'Affine2DMat':
         """
