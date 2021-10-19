@@ -141,11 +141,29 @@ class HKernel:
         elif dtype in [np.int64,np.uint64]:
             out += [f'#define {name_upper}_TO_FLOATX(x) ((double)x)']
         return '\n'.join(out)
+    
+    @staticmethod
+    def define_ndim_idx(ndim):
+        """
+        example for ndim=3
+        #define NDIM3_IDX(t0,t1,t2,T0,T1,T2) (((size_t)(t0))*T1*T2+((size_t)(t1))*T2+((size_t)(t2)))
+        #define NDIM3_IDX_MOD(t0,t1,t2,T0,T1,T2) (((size_t)(t0) % T0)*T1*T2+((size_t)(t1) % T1)*T2+((size_t)(t2) % T2))
+        """
+        
+        out = [f'#define NDIM{ndim}_IDX(' + \
+                ','.join([f't{i}' for i in range(ndim)] + [f'T{i}' for i in range(ndim)]) + \
+                ') (' + '+'.join([f'((size_t)(t{i}))' + ''.join(f'*T{j}' for j in range(i+1,ndim)) for i in range(ndim) ]) + ')']
+         
+        out +=[f'#define NDIM{ndim}_IDX_MOD(' + \
+                ','.join([f't{i}' for i in range(ndim)] + [f'T{i}' for i in range(ndim)]) + \
+                ') (' + '+'.join([f'((size_t)(t{i}) % T{i})' + ''.join(f'*T{j}' for j in range(i+1,ndim)) for i in range(ndim) ]) + ')']
+              
+        return '\n'.join(out)
 
     @staticmethod
     def define_tensor_shape(name, shape, axes_symbols=None):
         """
-        Returns a definitions for operations with tensor
+        Returns a definitions for operations with tensor shape
 
         example for 'O', (7,3),
 

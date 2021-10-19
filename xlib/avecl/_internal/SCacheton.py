@@ -27,24 +27,24 @@ class SCacheton:
         return data
 
     @staticmethod
-    def set_var(var_name, value):
+    def set_var(key, value):
         """
-        Set data cached by var_name
+        Set data cached by key
         All cached data will be freed with cleanup()
 
         You must not to store Tensor in SCacheton, use per-device cache vars
         """
-        SCacheton.cachevars[var_name] = value
+        SCacheton.cachevars[key] = value
 
     @staticmethod
-    def get_var(var_name):
+    def get_var(key):
         """
-        Get data cached by var_name
+        Get data cached by key
         All cached data will be freed with cleanup()
 
         You must not to store Tensor in SCacheton, use per-device cache vars
         """
-        return SCacheton.cachevars.get(var_name, None)
+        return SCacheton.cachevars.get(key, None)
 
     @staticmethod
     def cleanup():

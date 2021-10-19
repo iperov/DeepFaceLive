@@ -44,6 +44,7 @@ class NTest():
                         binary_erode_circle_test,
                         binary_dilate_circle_test,
                         binary_morph_test,
+                        cvt_color_test,
                     ]
 
         for test_func in test_funcs:
@@ -60,6 +61,30 @@ class NTest():
 
 def _all_close(x,y, atol=1, btol=1):
     return np.allclose( np.ndarray.flatten(x[None,...]), np.ndarray.flatten(y[None,...]), atol, btol )
+
+def cvt_color_test():
+    for _ in range(10):
+     for shape_len in range(2,6):
+      for in_mode in ['RGB','BGR','XYZ','LAB']:
+        for out_mode in ['RGB','BGR','XYZ','LAB']:
+          for dtype in [np.float16, np.float32, np.float64]:
+            shape = list(np.random.randint(1, 8, size=shape_len) )
+
+            ch_axis = np.random.randint(len(shape))
+            shape[ch_axis] = 3
+
+            print(f'cvt_color {shape} {str(np.dtype(dtype).name)} {in_mode}->{out_mode} ... ', end='')
+
+            inp_n = np.random.uniform(size=shape ).astype(dtype)
+            inp_t = Tensor.from_value(inp_n)
+
+            out_t = op.cvt_color(inp_t, in_mode=in_mode, out_mode=out_mode, ch_axis=ch_axis)
+            inp_t2 = op.cvt_color(out_t, in_mode=out_mode, out_mode=in_mode, ch_axis=ch_axis)
+
+            if not _all_close(inp_t.np(), inp_t2.np(), atol=0.1, btol=0.1):
+                raise Exception(f'data is not equal')
+
+            print('pass')
 
 def cast_test():
     for in_dtype in HType.get_np_scalar_types():

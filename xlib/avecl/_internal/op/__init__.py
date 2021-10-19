@@ -4,6 +4,7 @@ from .binary_erode_circle import binary_erode_circle
 from .binary_morph import binary_morph
 from .cast import cast
 from .concat import concat
+from .cvt_color import cvt_color
 from .depthwise_conv2D import depthwise_conv2D
 from .gaussian_blur import gaussian_blur
 from .matmul import matmul, matmulc

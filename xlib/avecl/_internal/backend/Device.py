@@ -36,7 +36,7 @@ class Device:
 
         self._cached_data = {}      # cached data (per device) by key
         self._pooled_buffers = {}   # Pool of cached device buffers.
-        self._compiled_kernels = {} # compiled kernels by key
+        self._cached_kernels = {} # compiled kernels by key
         self._ctx_q = None          # CL command queue
         self._ctx = None            # CL context
 
@@ -86,7 +86,7 @@ class Device:
         compile or get cached kernel
         """
 
-        compiled_krn, prog = self._compiled_kernels.get(key, (None, None) )
+        compiled_krn, prog = self._cached_kernels.get(key, (None, None) )
 
         if compiled_krn is None:
             clr = CL.CLRESULT()
@@ -123,7 +123,7 @@ class Device:
                 raise Exception(f'clCreateKernelsInProgram error: {clr}')
 
             compiled_krn = kernels[0]
-            self._compiled_kernels[key] = (compiled_krn, prog)
+            self._cached_kernels[key] = (compiled_krn, prog)
 
         return compiled_krn
 
@@ -176,7 +176,7 @@ class Device:
                 mem = self._cl_mem_alloc(size)
                 if mem is None:
                     # MemoryError.
-                    if not self._free_random_pooled_buffers():
+                    if not self._release_random_pooled_buffers():
                         raise Exception(f'Unable to allocate {size // 1024**2}Mb on {self.get_description()}')
                     continue
                 break
@@ -202,7 +202,7 @@ class Device:
         self._total_memory_pooled += size
         self._total_buffers_pooled += 1
 
-    def _free_random_pooled_buffers(self) -> bool:
+    def _release_random_pooled_buffers(self) -> bool:
         """
         remove random 25% of pooled boofers
 
@@ -221,7 +221,8 @@ class Device:
     def _keep_target_memory_usage(self):
         targ = self._target_memory_usage
         if targ != 0 and self.get_total_allocated_memory() >= targ:
-            self._free_random_pooled_buffers()
+            self.cleanup_cached_kernels()
+            self._release_random_pooled_buffers()
 
     def __str__(self):
         return self.get_description()
@@ -241,7 +242,18 @@ class Device:
         self._pooled_buffers = {}
         self._total_memory_pooled = 0
         self._total_buffers_pooled = 0
+    
+    def cleanup_cached_kernels(self):
+        for kernel, prog in self._cached_kernels.values():
+            clr = CL.clReleaseKernel(kernel)
+            if clr != CL.CLERROR.SUCCESS:
+                raise Exception(f'clReleaseKernel error: {clr}')
 
+            clr = CL.clReleaseProgram(prog)
+            if clr != CL.CLERROR.SUCCESS:
+                raise Exception(f'clReleaseProgram error: {clr}')
+        self._cached_kernels = {}
+        
     def cleanup(self):
         """
         Frees all resources from this Device.
@@ -253,15 +265,7 @@ class Device:
         if self._total_memory_allocated != 0:
             raise Exception('Unable to cleanup CLDevice, while not all Buffers are deallocated.')
 
-        for kernel, prog in self._compiled_kernels.values():
-            clr = CL.clReleaseKernel(kernel)
-            if clr != CL.CLERROR.SUCCESS:
-                raise Exception(f'clReleaseKernel error: {clr}')
-
-            clr = CL.clReleaseProgram(prog)
-            if clr != CL.CLERROR.SUCCESS:
-                raise Exception(f'clReleaseProgram error: {clr}')
-        self._compiled_kernels = {}
+        self.cleanup_cached_kernels()
 
         if self._ctx_q is not None:
             clr = CL.clReleaseCommandQueue(self._ctx_q)
@@ -308,7 +312,7 @@ Total memory allocated:  {self._total_memory_allocated}
 Total buffers allocated: {self._total_buffers_allocated}
 Total memory pooled:     {self._total_memory_pooled}
 Total buffers pooled:    {self._total_buffers_pooled}
-N of compiled kernels:   {len(self._compiled_kernels)}
+N of compiled kernels:   {len(self._cached_kernels)}
 N of cacheddata:         {len(self._cached_data)}
 '''
         print(s)
