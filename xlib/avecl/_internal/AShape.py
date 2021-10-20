@@ -15,7 +15,7 @@ class AShape(Iterable):
 
             shape       AShape
                         Iterable
-                        
+
         AShape cannot be scalar shape, thus minimal AShape is (1,)
 
         can raise ValueError during the construction
@@ -50,13 +50,26 @@ class AShape(Iterable):
                 self.size = size
             else:
                 raise ValueError('Invalid type to create AShape')
-    
+
     def copy(self) -> 'AShape':
         return AShape(self)
-    
+
     def as_list(self) -> List[int]:
         return list(self.shape)
-        
+
+    def check_axis(self, axis : int) -> int:
+        """
+        Check axis and returns normalized axis value
+
+        can raise ValueError
+        """
+        if axis < 0:
+            axis += self.ndim
+
+        if axis < 0 or axis >= self.ndim:
+            raise ValueError(f'axis {axis} out of bound of ndim {self.ndim}')
+        return axis
+
     def axes_arange(self) -> AAxes:
         """
         Returns tuple of axes arange.
@@ -64,7 +77,7 @@ class AShape(Iterable):
          Example (0,1,2) for ndim 3
         """
         return AAxes(range(self.ndim))
-        
+
     def replaced_axes(self, axes, dims) -> 'AShape':
         """
         returns new AShape where axes replaced with new dims
@@ -76,22 +89,22 @@ class AShape(Iterable):
                 axis = ndim + axis
             if axis < 0 or axis >= ndim:
                 raise ValueError(f'invalid axis value {axis}')
-            
+
             new_shape[axis] = dim
         return AShape(new_shape)
-        
+
 
     def split(self, axis) -> Tuple['AShape', 'AShape']:
         """
         split AShape at specified axis
-        
-        returns two AShape before+exclusive and inclusive+after 
+
+        returns two AShape before+exclusive and inclusive+after
         """
         if axis < 0:
             axis = self.ndim + axis
         if axis < 0 or axis >= self.ndim:
             raise ValueError(f'invalid axis value {axis}')
-            
+
         return self[:axis], self[axis:]
 
     def transpose_by_axes(self, axes) -> 'AShape':

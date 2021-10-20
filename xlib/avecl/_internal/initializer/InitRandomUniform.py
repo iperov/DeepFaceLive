@@ -38,8 +38,6 @@ class InitRandomUniform(Initializer):
                 gen_expression = f'hash_ulong_from_ulong(gid+seed64) % {int(hl)} + {int(l)}'
             elif tensor.dtype in [np.float16, np.float32]:
                 gen_expression = f'hash_float_from_uint(gid+seed32)*{hl} + {l}'
-            elif tensor.dtype in [np.float64]:
-                gen_expression = f'hash_double_from_ulong(gid+seed64)*{hl} + {l}'
 
             kernel = Kernel(kernel_text=f"""
 {HKernel.include_hash()}

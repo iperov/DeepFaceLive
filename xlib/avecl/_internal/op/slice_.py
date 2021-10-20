@@ -1,12 +1,38 @@
+from typing import List
+
 import numpy as np
 
 from ..AShape import AShape
+from ..AAxes import AAxes
 from ..backend import Kernel
 from ..HKernel import HKernel
 from ..HType import HType
 from ..info import SliceInfo
 from ..SCacheton import SCacheton
 from ..Tensor import Tensor
+
+
+def split(input_t : Tensor, axis, keepdims=False) -> List[Tensor]:
+    """
+
+    arguments
+
+     input_t    Tensor
+
+     axis
+
+    """
+    shape = input_t.shape
+
+    result = []
+    for i in range(shape[axis]):
+        slices = [slice(None, None, None)]*shape.ndim
+
+        slices[axis] = i if not keepdims else slice(i,i+1,1)
+
+        result.append( slice_(input_t, slices) )
+
+    return result
 
 
 def slice_(input_t : Tensor, slices, dtype : np.dtype = None, output_t=None, is_add_to_output=False) -> Tensor:

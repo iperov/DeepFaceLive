@@ -70,6 +70,7 @@ Tensor.mean = reduce_mean
 Tensor.min = reduce_min
 Tensor.reshape = reshape
 Tensor.sum = reduce_sum
+Tensor.std = reduce_std
 Tensor.transpose = transpose
 
 class TensorRef(Tensor):

@@ -58,7 +58,7 @@ def reduce_variance(input_t, axes=None, keepdims=False):
     mean = reduce_mean(input_t, axes, keepdims=True)
     return reduce_mean(square(input_t - mean), axes, keepdims)
 
-def moments(input_t, axes=None, keepdims=False):
+def moments(input_t, axes=None):
     """
     Returns (mean, variance) of input_t
 
@@ -68,11 +68,9 @@ def moments(input_t, axes=None, keepdims=False):
                     Iterable of ints.
                     None - all axes
 
-        keepdims(False)     keep reduced axes
     """
-    mean = reduce_mean(input_t, axes, keepdims)
-    mean_shape_keepdims = mean._op.info.o_shape_kd
-    var = reduce_mean(square(input_t - mean.reshape(mean_shape_keepdims) ), axes, keepdims)
+    mean = reduce_mean(input_t, axes, True)
+    var = reduce_mean(square(input_t - mean), axes, True)
     return mean, var
 
 def reduce_min (input_t : Tensor, axes=None, keepdims=False, output_t=None, is_add_to_output=False) -> Tensor:

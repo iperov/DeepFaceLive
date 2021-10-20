@@ -15,11 +15,8 @@ class HKernel:
                         np.int64   : 'long',
                         np.uint64  : 'ulong',
                         np.float16 : 'half',
-                        np.float32 : 'float',
-                        np.float64 : 'double'
+                        np.float32 : 'float'
                       }
-
-
 
     @staticmethod
     def np_dtype_to_cl(dtype : np.dtype):
@@ -134,30 +131,33 @@ class HKernel:
             out += [f'#define {name_upper}_GLOBAL_STORE8(offset,value) {name_upper}_PTR_NAME[(offset)] = (value)']
             out += [f'#define {name_upper}_GLOBAL_STORE16(offset,value) {name_upper}_PTR_NAME[(offset)] = (value)']
 
-        if dtype in [np.float32, np.float64]:
+        if dtype in [np.float32]:
             out += [f'#define {name_upper}_TO_FLOATX(x) x']
         elif dtype in [np.bool_, np.int8, np.uint8, np.int16, np.uint16, np.int32,np.uint32, np.float16]:
             out += [f'#define {name_upper}_TO_FLOATX(x) ((float)x)']
         elif dtype in [np.int64,np.uint64]:
             out += [f'#define {name_upper}_TO_FLOATX(x) ((double)x)']
         return '\n'.join(out)
-    
+
     @staticmethod
     def define_ndim_idx(ndim):
         """
+        define macro to calculate index for n-dim shape
+
         example for ndim=3
+
         #define NDIM3_IDX(t0,t1,t2,T0,T1,T2) (((size_t)(t0))*T1*T2+((size_t)(t1))*T2+((size_t)(t2)))
         #define NDIM3_IDX_MOD(t0,t1,t2,T0,T1,T2) (((size_t)(t0) % T0)*T1*T2+((size_t)(t1) % T1)*T2+((size_t)(t2) % T2))
         """
-        
+
         out = [f'#define NDIM{ndim}_IDX(' + \
                 ','.join([f't{i}' for i in range(ndim)] + [f'T{i}' for i in range(ndim)]) + \
                 ') (' + '+'.join([f'((size_t)(t{i}))' + ''.join(f'*T{j}' for j in range(i+1,ndim)) for i in range(ndim) ]) + ')']
-         
+
         out +=[f'#define NDIM{ndim}_IDX_MOD(' + \
                 ','.join([f't{i}' for i in range(ndim)] + [f'T{i}' for i in range(ndim)]) + \
                 ') (' + '+'.join([f'((size_t)(t{i}) % T{i})' + ''.join(f'*T{j}' for j in range(i+1,ndim)) for i in range(ndim) ]) + ')']
-              
+
         return '\n'.join(out)
 
     @staticmethod
@@ -165,14 +165,14 @@ class HKernel:
         """
         Returns a definitions for operations with tensor shape
 
-        example for 'O', (7,3),
+        example for 'O', (2,3),
 
-        #define O0 7
+        #define O0 2
         #define O1 3
         #define Om1 3
-        #define Om2 7
-        #define O_IDX(o0,o1) ( (size_t)(o0) )*3 +( o1 )
-        #define O_IDX_MOD(o0,o1) ( (size_t)(o0) % 7 )*3 +( (o1) % 3 )
+        #define Om2 2
+        #define O_IDX(o0,o1) (((size_t)(o0))*3+((size_t)(o1)))
+        #define O_IDX_MOD(o0,o1) (((size_t)(o0) % 2)*3+((size_t)(o1) % 3))
         """
         shape = tuple(shape)
         ndim = len(shape)
@@ -183,36 +183,14 @@ class HKernel:
             axes_symbols = "".join([str(i) for i in range(ndim)])
         axes_symbols = axes_symbols.upper()
 
-        out = []
-        for i in range(ndim):
-            out += [f'#define {name_upper}{axes_symbols[i]} {shape[i]}']
+        out =  [f'#define {name_upper}{axes_symbols[i]} {shape[i]}' for i in range(ndim)]
+        out += [f'#define {name_upper}m{i} {shape[-i]}' for i in range(1,ndim+1)]
 
-        for i in range(1,ndim+1):
-            out += [f'#define {name_upper}m{i} {shape[-i]}']
+        out += [f'#define {name_upper}_IDX({HKernel.axes_seq_enum(name, ndim)}) (' + \
+                 '+'.join([f'((size_t)({name_lower}{i}))'              + ''.join(f'*{shape[j]}' for j in range(i+1,ndim)) for i in range(ndim)]) + ')']
 
-        line = f'#define {name_upper}_IDX({HKernel.axes_seq_enum(name, ndim)}) '
-
-        for i in range(ndim):
-            line += f'( (size_t)({name_lower}{i}) )'
-
-            for j in range(i+1,ndim):
-                line += f'*{shape[j]} '
-            if i != ndim-1:
-                line += '+'
-
-        out += [line]
-
-        line = f'#define {name_upper}_IDX_MOD({HKernel.axes_seq_enum(name, ndim)}) '
-
-        for i in range(ndim):
-            line += f'( (size_t)({name_lower}{i}) % {shape[i]} )'
-
-            for j in range(i+1,ndim):
-                line += f'*{shape[j]} '
-            if i != ndim-1:
-                line += '+'
-
-        out += [line,'']
+        out += [f'#define {name_upper}_IDX_MOD({HKernel.axes_seq_enum(name, ndim)}) (' + \
+                 '+'.join([f'((size_t)({name_lower}{i}) % {shape[i]})' + ''.join(f'*{shape[j]}' for j in range(i+1,ndim)) for i in range(ndim)]) + ')']
 
         return '\n'.join(out)
 

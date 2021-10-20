@@ -39,7 +39,7 @@ def cvt_color (input_t : Tensor, in_mode : str, out_mode : str, ch_axis=1, dtype
     return output_t
 
 _allowed_modes = ['RGB', 'BGR', 'XYZ', 'LAB']
-_allowed_dtypes = [np.float16, np.float32, np.float64]
+_allowed_dtypes = [np.float16, np.float32]
 
 class _CvtColor32Op():
     def __init__(self, i_shape : AShape, i_dtype, in_mode, o_dtype, out_mode, ch_axis):
@@ -100,54 +100,74 @@ class _CvtColor32Op():
             self.forward_krn = krn
 
     @staticmethod
-    def get_RGB_to_LAB_body(R,G,B,L,a,b,lab_type='') -> str:
+    def get_RGB_to_LAB_body(R,G,B,L,a,b, declare_out_type=False) -> str:
         return f"""
-{_CvtColor32Op.get_RGB_to_XYZ_body(R,G,B,'X','Y','Z', xyz_type='float')}
-{_CvtColor32Op.get_XYZ_to_LAB_body('X','Y','Z',L,a,b, lab_type=lab_type)}
+{_CvtColor32Op.get_sRGB_to_XYZ_body(R,G,B,'X','Y','Z', declare_out_type=True)}
+{_CvtColor32Op.get_XYZ_to_LAB_body('X','Y','Z',L,a,b, declare_out_type=declare_out_type)}
 """
 
     @staticmethod
-    def get_LAB_to_RGB_body(L,a,b,R,G,B,rgb_type='') -> str:
+    def get_LAB_to_RGB_body(L,a,b,R,G,B, declare_out_type=False) -> str:
         return f"""
-{_CvtColor32Op.get_LAB_to_XYZ_body(L,a,b,'X','Y','Z', xyz_type='float')}
-{_CvtColor32Op.get_XYZ_to_RGB_body('X','Y','Z',R,G,B,rgb_type=rgb_type)}
+{_CvtColor32Op.get_LAB_to_XYZ_body(L,a,b,'X','Y','Z', declare_out_type=True)}
+{_CvtColor32Op.get_XYZ_to_sRGB_body('X','Y','Z',R,G,B, declare_out_type=declare_out_type)}
 """
 
     @staticmethod
-    def get_RGB_to_XYZ_body(R,G,B,X,Y,Z,xyz_type='') -> str:
+    def get_sRGB_to_XYZ_body(R,G,B,X,Y,Z, declare_out_type=False) -> str:
         return f"""
-{xyz_type} {X} = fma(0.4124564, {R}, fma(0.3575761, {G}, 0.1804375*{B}));
-{xyz_type} {Y} = fma(0.2126729, {R}, fma(0.7151522, {G}, 0.0721750*{B}));
-{xyz_type} {Z} = fma(0.0193339, {R}, fma(0.1191920, {G}, 0.9503041*{B}));
-"""
-    @staticmethod
-    def get_XYZ_to_RGB_body(X,Y,Z,R,G,B,rgb_type='') -> str:
-        return f"""
-{rgb_type} {R} = fma( 3.2404542, {X}, fma(-1.5371385, {Y}, -0.4985314*{Z}));
-{rgb_type} {G} = fma(-0.9692660, {X}, fma( 1.8760108, {Y},  0.0415560*{Z}));
-{rgb_type} {B} = fma( 0.0556434, {X}, fma(-0.2040259, {Y},  1.0572252*{Z}));
+{R} = ({R} > 0.04045)*( pow( ({R}+0.055)/1.055, 2.4) ) + ({R} <= 0.04045)*({R} / 12.92);
+{G} = ({G} > 0.04045)*( pow( ({G}+0.055)/1.055, 2.4) ) + ({G} <= 0.04045)*({G} / 12.92);
+{B} = ({B} > 0.04045)*( pow( ({B}+0.055)/1.055, 2.4) ) + ({B} <= 0.04045)*({B} / 12.92);
+
+{_CvtColor32Op.get_RGB_to_XYZ_body(R,G,B,X,Y,Z,declare_out_type=declare_out_type) }
 """
 
     @staticmethod
-    def get_RGB_to_BGR_body(R,G,B,b,g,r,bgr_type='') -> str:
+    def get_RGB_to_XYZ_body(R,G,B,X,Y,Z, declare_out_type=False) -> str:
         return f"""
-{bgr_type} {b} = {R};
-{bgr_type} {g} = {G};
-{bgr_type} {r} = {B};
+{'float' if declare_out_type else ''} {X} = {R}*0.412453 + {G}*0.357580 + {B}*0.180423;
+{'float' if declare_out_type else ''} {Y} = {R}*0.212671 + {G}*0.715160 + {B}*0.072169;
+{'float' if declare_out_type else ''} {Z} = {R}*0.019334 + {G}*0.119193 + {B}*0.950227;
 """
 
     @staticmethod
-    def get_BGR_to_RGB_body(B,G,R,r,g,b,rgb_type='') -> str:
+    def get_XYZ_to_sRGB_body(X,Y,Z,R,G,B, declare_out_type=False) -> str:
         return f"""
-{rgb_type} {r} = {B};
-{rgb_type} {g} = {G};
-{rgb_type} {b} = {R};
+{_CvtColor32Op.get_XYZ_to_RGB_body(X,Y,Z,R,G,B,declare_out_type=declare_out_type) }
+{R} = ({R} > 0.0031308)*( 1.055*pow({R},1.0/2.4)-0.055 ) + ({R} <= 0.0031308)*({R} * 12.92);
+{G} = ({G} > 0.0031308)*( 1.055*pow({G},1.0/2.4)-0.055 ) + ({G} <= 0.0031308)*({G} * 12.92);
+{B} = ({B} > 0.0031308)*( 1.055*pow({B},1.0/2.4)-0.055 ) + ({B} <= 0.0031308)*({B} * 12.92);
 """
 
     @staticmethod
-    def get_XYZ_to_LAB_body(X,Y,Z,L,A,B,lab_type='') -> str:
+    def get_XYZ_to_RGB_body(X,Y,Z,R,G,B, declare_out_type=False) -> str:
+        return f"""
+{'float' if declare_out_type else ''} {R} = clamp( {X}* 3.240479 + {Y}*-1.53715  + {Z}*-0.498535, 0.0, 1.0 );
+{'float' if declare_out_type else ''} {G} = clamp( {X}*-0.969256 + {Y}* 1.875991 + {Z}* 0.041556, 0.0, 1.0 );
+{'float' if declare_out_type else ''} {B} = clamp( {X}* 0.055648 + {Y}*-0.204043 + {Z}* 1.057311, 0.0, 1.0 );
+"""
+
+    @staticmethod
+    def get_RGB_to_BGR_body(R,G,B,b,g,r, declare_out_type=False) -> str:
+        return f"""
+{'float' if declare_out_type else ''} {b} = {R};
+{'float' if declare_out_type else ''} {g} = {G};
+{'float' if declare_out_type else ''} {r} = {B};
+"""
+
+    @staticmethod
+    def get_BGR_to_RGB_body(B,G,R,r,g,b, declare_out_type=False) -> str:
+        return f"""
+{'float' if declare_out_type else ''} {r} = {B};
+{'float' if declare_out_type else ''} {g} = {G};
+{'float' if declare_out_type else ''} {b} = {R};
+"""
+
+    @staticmethod
+    def get_XYZ_to_LAB_body(X,Y,Z,L,A,B, declare_out_type=False) -> str:
         beta3 = '((6.0/29.0)*(6.0/29.0)*(6.0/29.0))'
-        xyz_xn = '(0.9556)'
+        xyz_xn = '(0.950456)'
         xyz_zn = '(1.088754)'
         return f"""
 {X} /= {xyz_xn};
@@ -157,20 +177,20 @@ class _CvtColor32Op():
 {Y} = ({Y} > {beta3})*rootn({Y}, 3) + ({Y} <= {beta3})*(7.787*{Y}+4.0/29.0);
 {Z} = ({Z} > {beta3})*rootn({Z}, 3) + ({Z} <= {beta3})*(7.787*{Z}+4.0/29.0);
 
-{lab_type} {L} = 116.0*{Y}-16.0;
-{lab_type} {A} = 500.0*({X}-{Y});
-{lab_type} {B} = 200.0*({Y}-{Z});
+{'float' if declare_out_type else ''} {L} = 116.0*{Y}-16.0;
+{'float' if declare_out_type else ''} {A} = 500.0*({X}-{Y});
+{'float' if declare_out_type else ''} {B} = 200.0*({Y}-{Z});
 """
     @staticmethod
-    def get_LAB_to_XYZ_body(L,A,B,X,Y,Z,xyz_type='') -> str:
+    def get_LAB_to_XYZ_body(L,A,B,X,Y,Z, declare_out_type=False) -> str:
         beta = '(6.0/29.0)'
         beta2 = '((6.0/29.0)*(6.0/29.0))'
-        xyz_xn = '(0.9556)'
+        xyz_xn = '(0.950456)'
         xyz_zn = '(1.088754)'
         return f"""
-{xyz_type} {Y} = ({L} + 16.0) / 116.0;
-{xyz_type} {X} = {Y} + {A} / 500.0;
-{xyz_type} {Z} = {Y} - {B} / 200.0;
+{'float' if declare_out_type else ''} {Y} = ({L} + 16.0) / 116.0;
+{'float' if declare_out_type else ''} {X} = {Y} + {A} / 500.0;
+{'float' if declare_out_type else ''} {Z} = {Y} - {B} / 200.0;
 
 {Y} = ({Y} > {beta})*({Y}*{Y}*{Y})          + ({Y} <= {beta})*({Y}-16.0/116.0)*3*{beta2};
 {X} = ({X} > {beta})*({X}*{X}*{X}*{xyz_xn}) + ({X} <= {beta})*({X}-16.0/116.0)*3*{beta2}*{xyz_xn};

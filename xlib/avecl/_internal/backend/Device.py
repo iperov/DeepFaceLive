@@ -18,8 +18,7 @@ _np_dtype_to_cl = { np.uint8:   CL.cl_uchar,
                     np.uint64:  CL.cl_ulong,
                     np.int64:   CL.cl_long,
                     np.float16: CL.cl_half,
-                    np.float32: CL.cl_float,
-                    np.float64: CL.cl_double }
+                    np.float32: CL.cl_float}
 
 _opencl_device_ids = None
 _default_device = None

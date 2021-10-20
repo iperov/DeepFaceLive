@@ -1,14 +1,13 @@
-import traceback
-
 import numpy as np
 
-from .HType import HType
-from .NCore import NCore
-from .backend import get_device, get_default_device, set_default_device
-from .Tensor import Tensor
 from . import op
-from .initializer import InitRandomUniform, InitCoords2DArange
+from .backend import get_default_device, get_device, set_default_device
+from .HType import HType
 from .info import Conv2DInfo
+from .initializer import InitCoords2DArange, InitRandomUniform
+from .NCore import NCore
+from .Tensor import Tensor
+
 
 class NTest():
 
@@ -45,6 +44,7 @@ class NTest():
                         binary_dilate_circle_test,
                         binary_morph_test,
                         cvt_color_test,
+                        rct_test,
                     ]
 
         for test_func in test_funcs:
@@ -62,18 +62,39 @@ class NTest():
 def _all_close(x,y, atol=1, btol=1):
     return np.allclose( np.ndarray.flatten(x[None,...]), np.ndarray.flatten(y[None,...]), atol, btol )
 
+def rct_test():
+    for _ in range(10):
+      for dtype in [np.float16, np.float32]:
+        base_shape = list(np.random.randint(1, 8, size=4) )
+        shape = base_shape.copy()
+        shape[1] = 3
+
+        mask_shape = base_shape.copy()
+        mask_shape[1] = 3
+
+        print(f'rct {shape} {str(np.dtype(dtype).name)} ... ', end='', flush=True)
+
+        source_t = Tensor(shape=shape, dtype=dtype, initializer=InitRandomUniform())
+        target_t = Tensor(shape=shape, dtype=dtype, initializer=InitRandomUniform())
+        mask_t   = Tensor(shape=mask_shape, dtype=dtype, initializer=InitRandomUniform())
+
+        result_t = op.rct(target_t, source_t, target_mask_t=mask_t, source_mask_t=mask_t )
+
+        print('pass')
+
+
 def cvt_color_test():
     for _ in range(10):
      for shape_len in range(2,6):
       for in_mode in ['RGB','BGR','XYZ','LAB']:
         for out_mode in ['RGB','BGR','XYZ','LAB']:
-          for dtype in [np.float16, np.float32, np.float64]:
+          for dtype in [np.float16, np.float32]:
             shape = list(np.random.randint(1, 8, size=shape_len) )
 
             ch_axis = np.random.randint(len(shape))
             shape[ch_axis] = 3
 
-            print(f'cvt_color {shape} {str(np.dtype(dtype).name)} {in_mode}->{out_mode} ... ', end='')
+            print(f'cvt_color {shape} {str(np.dtype(dtype).name)} {in_mode}->{out_mode} ... ', end='', flush=True)
 
             inp_n = np.random.uniform(size=shape ).astype(dtype)
             inp_t = Tensor.from_value(inp_n)
@@ -81,7 +102,9 @@ def cvt_color_test():
             out_t = op.cvt_color(inp_t, in_mode=in_mode, out_mode=out_mode, ch_axis=ch_axis)
             inp_t2 = op.cvt_color(out_t, in_mode=out_mode, out_mode=in_mode, ch_axis=ch_axis)
 
-            if not _all_close(inp_t.np(), inp_t2.np(), atol=0.1, btol=0.1):
+            is_check = in_mode in ['RGB','BGR','XYZ'] and out_mode in ['XYZ','LAB']
+
+            if is_check and not _all_close(inp_t.np(), inp_t2.np(), atol=0.1, btol=0.1):
                 raise Exception(f'data is not equal')
 
             print('pass')
@@ -91,7 +114,7 @@ def cast_test():
         for out_dtype in HType.get_np_scalar_types():
             shape = tuple(np.random.randint(1, 8, size=( np.random.randint(1,5))) )
 
-            print(f'cast: {shape} in_dtype:{str(np.dtype(in_dtype).name)} out_dtype:{str(np.dtype(out_dtype).name)}  ... ', end='')
+            print(f'cast: {shape} in_dtype:{str(np.dtype(in_dtype).name)} out_dtype:{str(np.dtype(out_dtype).name)}  ... ', end='', flush=True)
 
             val_n = np.random.uniform( -64, 64, size=shape ).astype(in_dtype)
             cast_n = val_n.astype(out_dtype)
@@ -113,7 +136,7 @@ def binary_morph_test():
             input_n = np.random.randint( 2, size=shape ).astype(dtype)
             input_t = Tensor.from_value(input_n)
 
-            print(f'binary_morph: {shape} erode_dilate:{erode_dilate} blur:{blur} {np.dtype(dtype).name} ... ', end='')
+            print(f'binary_morph: {shape} erode_dilate:{erode_dilate} blur:{blur} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             op.binary_morph(input_t, erode_dilate=erode_dilate, blur=blur, fade_to_border=True)
 
@@ -130,7 +153,7 @@ def binary_erode_circle_test():
             input_n = np.random.randint( 2, size=shape ).astype(dtype)
             input_t = Tensor.from_value(input_n)
 
-            print(f'binary_erode_circle: {shape} radius:{radius} iters:{iterations} {np.dtype(dtype).name} ... ', end='')
+            print(f'binary_erode_circle: {shape} radius:{radius} iters:{iterations} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             op.binary_erode_circle(input_t, radius=radius, iterations=iterations)
 
@@ -147,7 +170,7 @@ def binary_dilate_circle_test():
             input_n = np.random.randint( 2, size=shape ).astype(dtype)
             input_t = Tensor.from_value(input_n)
 
-            print(f'binary_dilate_circle: {shape} radius:{radius} iters:{iterations} {np.dtype(dtype).name} ... ', end='')
+            print(f'binary_dilate_circle: {shape} radius:{radius} iters:{iterations} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             op.binary_dilate_circle(input_t, radius=radius, iterations=iterations)
 
@@ -156,11 +179,11 @@ def binary_dilate_circle_test():
 
 def gaussian_blur_test():
     for shape_len in range(2,5):
-        for dtype in [np.float16, np.float32, np.float64]:
+        for dtype in [np.float16, np.float32]:
 
             shape = np.random.randint( 1, 64, size=(shape_len,) )
             sigma = np.random.rand() * 10
-            print(f'gaussian_blur: {shape} sigma:{sigma} {np.dtype(dtype).name} ... ', end='')
+            print(f'gaussian_blur: {shape} sigma:{sigma} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             val_n = np.random.randint( 2**8, size=shape ).astype(dtype)
             val_t = Tensor.from_value(val_n)
@@ -179,7 +202,7 @@ def pad_test():
 
                 paddings = tuple( (np.random.randint(8), np.random.randint(8)) for i in range(len(shape)) )
 
-                print(f'pad: {shape} {paddings} {mode} {np.dtype(dtype).name} ... ', end='')
+                print(f'pad: {shape} {paddings} {mode} {np.dtype(dtype).name} ... ', end='', flush=True)
 
                 val_n = np.random.randint( 2**8, size=shape ).astype(dtype)
                 pad_n = np.pad(val_n, paddings, mode=mode)
@@ -187,7 +210,7 @@ def pad_test():
                 val_t = Tensor.from_value(val_n)
                 pad_t = op.pad(val_t, paddings, mode=mode)
 
-                print(f'{pad_n.shape} == {pad_t.shape} ... ', end='')
+                print(f'{pad_n.shape} == {pad_t.shape} ... ', end='', flush=True)
 
                 if pad_n.shape != pad_t.shape:
                     raise Exception(f'shape is not equal')
@@ -241,7 +264,7 @@ def slice_set_test():
                 shape = tuple(shape)
                 slices = tuple(slices)
 
-                print(f'slice_set: {shape} {np.dtype(dtype).name} {slices} ... ', end='')
+                print(f'slice_set: {shape} {np.dtype(dtype).name} {slices} ... ', end='', flush=True)
 
                 val_n = np.random.randint( 2**8, size=shape ).astype(dtype)
                 val_t = Tensor.from_value(val_n)
@@ -330,7 +353,7 @@ def depthwise_conv2d_test():
                             input_shape  = (n, ic, ih, iw)
                             kernel_shape = (ic, ks, ks)
 
-                            print(f'depthwise_conv2d: {input_shape},{kernel_shape},{padding},{stride},{dilation},{np.dtype(dtype).name} ... ', end='')
+                            print(f'depthwise_conv2d: {input_shape},{kernel_shape},{padding},{stride},{dilation},{np.dtype(dtype).name} ... ', end='', flush=True)
 
                             input_n  = np.random.randint( 64, size=input_shape ).astype(dtype)
                             kernel_n = np.ones(shape=kernel_shape ).astype(dtype)
@@ -358,7 +381,7 @@ def warp_affine_test():
         H = np.random.randint(8, 64)
         W = np.random.randint(8, 64)
 
-        print(f'warp_affine: [{H},{W}] {np.dtype(dtype).name} ... ', end='')
+        print(f'warp_affine: [{H},{W}] {np.dtype(dtype).name} ... ', end='', flush=True)
 
         input_t = Tensor ( [H,W,2], dtype, initializer=InitCoords2DArange(0, H-1, 0, W-1) ).sum( (-1,) )
 
@@ -380,7 +403,7 @@ def remap_np_affine_test():
         H = np.random.randint(8, 64)
         W = np.random.randint(8, 64)
 
-        print(f'remap_np_affine: [{H},{W}] {np.dtype(dtype).name} ... ', end='')
+        print(f'remap_np_affine: [{H},{W}] {np.dtype(dtype).name} ... ', end='', flush=True)
 
         input_t = Tensor ( [H,W,2], dtype, initializer=InitCoords2DArange(0, H-1, 0, W-1) ).sum( (-1,) )
 
@@ -402,7 +425,7 @@ def remap_test():
         H = np.random.randint(8, 64)
         W = np.random.randint(8, 64)
 
-        print(f'remap: [{H},{W}] {np.dtype(dtype).name} ... ', end='')
+        print(f'remap: [{H},{W}] {np.dtype(dtype).name} ... ', end='', flush=True)
 
         input_t = Tensor ( [H,W,2], dtype, initializer=InitCoords2DArange(0, H-1, 0, W-1) ).sum( (-1,) )
 
@@ -422,7 +445,7 @@ def tile_test():
             shape = tuple(np.random.randint( 8, size=(shape_len,) )+1)
             tiles = tuple(np.random.randint( 4, size=(shape_len,) )+1)
 
-            print(f'tile: {shape} {tiles} {np.dtype(dtype).name} ... ', end='')
+            print(f'tile: {shape} {tiles} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             val_n = np.random.randint( 2**8, size=shape ).astype(dtype)
             tiled_n = np.tile(val_n, tiles)
@@ -430,7 +453,7 @@ def tile_test():
             val_t = Tensor.from_value(val_n)
             tiled_t = op.tile(val_t, tiles)
 
-            print(f'{tiled_n.shape} == {tiled_t.shape} ... ', end='')
+            print(f'{tiled_n.shape} == {tiled_t.shape} ... ', end='', flush=True)
 
             if tiled_n.shape != tiled_t.shape:
                 raise Exception(f'shape is not equal')
@@ -448,7 +471,7 @@ def stack_test():
                 axis = np.random.randint(shape_len+1)
                 stack_count = np.random.randint(4)+1
 
-                print(f'stack: {shape}*{stack_count} axis:{axis} {np.dtype(dtype).name} ... ', end='')
+                print(f'stack: {shape}*{stack_count} axis:{axis} {np.dtype(dtype).name} ... ', end='', flush=True)
 
                 vals_n = [ np.random.randint( 2**8, size=shape ).astype(dtype) for i in range(stack_count) ]
                 stack_n = np.stack(vals_n, axis)
@@ -456,7 +479,7 @@ def stack_test():
                 vals_t = [ Tensor.from_value(vals_n[i]) for i in range(stack_count) ]
                 stack_t = op.stack(vals_t, axis)
 
-                print(f'{stack_n.shape} == {stack_t.shape} ... ', end='')
+                print(f'{stack_n.shape} == {stack_t.shape} ... ', end='', flush=True)
 
                 if stack_n.shape != stack_t.shape:
                     raise Exception('shape is not equal')
@@ -483,9 +506,9 @@ def reduce_test():
 
                 keepdims = np.random.randint(2) == 0
 
-                print(f'reduce {op_type}: {shape} {np.dtype(dtype).name} axes={reduction_axes} keepdims={keepdims} ... ', end='')
+                print(f'reduce {op_type}: {shape} {np.dtype(dtype).name} axes={reduction_axes} keepdims={keepdims} ... ', end='', flush=True)
 
-                if dtype in [np.float16, np.float32, np.float64]:
+                if dtype in [np.float16, np.float32]:
                     value_n = np.random.uniform(size=shape).astype(dtype)
                 else:
                     value_n = np.random.randint( max(1, int(np.iinfo(dtype).max / np.prod(shape)) ), size=shape, dtype=dtype )
@@ -518,7 +541,7 @@ def InitRandomUniform_test():
         for shape_len in range(1, 5):
             shape = np.random.randint( 8, size=(shape_len,) )+1
 
-            print(f'InitRandomUniform: {shape} {np.dtype(dtype).name} ... ', end='')
+            print(f'InitRandomUniform: {shape} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             Tensor(shape, dtype, initializer=InitRandomUniform()).np()
 
@@ -534,7 +557,7 @@ def InitCoords2DArange_test():
             w_start = np.random.randint(80)
             w_stop = w_start + np.random.randint(80)
 
-            print(f'InitCoords2DArange: {shape} {np.dtype(dtype).name} ... ', end='')
+            print(f'InitCoords2DArange: {shape} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             Tensor(shape, dtype, initializer=InitCoords2DArange(h_start,h_stop,w_start,w_stop )).np()
 
@@ -551,17 +574,17 @@ def concat_test():
                                     for i,dim in enumerate(shape) )
                             for shape in ([shape] * count) )
 
-            print(f'concat: {shapes} axis={axis} {np.dtype(dtype).name} ... ', end='')
+            print(f'concat: {shapes} axis={axis} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             V_n = [ np.random.randint( 2**8, size=shape ).astype(dtype) for shape in shapes ]
             O_n = np.concatenate(V_n, axis)
 
-            print(f'{O_n.shape} == ', end='')
+            print(f'{O_n.shape} == ', end='', flush=True)
 
             V_t = [ Tensor.from_value(V_n[i]) for i in range(count) ]
             O_t = op.concat(V_t, axis)
 
-            print(f'{O_t.shape} ... ', end='')
+            print(f'{O_t.shape} ... ', end='', flush=True)
 
             if O_n.shape != O_t.shape:
                 raise Exception('shape is not equal')
@@ -596,19 +619,19 @@ def matmul_test():
                 A_shape = (BATCH, M, K)
                 B_shape = (BATCH, K, N)
 
-            print(f'matmul: {A_shape} {B_shape} {np.dtype(dtype).name} ... ', end='')
+            print(f'matmul: {A_shape} {B_shape} {np.dtype(dtype).name} ... ', end='', flush=True)
 
             A_n = np.random.randint( 2**4, size=A_shape ).astype(dtype)
             B_n = np.random.randint( 2**4, size=B_shape ).astype(dtype)
 
             O_n = np.matmul(A_n, B_n)
 
-            print(f'{O_n.shape} == ', end='')
+            print(f'{O_n.shape} == ', end='', flush=True)
 
             A_t = Tensor.from_value(A_n)
             B_t = Tensor.from_value(B_n)
             O_t = op.matmul(A_t, B_t)
-            print(f'{O_t.shape} ... ', end='')
+            print(f'{O_t.shape} ... ', end='', flush=True)
 
             if O_n.shape != O_t.shape:
                 raise Exception('shape is not equal')
@@ -659,17 +682,17 @@ def slice_test():
                 shape = tuple(shape)
                 slices = tuple(slices)
 
-                print(f'slice: {shape} {np.dtype(dtype).name} {slices} ... ', end='')
+                print(f'slice: {shape} {np.dtype(dtype).name} {slices} ... ', end='', flush=True)
 
                 val_n = np.random.randint( 2**8, size=shape ).astype(dtype)
 
                 sliced_n = val_n[slices]
 
-                print(f'{sliced_n.shape} ... ', end='')
+                print(f'{sliced_n.shape} ... ', end='', flush=True)
 
                 sliced_t = Tensor.from_value(val_n)[slices]
 
-                print(f'{sliced_t.shape} ... ', end='')
+                print(f'{sliced_t.shape} ... ', end='', flush=True)
 
                 if 0 in sliced_n.shape:
                     # some cases like 0:1:-1 will produce zero shape and invalid array on numpy
@@ -694,17 +717,17 @@ def transpose_test():
             axes_order = np.array([*range(shape_len)])
             np.random.shuffle(axes_order)
 
-            print(f'transpose: {shape} {axes_order} ... ', end='')
+            print(f'transpose: {shape} {axes_order} ... ', end='', flush=True)
 
             val_n = np.random.randint( 2**8, size=shape ).astype(dtype)
             transposed_n = np.transpose(val_n, axes_order)
 
-            print(f'{transposed_n.shape} ... ', end='')
+            print(f'{transposed_n.shape} ... ', end='', flush=True)
 
             val_t = Tensor.from_value(val_n)
             transposed_t = op.transpose (val_t, axes_order )
 
-            print(f'{transposed_t.shape} ... ', end='')
+            print(f'{transposed_t.shape} ... ', end='', flush=True)
 
             if transposed_n.shape != transposed_t.shape:
                 raise Exception('shape is not equal')
@@ -736,7 +759,7 @@ def any_wise_op_test():
                     shapes = shapes[::-1]
                 a_shape, b_shape = shapes
 
-                print(f'any_wise: {a_shape} {str(op_type)} {b_shape}:{str(np.dtype(dtype).name)} ...', end='')
+                print(f'any_wise: {a_shape} {str(op_type)} {b_shape}:{str(np.dtype(dtype).name)} ...', end='', flush=True)
 
                 a_n = np.random.randint( 1, 2**8, size=a_shape ).astype(dtype)
                 b_n = np.random.randint( 1, 2**8, size=b_shape ).astype(dtype)

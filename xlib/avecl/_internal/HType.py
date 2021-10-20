@@ -3,10 +3,10 @@ from typing import Iterable, List
 import numpy as np
 
 scalar_types = [int, float, np.uint8, np.int8, np.uint16, np.int16, np.uint32, np.int32, np.uint64, np.int64,
-                np.float16, np.float32, np.float64, np.bool_]
+                np.float16, np.float32, np.bool_]
 
 np_scalar_types = [np.uint8, np.int8, np.uint16, np.int16, np.uint32, np.int32, np.uint64, np.int64,
-                    np.float16, np.float32, np.float64, np.bool_]
+                    np.float16, np.float32, np.bool_]
 
 _np_dtype_to_cl = {
     np.bool_   : 'bool',
@@ -20,7 +20,6 @@ _np_dtype_to_cl = {
     np.int64   : 'long',
     np.float16 : 'half',
     np.float32 : 'float',
-    np.float64 : 'double',
 }
 
 _np_dtype_weight = {
@@ -34,8 +33,7 @@ _np_dtype_weight = {
     np.uint64  : 8,
     np.int64   : 9,
     np.float16 : 10,
-    np.float32 : 11,
-    np.float64 : 12,
+    np.float32 : 11
 }
 
 class HType:

@@ -3,6 +3,7 @@ AveCL ! Make OpenCL great again.
 
 Lightweight ndarray library using OpenCL 1.2 written in pure python.
 Applicable for high-performance general purpose n-dim array computations for every device that supports OpenCL 1.2.
+Supports any dtype except float64.
 
 Works in python 3.5+. Dependencies: numpy.
 
