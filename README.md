@@ -28,11 +28,18 @@ Margot Robbie
 
 <a href="doc/celebs/Margot_Robbie/examples.md">examples</a>
 </td><td align="center">
+Sylvester Stallone
+
+<img src="doc/celebs/Sylvester_Stallone/Sylvester_Stallone.jpg" width=128></img>
+
+<a href="doc/celebs/Sylvester_Stallone/examples.md">examples</a>
+</td><td align="center">
 Tom Cruise
 
 <img src="doc/celebs/Tom_Cruise/Tom_Cruise.jpg" width=128></img>
 
 <a href="doc/celebs/Tom_Cruise/examples.md">examples</a>
+
 </td></tr>
 </table>
 
