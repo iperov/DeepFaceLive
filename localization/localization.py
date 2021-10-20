@@ -547,10 +547,15 @@ class Localization:
                 'ru-RU' : 'Размытие маски',
                 'zh-CN' : '遮罩边缘羽化'},
                 
+    'QFaceMerger.color_transfer':{
+                'en-US' : 'Color transfer',
+                'ru-RU' : 'Перенос цвета',
+                'zh-CN' : '彩色转印'},
+                
     'QFaceMerger.interpolation':{
                 'en-US' : 'Interpolation',
                 'ru-RU' : 'Интерполяция',
-                'zh-CN' : '插值 '},
+                'zh-CN' : '插值'},
                 
     'QFaceMerger.face_opacity':{
                 'en-US' : 'Face opacity',

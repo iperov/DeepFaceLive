@@ -5,6 +5,7 @@ import numexpr as ne
 import numpy as np
 from xlib import avecl as lib_cl
 from xlib import os as lib_os
+from xlib.image import color_transfer as lib_ct
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
@@ -93,6 +94,11 @@ class FaceMergerWorker(BackendWorker):
             cs.face_mask_blur.set_config(lib_csw.Number.Config(min=0, max=400, step=1, decimals=0, allow_instant_update=True))
             cs.face_mask_blur.set_number(state.face_mask_blur if state.face_mask_blur is not None else 25.0)
 
+            cs.color_transfer.call_on_selected(self.on_cs_color_transfer)
+            cs.color_transfer.enable()
+            cs.color_transfer.set_choices(['none','rct'])
+            cs.color_transfer.select(state.color_transfer if state.color_transfer is not None else 'none')
+
             cs.interpolation.call_on_selected(self.on_cs_interpolation)
             cs.interpolation.enable()
             cs.interpolation.set_choices(['bilinear','bicubic','lanczos4'], none_choice_name=None)
@@ -106,7 +112,6 @@ class FaceMergerWorker(BackendWorker):
             state.device = device
             self.save_state()
             self.restart()
-
 
     def on_cs_face_x_offset(self, face_x_offset):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -154,6 +159,12 @@ class FaceMergerWorker(BackendWorker):
         self.save_state()
         self.reemit_frame_signal.send()
 
+    def on_cs_color_transfer(self, idx, color_transfer):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.color_transfer = color_transfer
+        self.save_state()
+        self.reemit_frame_signal.send()
+
     def on_cs_interpolation(self, idx, interpolation):
         state, cs = self.get_state(), self.get_control_sheet()
         state.interpolation = interpolation
@@ -171,7 +182,7 @@ class FaceMergerWorker(BackendWorker):
     _cpu_interp = {'bilinear' : ImageProcessor.Interpolation.LINEAR,
                    'bicubic'  : ImageProcessor.Interpolation.CUBIC,
                    'lanczos4' : ImageProcessor.Interpolation.LANCZOS4}
-    def _merge_on_cpu(self, frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
+    def _merge_on_cpu(self, frame_image, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
         state = self.get_state()
 
         interpolation = self._cpu_interp[state.interpolation]
@@ -188,13 +199,17 @@ class FaceMergerWorker(BackendWorker):
             face_mask = face_align_mask_img*face_swap_mask_img
 
         # Combine face mask
-        face_mask_ip = ImageProcessor(face_mask).erode_blur(state.face_mask_erode, state.face_mask_blur, fade_to_border=True) \
-                                                .warpAffine(aligned_to_source_uni_mat, frame_width, frame_height)
-        face_mask_ip.clip2( (1.0/255.0), 0.0, 1.0, 1.0)
-        frame_face_mask = face_mask_ip.get_image('HWC')
+        face_mask = ImageProcessor(face_mask).erode_blur(state.face_mask_erode, state.face_mask_blur, fade_to_border=True).get_image('HWC')
 
-        frame_face_swap_img = ImageProcessor(face_swap_img) \
-                                .to_ufloat32().warpAffine(aligned_to_source_uni_mat, frame_width, frame_height, interpolation=interpolation).get_image('HWC')
+        frame_face_mask = ImageProcessor(face_mask).warpAffine(aligned_to_source_uni_mat, frame_width, frame_height).clip2( (1.0/255.0), 0.0, 1.0, 1.0).get_image('HWC')
+
+        face_swap_img = ImageProcessor(face_swap_img).to_ufloat32().get_image('HWC')
+
+        if state.color_transfer == 'rct':
+            face_align_img = ImageProcessor(face_align_img).to_ufloat32().get_image('HWC')
+            face_swap_img = lib_ct.rct(face_swap_img, face_align_img, target_mask=face_mask, source_mask=face_mask)
+
+        frame_face_swap_img = ImageProcessor(face_swap_img).warpAffine(aligned_to_source_uni_mat, frame_width, frame_height, interpolation=interpolation).get_image('HWC')
 
         # Combine final frame
         opacity = state.face_opacity
@@ -209,16 +224,14 @@ class FaceMergerWorker(BackendWorker):
                    'bicubic'  : lib_cl.EInterpolation.CUBIC,
                    'lanczos4' : lib_cl.EInterpolation.LANCZOS4}
 
-    def _merge_on_gpu(self, frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
+    def _merge_on_gpu(self, frame_image, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
         state = self.get_state()
         interpolation = self._gpu_interp[state.interpolation]
 
         if state.face_mask_type == FaceMaskType.SRC:
-            face_mask_t = lib_cl.Tensor.from_value(face_align_mask_img)
-            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I < 128 ? 0 : 1);', dtype=np.uint8)
+            face_mask_t = lib_cl.Tensor.from_value(face_align_mask_img).transpose( (2,0,1), op_text='O = (I < 128 ? 0 : 1);', dtype=np.uint8)
         elif state.face_mask_type == FaceMaskType.CELEB:
-            face_mask_t = lib_cl.Tensor.from_value(face_swap_mask_img)
-            face_mask_t = face_mask_t.transpose( (2,0,1), op_text='O = (I < 128 ? 0 : 1);', dtype=np.uint8)
+            face_mask_t = lib_cl.Tensor.from_value(face_swap_mask_img).transpose( (2,0,1), op_text='O = (I < 128 ? 0 : 1);', dtype=np.uint8)
 
         elif state.face_mask_type == FaceMaskType.SRC_M_CELEB:
             face_mask_t = lib_cl.any_wise('float X = (((float)I0) / 255.0) * (((float)I1) / 255.0); O = (X <= 0.5 ? 0 : 1);',
@@ -227,9 +240,11 @@ class FaceMergerWorker(BackendWorker):
                                           dtype=np.uint8).transpose( (2,0,1) )
 
         face_mask_t = lib_cl.binary_morph(face_mask_t, state.face_mask_erode, state.face_mask_blur, fade_to_border=True, dtype=np.float32)
+        face_swap_img_t  = lib_cl.Tensor.from_value(face_swap_img ).transpose( (2,0,1), op_text='O = ((O_TYPE)I) / 255.0', dtype=np.float32)
 
-        face_swap_img_t = lib_cl.Tensor.from_value(face_swap_img)
-        face_swap_img_t = face_swap_img_t.transpose( (2,0,1), op_text='O = ((O_TYPE)I) / 255.0', dtype=np.float32)
+        if state.color_transfer == 'rct':
+            face_align_img_t = lib_cl.Tensor.from_value(face_align_img).transpose( (2,0,1), op_text='O = ((O_TYPE)I) / 255.0', dtype=np.float32)
+            face_swap_img_t = lib_cl.rct(face_swap_img_t, face_align_img_t, target_mask_t=face_mask_t, source_mask_t=face_mask_t)
 
         frame_face_mask_t     = lib_cl.remap_np_affine(face_mask_t,     aligned_to_source_uni_mat, interpolation=lib_cl.EInterpolation.LINEAR, output_size=(frame_height, frame_width), post_op_text='O = (O <= (1.0/255.0) ? 0.0 : O > 1.0 ? 1.0 : O);' )
         frame_face_swap_img_t = lib_cl.remap_np_affine(face_swap_img_t, aligned_to_source_uni_mat, interpolation=interpolation, output_size=(frame_height, frame_width), post_op_text='O = clamp(O, 0.0, 1.0);' )
@@ -243,7 +258,6 @@ class FaceMergerWorker(BackendWorker):
             frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); O = I0f*(1.0-I1) + I0f*I1*(1.0-I3) + I2*I1*I3', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, opacity, dtype=np.float32)
 
         return frame_final_t.transpose( (1,2,0) ).np()
-
 
     def on_tick(self):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -260,14 +274,14 @@ class FaceMergerWorker(BackendWorker):
 
                 if frame_image is not None:
                     for fsi in bcd.get_face_swap_info_list():
-                        face_align_img_shape, _ = bcd.get_image_shape_dtype(fsi.face_align_image_name)
+                        face_align_img      = bcd.get_image(fsi.face_align_image_name)
                         face_align_mask_img = bcd.get_image(fsi.face_align_mask_name)
                         face_swap_img       = bcd.get_image(fsi.face_swap_image_name)
                         face_swap_mask_img  = bcd.get_image(fsi.face_swap_mask_name)
                         image_to_align_uni_mat = fsi.image_to_align_uni_mat
 
-                        if all_is_not_None(face_align_img_shape, face_align_mask_img, face_swap_img, face_swap_mask_img, image_to_align_uni_mat):
-                            face_height, face_width = face_align_img_shape[:2]
+                        if all_is_not_None(face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, image_to_align_uni_mat):
+                            face_height, face_width = face_align_img.shape[:2]
                             frame_height, frame_width = frame_image.shape[:2]
                             aligned_to_source_uni_mat = image_to_align_uni_mat.invert()
                             aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_translated(-state.face_x_offset, -state.face_y_offset)
@@ -275,9 +289,9 @@ class FaceMergerWorker(BackendWorker):
                             aligned_to_source_uni_mat = aligned_to_source_uni_mat.to_exact_mat (face_width, face_height, frame_width, frame_height)
 
                             if state.device == 'CPU':
-                                merged_frame = self._merge_on_cpu(frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
+                                merged_frame = self._merge_on_cpu(frame_image, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
                             else:
-                                merged_frame = self._merge_on_gpu(frame_image, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
+                                merged_frame = self._merge_on_gpu(frame_image, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
                             # keep image in float32 in order not to extra load FaceMerger
 
                             merged_image_name = f'{frame_image_name}_merged'
@@ -310,6 +324,7 @@ class Sheet:
             self.face_mask_scale = lib_csw.Number.Client()
             self.face_mask_erode = lib_csw.Number.Client()
             self.face_mask_blur = lib_csw.Number.Client()
+            self.color_transfer = lib_csw.DynamicSingleSwitch.Client()
             self.interpolation = lib_csw.DynamicSingleSwitch.Client()
             self.face_opacity = lib_csw.Number.Client()
 
@@ -323,6 +338,7 @@ class Sheet:
             self.face_mask_type = lib_csw.DynamicSingleSwitch.Host()
             self.face_mask_erode = lib_csw.Number.Host()
             self.face_mask_blur = lib_csw.Number.Host()
+            self.color_transfer = lib_csw.DynamicSingleSwitch.Host()
             self.interpolation = lib_csw.DynamicSingleSwitch.Host()
             self.face_opacity = lib_csw.Number.Host()
 
@@ -334,6 +350,6 @@ class WorkerState(BackendWorkerState):
     face_mask_type = None
     face_mask_erode : int = None
     face_mask_blur : int = None
+    color_transfer = None
     interpolation = None
     face_opacity : float = None
-
