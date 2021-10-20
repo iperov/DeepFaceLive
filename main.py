@@ -52,6 +52,19 @@ def main():
     p.add_argument('--delete-parts', action="store_true", default=False)
     p.set_defaults(func=run_merge_large_files)
 
+    train_parser = subparsers.add_parser( "train", help="Train neural network.")
+    train_parsers = train_parser.add_subparsers()
+
+    def train_FaceAligner(args):
+        faceset_path = Path(args.faceset_path)
+
+        from apps.trainers.FaceAligner.FaceAlignerTrainer import FaceAlignerTrainer
+        FaceAlignerTrainer(faceset_path=faceset_path).run()
+
+    p = train_parsers.add_parser('FaceAligner')
+    p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs path")
+    p.set_defaults(func=train_FaceAligner)
+
     def bad_args(arguments):
         parser.print_help()
         exit(0)

@@ -1,2 +1,2 @@
 from .ImageProcessor import ImageProcessor
-from .misc import get_NHWC_shape
+from ._misc import get_NHWC_shape
