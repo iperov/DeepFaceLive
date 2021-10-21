@@ -3,7 +3,7 @@
 
 ## Why does it require a graphic accelerator to work?
 
-The program is based on machine learning models. For example, face detection in the frame, facial point detection, face replacement. These models require intensive computations, which graphical accelerator can handle tens of times faster than on an ordinary processor. 
+The program is based on machine learning models. For example, face detection in the frame, facial point detection, face replacement. These models require intensive computations, which graphical accelerator can handle tens of times faster than on an ordinary processor.
 
 ## How to increase the quality of the picture?
 
@@ -53,13 +53,29 @@ No. DeepFaceLive is designed for face swapping in streams. The ability to change
 </td></tr>
 <tr><td colspan=2 align="left">
 
-1. If you are novice, learn all about DeepFaceLab https://mrdeepfakes.com/forums/thread-guide-deepfacelab-2-0-guide
+If you are novice, learn all about DeepFaceLab https://mrdeepfakes.com/forums/thread-guide-deepfacelab-2-0-guide
 
-2. Gather 5000+ samples of your face with various conditions using webcam which will be used for Live. The conditions are as follows: different lighting, different facial expressions, head direction, eyes direction, being far or closer to the camera, etc. Sort faceset by best to 2000.
+Gather 5000+ samples of your face with various conditions using webcam which will be used for Live. The conditions are as follows: different lighting, different facial expressions, head direction, eyes direction, being far or closer to the camera, etc. Sort faceset by best to 2000.
 
-3. Train the pretrained model, where src faceset is the celebrity and dst faceset is your faceset. 
+> Using SAEHD model.
 
-4. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
+res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, random_hsv_power:0.1, batch:8. Others by default.
+
+Make a backup before every stage !
+
+1) train +500.000 with RTM WF faceset from the torrent as dst, deleting inter_AB.npy every 100k (save, delete, continue run)
+
+2) train +500.000
+
+3) place your faceset to dst
+
+4) do not delete anything, continue train +500.000
+
+5) random_warp:OFF, train +500.000
+
+6) enable gan 0.1 gan_dims:32, train +300.000
+
+7. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
 
 </td></tr>
 <tr><td colspan=2 align="center">
@@ -76,16 +92,36 @@ Src faceset should be xseg'ed and applied. You can apply Generic XSeg to src fac
 
 Dst faceset is RTM WF faceset from the torrent.
 
-Make a backup before every stage !
-
 > Using SAEHD model.
 
--- coming soon --
+res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, random_hsv_power:0.1, batch:8. Others by default.
 
-> Using AMP model.
+Make a backup before every stage !
 
--- coming soon --
+1) train +1.000.000 iters with RTM WF faceset from the torrent as dst, deleting inter_AB.npy every 100k (save, delete, continue run)
 
+2) random_warp:ON,  train +500.000
+
+3) random_warp:OFF, train +500.000
+
+4) if swapped face looks more like dst, delete inter_AB, repeat from stage 2
+
+5) enable gan 0.1 gan_dims:32, train +300.000
+
+</td></tr>
+<tr><td colspan=2 align="left">
+
+## I want to change some code and test the result on my local machine. What I need to do?
+
+There is ready-to-use VSCode editor inside DeepFaceLive folder located in
+
+> _internal\vscode.bat
+
+All code changes will only affect the current folder.
+
+Also you can build a new and clean DeepFaceLive folder with the code from current folder using
+
+> _internal\build DeepFaceLive.bat
 
 </td></tr>
 </table>
