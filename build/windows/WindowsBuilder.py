@@ -482,10 +482,7 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
         builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
         builder.install_pip_package('onnxruntime-gpu==1.9.0')
     elif backend == 'directml':
-        if python_ver[:3] == '3.7':
-            builder.install_pip_package('https://github.com/iperov/DeepFaceLive/releases/download/ort-dml/onnxruntime_directml-1.8.2-cp37-cp37m-win_amd64.whl')
-        else:
-            raise Exception(f'no onnxruntime_directml wheel for python {python_ver}')
+        builder.install_pip_package('onnxruntime-directml==1.9.0')
 
     builder.install_ffmpeg_binaries()
 
