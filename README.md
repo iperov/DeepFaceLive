@@ -95,8 +95,10 @@ Windows 10
 
 </td></tr>
 <tr><td align="right"> <a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
-</td><td align="center">
+</td><td align="left">
 DirectX12 build : NVIDIA, AMD, Intel videocards.
+
+NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. 
 </td></tr>
 <tr><td colspan=2 align="center">
 
@@ -104,11 +106,11 @@ DirectX12 build : NVIDIA, AMD, Intel videocards.
 
 <tr><td align="right">
 <a href="https://discord.gg/S2h7kPySQp">Discord</a>
-</td><td align="center">Official discord channel. English / Russian.</td></tr>
+</td><td align="left">Official discord channel. English / Russian.</td></tr>
 
 <tr><td align="right">
 <a href="https://mrdeepfakes.com/forums/">mrdeepfakes</a>
-</td><td align="center">the biggest NSFW English deepfake community</td></tr>
+</td><td align="left">the biggest NSFW English deepfake community</td></tr>
 
 </td></tr>
 <tr><td colspan=2 align="center">
