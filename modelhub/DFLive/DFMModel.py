@@ -34,6 +34,7 @@ class DFMModelInfo:
 def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
     # predefined list of celebs with urls
     dfm_models = [
+            DFMModelInfo(name='Alexandra Daddario', model_path=models_path / f'Alexandra_Daddario.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ALEXANDRA_DADDARIO/Alexandra_Daddario.dfm'),
             DFMModelInfo(name='Margot Robbie', model_path=models_path / f'Margot_Robbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MARGOT_ROBBIE/Margot_Robbie.dfm'),
             DFMModelInfo(name='Sylvester Stallone', model_path=models_path / f'Sylvester_Stallone.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/SYLVESTER_STALLONE/Sylvester_Stallone.dfm'),
             DFMModelInfo(name='Tom Cruise', model_path=models_path / f'Tom_Cruise.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TOM_CRUISE/Tom_Cruise.dfm'),

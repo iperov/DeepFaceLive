@@ -22,6 +22,12 @@
 
 <table align="center" border="0">
 <tr><td align="center">
+Alexandra Daddario
+
+<img src="doc/celebs/Alexandra_Daddario/Alexandra_Daddario.jpg" width=128></img>
+
+<a href="doc/celebs/Alexandra_Daddario/examples.md">examples</a>
+</td><td align="center">
 Margot Robbie
 
 <img src="doc/celebs/Margot_Robbie/Margot_Robbie.png" width=128></img>
