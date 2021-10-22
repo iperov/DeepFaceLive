@@ -8,7 +8,6 @@ from xlib import os as lib_os
 from xlib.facemeta import ELandmarks2D, FLandmarks2D, FPose
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
-from xlib.python import all_is_not_None
 
 from .BackendBase import (BackendConnection, BackendDB, BackendHost,
                           BackendSignal, BackendWeakHeap, BackendWorker,

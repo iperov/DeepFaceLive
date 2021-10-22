@@ -17,8 +17,10 @@ class BackendFaceSwapInfo:
         self.face_pose : FPose = None
         self.face_ulmrks : FLandmarks2D = None
 
+        self.face_resolution : int = None
         self.face_align_image_name : str = None
         self.face_align_mask_name : str = None
+        self.face_align_lmrks_mask_name : str = None
         self.face_swap_image_name : str = None
         self.face_swap_mask_name : str = None
 

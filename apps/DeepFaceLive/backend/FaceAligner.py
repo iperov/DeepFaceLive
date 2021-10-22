@@ -129,7 +129,9 @@ class FaceAlignerWorker(BackendWorker):
 
                         face_ulmrks = fsi.face_ulmrks
                         if face_ulmrks is not None:
-                            face_image, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
+                            fsi.face_resolution = state.resolution
+
+                            face_align_img, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
                                                                   exclude_moving_parts=state.exclude_moving_parts,
                                                                   head_yaw=head_yaw,
                                                                   x_offset=state.x_offset,
@@ -138,8 +140,13 @@ class FaceAlignerWorker(BackendWorker):
                             fsi.face_align_image_name = f'{frame_image_name}_{face_id}_aligned'
                             fsi.image_to_align_uni_mat = uni_mat
                             fsi.face_align_ulmrks = face_ulmrks.transform(uni_mat)
+                            bcd.set_image(fsi.face_align_image_name, face_align_img)
 
-                            bcd.set_image(fsi.face_align_image_name, face_image)
+                            # Due to FaceAligner is not well loaded, we can make lmrks mask here
+                            face_align_lmrks_mask_img = fsi.face_align_ulmrks.get_convexhull_mask( face_align_img.shape[:2], color=(255,), dtype=np.uint8)
+                            fsi.face_align_lmrks_mask_name = f'{frame_image_name}_{face_id}_aligned_lmrks_mask'
+                            bcd.set_image(fsi.face_align_lmrks_mask_name, face_align_lmrks_mask_img)
+
 
                 self.stop_profile_timing()
                 self.pending_bcd = bcd

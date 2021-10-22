@@ -536,7 +536,7 @@ class Localization:
                 'en-US' : 'Face mask type',
                 'ru-RU' : 'Тип маски лица',
                 'zh-CN' : '人脸遮罩类型'},
-
+    
     'QFaceMerger.face_mask_erode':{
                 'en-US' : 'Face mask erode',
                 'ru-RU' : 'Укорочение маски',
@@ -547,6 +547,11 @@ class Localization:
                 'ru-RU' : 'Размытие маски',
                 'zh-CN' : '遮罩边缘羽化'},
                 
+    'QFaceMerger.help.color_transfer':{
+                'en-US' : 'Match the color distribution of the replaced face to the original face.',
+                'ru-RU' : 'Совместить цветовое распределение заменённого лица с исходным.',
+                'zh-CN' : '将被替换的面孔的颜色分布与原始面孔相匹配。'},
+                
     'QFaceMerger.color_transfer':{
                 'en-US' : 'Color transfer',
                 'ru-RU' : 'Перенос цвета',
@@ -556,7 +561,12 @@ class Localization:
                 'en-US' : 'Interpolation',
                 'ru-RU' : 'Интерполяция',
                 'zh-CN' : '插值'},
-                
+
+    'QFaceMerger.color_compression':{
+                'en-US' : 'Color compression',
+                'ru-RU' : 'Сжатие цвета',
+                'zh-CN' : '颜色压缩'},
+                    
     'QFaceMerger.face_opacity':{
                 'en-US' : 'Face opacity',
                 'ru-RU' : 'Непрозрач. лица',
@@ -686,21 +696,6 @@ class Localization:
                 'en-US' : 'Downloading model...',
                 'ru-RU' : 'Загрузка модели...',
                 'zh-CN' : '下载模型中...'},
-
-    'FaceMerger.FaceMaskType.SRC':{
-                'en-US' : 'Source',
-                'ru-RU' : 'Исходный',
-                'zh-CN' : '源脸'},
-
-    'FaceMerger.FaceMaskType.CELEB':{
-                'en-US' : 'Celeb',
-                'ru-RU' : 'Знаменитость',
-                'zh-CN' : '目标脸（名人）'},
-
-    'FaceMerger.FaceMaskType.SRC_M_CELEB':{
-                'en-US' : 'Source*Celeb',
-                'ru-RU' : 'Исходный*Знаменитость',
-                'zh-CN' : '源脸*目标脸'},
                 
     'StreamOutput.SourceType.SOURCE_FRAME':{
                 'en-US' : 'Source frame',
