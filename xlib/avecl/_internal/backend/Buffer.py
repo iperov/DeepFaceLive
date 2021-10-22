@@ -85,20 +85,21 @@ class Buffer:
             CL.clWaitForEvents(1, ( CL.cl_event * 1 )(ev) )
             CL.clReleaseEvent(ev)
 
-    def np(self, shape : Iterable, dtype : np.dtype):
+    def np(self, shape : Iterable, dtype : np.dtype, out=None):
         """
         Returns data of buffer as np.ndarray with specified shape and dtype
         """
-        out_np_value = np.empty (shape, dtype)
+        if out is None:
+            out = np.empty (shape, dtype)
 
-        if out_np_value.nbytes != self._size:
+        if out.nbytes != self._size:
             raise ValueError(f'Unable to represent Buffer with size {self._size} as shape {shape} with dtype {dtype}')
 
-        clr = CL.clEnqueueReadBuffer(self._device._get_ctx_q(), self.get_cl_mem(), True, 0, self._size, out_np_value.ctypes.data, 0, None, None)
+        clr = CL.clEnqueueReadBuffer(self._device._get_ctx_q(), self.get_cl_mem(), True, 0, self._size, out.ctypes.data, 0, None, None)
         if clr != CL.CLERROR.SUCCESS:
             raise Exception(f'clEnqueueReadBuffer error: {clr}')
 
-        return out_np_value
+        return out
 
     def __str__(self):
         return f'Buffer [{self._size} bytes][{f"{self._cl_mem.value}" if self._cl_mem is not None else "unallocated"}] on {str(self._device)}'

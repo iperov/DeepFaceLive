@@ -86,7 +86,6 @@ class Device:
         """
 
         compiled_krn, prog = self._cached_kernels.get(key, (None, None) )
-
         if compiled_krn is None:
             clr = CL.CLRESULT()
             prog = CL.clCreateProgramWithSource(self._get_ctx(), 1, CL.c_char_p(kernel_text.encode()), None, clr )
@@ -209,7 +208,7 @@ class Device:
         """
         pool = self._pooled_buffers
         mems = [ (k,x) for k in pool.keys() for x in pool[k]  ]
-        
+
         if len(mems) != 0:
             mems = random.sample(mems, max(1,int(len(mems)*0.25)) )
             for k, mem in mems:
@@ -241,7 +240,7 @@ class Device:
         self._pooled_buffers = {}
         self._total_memory_pooled = 0
         self._total_buffers_pooled = 0
-    
+
     def cleanup_cached_kernels(self):
         for kernel, prog in self._cached_kernels.values():
             clr = CL.clReleaseKernel(kernel)
@@ -252,7 +251,7 @@ class Device:
             if clr != CL.CLERROR.SUCCESS:
                 raise Exception(f'clReleaseProgram error: {clr}')
         self._cached_kernels = {}
-        
+
     def cleanup(self):
         """
         Frees all resources from this Device.
@@ -343,8 +342,6 @@ N of cacheddata:         {len(self._cached_data)}
 
             wait(False)     wait execution to complete
         """
-        ckernel = self._compile_kernel(kernel, kernel.get_kernel_text())
-
         if global_shape is None:
             global_shape = kernel.get_global_shape()
         if global_shape is None:
@@ -376,8 +373,8 @@ N of cacheddata:         {len(self._cached_data)}
             for i,v in enumerate(local_shape):
                 global_shape_offsets_ar[i] = v
 
+        krn_args = []
         for i, arg in enumerate(args):
-
             if isinstance(arg, Buffer):
                 arg = arg.get_cl_mem()
             else:
@@ -385,7 +382,11 @@ N of cacheddata:         {len(self._cached_data)}
                 if cl_type is None:
                     raise ValueError(f'Cannot convert type {arg.__class__} to OpenCL type.')
                 arg = cl_type(arg)
+            krn_args.append(arg)
 
+        ckernel = self._compile_kernel(kernel, kernel.get_kernel_text())
+
+        for i, arg in enumerate(krn_args):
             clr = CL.clSetKernelArg(ckernel, i, CL.sizeof(arg), CL.byref(arg))
             if clr != CL.CLERROR.SUCCESS:
                 raise Exception(f'clSetKernelArg error: {clr}')

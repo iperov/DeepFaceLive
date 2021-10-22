@@ -82,9 +82,9 @@ class Tensor:
             self.get_buffer().set(value)
         return self
 
-    def np(self):
+    def np(self, out=None):
         """Returns numpy value of a Tensor"""
-        return self.get_buffer().np(self.shape, self.dtype)
+        return self.get_buffer().np(self.shape, self.dtype, out=out)
 
 
     ### OPERATORS
