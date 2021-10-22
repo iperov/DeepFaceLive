@@ -101,8 +101,8 @@ class FLandmarks2D:
         r = max(xrt[0], xrb[0])
         b = max(xlb[1], xrb[1])
         return FRect.from_ltrb( (l,t,r,b) )
-    
-    def calc_cut(self, w_h, coverage : float, output_size : int,
+
+    def calc_cut(self, h_w, coverage : float, output_size : int,
                        exclude_moving_parts : bool,
                        head_yaw : float = None,
                        x_offset : float = 0, y_offset : float = 0):
@@ -114,8 +114,9 @@ class FLandmarks2D:
              mat,       matrix to transform img space to face_image space
              uni_mat    matrix to transform uniform img space to uniform face_image space
         """
+        h,w = h_w
         type = self._type
-        lmrks = (self._ulmrks * w_h).astype(np.float32)
+        lmrks = (self._ulmrks * (w,h)).astype(np.float32)
 
         # estimate landmarks transform from global space to local aligned space with bounds [0..1]
         if type == ELandmarks2D.L68:
@@ -161,7 +162,7 @@ class FLandmarks2D:
 
         # calc affine transform from 3 global space points to 3 local space points size of 'output_size'
         mat     = Affine2DMat.from_3_pairs ( l_t, np.float32(( (0,0),(output_size,0),(output_size,output_size) )))
-        uni_mat = Affine2DUniMat.from_3_pairs ( (l_t / w_h).astype(np.float32), np.float32(( (0,0),(1,0),(1,1) )) )
+        uni_mat = Affine2DUniMat.from_3_pairs ( (l_t / (w,h) ).astype(np.float32), np.float32(( (0,0),(1,0),(1,1) )) )
 
         return mat, uni_mat
 
@@ -196,7 +197,7 @@ class FLandmarks2D:
         """
         h,w = img.shape[0:2]
 
-        mat, uni_mat = self.calc_cut( (w,h), coverage, output_size, exclude_moving_parts, head_yaw=head_yaw, x_offset=x_offset, y_offset=y_offset)
+        mat, uni_mat = self.calc_cut( (h,w), coverage, output_size, exclude_moving_parts, head_yaw=head_yaw, x_offset=x_offset, y_offset=y_offset)
 
         face_image = cv2.warpAffine(img, mat, (output_size, output_size), cv2.INTER_CUBIC )
         return face_image, uni_mat
@@ -213,6 +214,16 @@ class FLandmarks2D:
         for x, y in pts:
             cv2.circle(img, (x, y), radius, color, lineType=cv2.LINE_AA)
 
+    def get_convexhull_mask(self, h_w, color=(1,), dtype=np.float32) -> np.ndarray:
+        """
+
+        """
+        h, w = h_w
+        ch = len(color)
+        lmrks = (self._ulmrks * h_w).astype(np.int32)
+        mask = np.zeros( (h,w,ch), dtype=dtype)
+        cv2.fillConvexPoly( mask, cv2.convexHull(lmrks), color)
+        return mask
 
 
 
