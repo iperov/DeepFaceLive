@@ -244,7 +244,7 @@ class FaceMergerWorker(BackendWorker):
         frame_face_swap_img = ImageProcessor(face_swap_img).warpAffine(aligned_to_source_uni_mat, frame_width, frame_height, interpolation=interpolation).get_image('HWC')
 
         # Combine final frame
-        opacity = state.face_opacity
+        opacity = np.float32(state.face_opacity)
         one_f = np.float32(1.0)
         if opacity == 1.0:
             ne.evaluate('frame_image*(one_f-frame_face_mask) + frame_face_swap_img*frame_face_mask', out=out_merged_frame)
@@ -300,7 +300,7 @@ class FaceMergerWorker(BackendWorker):
         if opacity == 1.0:
             frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); O = I0f*(1.0-I1) + I2*I1', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, dtype=np.float32)
         else:
-            frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); O = I0f*(1.0-I1) + I0f*I1*(1.0-I3) + I2*I1*I3', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, opacity, dtype=np.float32)
+            frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); O = I0f*(1.0-I1) + I0f*I1*(1.0-I3) + I2*I1*I3', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, np.float32(opacity), dtype=np.float32)
 
         color_compression = state.color_compression
         if color_compression != 0:
