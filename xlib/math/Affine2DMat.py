@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import numpy.linalg as npla
-
+import math
 
 class Affine2DMat(np.ndarray):
     """
@@ -21,6 +21,18 @@ class Affine2DMat(np.ndarray):
 
     def __init__(self, values):
         super().__init__()
+
+    def __rmul__(self, other) -> 'Affine2DMat':
+        if isinstance(other, Affine2DMat):
+            return Affine2DMat( np.matmul( np.concatenate( [ other, [[0,0,1]] ], 0),
+                                           np.concatenate( [ self,  [[0,0,1]] ], 0) )[:2] )
+        raise ValueError('You can multiplacte Affine2DMat only with Affine2DMat')
+
+    def __mul__(self, other) -> 'Affine2DMat':
+        if isinstance(other, Affine2DMat):
+            return Affine2DMat( np.matmul( np.concatenate( [ self, [[0,0,1]] ], 0),
+                                           np.concatenate( [ other,  [[0,0,1]] ], 0) )[:2] )
+        raise ValueError('You can multiplacte Affine2DMat only with Affine2DMat')
 
     @staticmethod
     def identity():
@@ -96,6 +108,20 @@ class Affine2DMat(np.ndarray):
 
         return Affine2DMat(T[:2])
 
+    @staticmethod
+    def from_transformation(cx : float, cy : float,rot_deg : float, scale : float,  tx : float, ty : float) -> 'Affine2DMat':
+        """
+         cx, cy     center x,y to rotate and scale around this point
+
+         tx, ty     additional translate x,y
+        """
+        rot_rad = rot_deg * math.pi / 180.0
+        alpha = math.cos(rot_rad)*scale
+        beta  = math.sin(rot_rad)*scale
+
+        return Affine2DMat( ((alpha, beta,  (1-alpha)*cx - beta*cy + tx),
+                             (-beta, alpha, beta*cx + (1-alpha)*cy + ty)) )
+
 
     @staticmethod
     def from_3_pairs(src_pts, dst_pts) -> 'Affine2DMat':
@@ -108,35 +134,15 @@ class Affine2DMat(np.ndarray):
         """
         returns inverted Affine2DMat
         """
-        affine_mat = np.concatenate( (self.copy(), [[0,0,1]]), 0 )
-        affine_mat = npla.inv(affine_mat)
-        return Affine2DMat( affine_mat[:2,:] )
+        ((a, b, c),
+         (d, e, f)) = self
+        D = a*e - b*d
+        D = 1.0 / D if D != 0.0 else 0.0
+        a, b, c, d, e, f = ( e*D, -b*D, (b*f-e*c)*D ,
+                            -d*D,  a*D, (d*c-a*f)*D )
 
-
-    # def scaled(self, sw : float, sh: float, tw: float, th: float) -> 'Affine2DMat':
-    #     """
-
-    #         sw, sh      source width/height scale
-    #         tw, th      target width/height scale
-    #     """
-    #     src_pts = np.float32([(0,0),(1,0),(0,1),(0.5,0.5)])
-    #     src_pts -= 0.5
-
-    #     dst_pts = self.transform_points(src_pts)
-
-    #     print(src_pts, dst_pts)
-
-    #     src_pts = src_pts*(sw,sh)
-
-    #     dst_cpt = dst_pts[-1]
-
-    #     dst_pts = (dst_pts-dst_cpt)*(tw,th) + dst_cpt*(tw,th)
-
-
-
-    #     return Affine2DUniMat.from_3_pairs(src_pts[:3], dst_pts[:3] )
-
-
+        return Affine2DMat( ((a, b, c),
+                             (d, e, f)) )
 
     def transform_points(self, points):
         if not isinstance(points, np.ndarray):
@@ -159,6 +165,11 @@ class Affine2DUniMat(Affine2DMat):
     """
     same as Affine2DMat but for transformation of uniform coordinates
     """
+    def __rmul__(self, other) -> 'Affine2DUniMat':
+        return super().__rmul__(other).as_uni_mat()
+
+    def __mul__(self, other) -> 'Affine2DUniMat':
+        return super().__mul__(other).as_uni_mat()
 
     @staticmethod
     def identity(): return Affine2DMat.identity().as_uni_mat()
@@ -167,10 +178,18 @@ class Affine2DUniMat(Affine2DMat):
     def umeyama(src, dst, estimate_scale=True): return Affine2DMat.umeyama(src, dst, estimate_scale=estimate_scale).as_uni_mat()
 
     @staticmethod
+    def from_transformation(cx : float, cy : float,rot_deg : float, scale : float,  tx : float, ty : float) -> 'Affine2DUniMat':
+        """
+         cx, cy     center x,y to rotate and scale around this point
+
+         tx, ty     additional translate x,y
+        """
+        return Affine2DMat.from_transformation(cx, cy, rot_deg, scale, tx, ty).as_uni_mat()
+
+    @staticmethod
     def from_3_pairs(src_pts, dst_pts) -> 'Affine2DUniMat': return Affine2DMat.from_3_pairs(src_pts, dst_pts).as_uni_mat()
 
     def invert(self) -> 'Affine2DUniMat': return super().invert().as_uni_mat()
-    #def scaled(self, sw : float, sh: float, tw: float, th: float) -> 'Affine2DUniMat': return super().scaled(sw, sh, tw, th).as_uni_mat()
 
     def source_scaled_around_center(self, sw : float, sh: float) -> 'Affine2DUniMat':
         """
@@ -207,3 +226,27 @@ class Affine2DUniMat(Affine2DMat):
         return Affine2DMat.from_3_pairs([[0,0],[sw,0],[0,sh]],
                                         self.transform_points( [(0,0),(1,0),(0,1)] ) * (tw,th) )
 
+
+
+# def scaled(self, sw : float, sh: float, tw: float, th: float) -> 'Affine2DMat':
+#     """
+
+#         sw, sh      source width/height scale
+#         tw, th      target width/height scale
+#     """
+#     src_pts = np.float32([(0,0),(1,0),(0,1),(0.5,0.5)])
+#     src_pts -= 0.5
+
+#     dst_pts = self.transform_points(src_pts)
+
+#     print(src_pts, dst_pts)
+
+#     src_pts = src_pts*(sw,sh)
+
+#     dst_cpt = dst_pts[-1]
+
+#     dst_pts = (dst_pts-dst_cpt)*(tw,th) + dst_cpt*(tw,th)
+
+
+
+#     return Affine2DUniMat.from_3_pairs(src_pts[:3], dst_pts[:3] )
