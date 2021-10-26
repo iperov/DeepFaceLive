@@ -38,7 +38,7 @@ class Faceset:
             self.shrink()
         else:
             cur.execute('END')
-            
+
     def __del__(self):
         self.close()
 
@@ -50,7 +50,7 @@ class Faceset:
 
     def __repr__(self): return self.__str__()
     def __str__(self):
-        return f"Faceset. UImage:{self.get_UImage_count()} UFaceMark:{self.get_UFaceMark_count()}"
+        return f"Faceset. UImage:{self.get_UImage_count()} UFaceMark:{self.get_UFaceMark_count()} UPerson:{self.get_UPerson_count()}"
 
     def _is_table_exists(self, name):
         return self._cur.execute(f"SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", [name]).fetchone()[0] != 0
@@ -85,8 +85,8 @@ class Faceset:
             .execute('INSERT INTO  FacesetInfo VALUES (1)')
 
             .execute('CREATE TABLE UImage (uuid BLOB, name TEXT, format TEXT, data BLOB)')
-            .execute('CREATE TABLE UPerson (uuid BLOB, name TEXT, age NUMERIC)')
-            .execute('CREATE TABLE UFaceMark (uuid BLOB, UImage_uuid BLOB, UPerson_uuid BLOB, pickled_bytes BLOB)')
+            .execute('CREATE TABLE UPerson (uuid BLOB, data BLOB)')
+            .execute('CREATE TABLE UFaceMark (uuid BLOB, UImage_uuid BLOB, UPerson_uuid BLOB, data BLOB)')
             )
 
         if _transaction:
@@ -99,46 +99,49 @@ class Faceset:
     ### UFaceMark
     ###################
     def _UFaceMark_from_db_row(self, db_row) -> UFaceMark:
-        uuid, UImage_uuid, UPerson_uuid, pickled_bytes = db_row
-        return pickle.loads(pickled_bytes)
+        uuid, UImage_uuid, UPerson_uuid, data = db_row
+
+        ufm = UFaceMark()
+        ufm.restore_state(pickle.loads(data))
+        return ufm
 
     def add_UFaceMark(self, ufacemark_or_list : UFaceMark):
         """
         add or update UFaceMark in DB
         """
         if not isinstance(ufacemark_or_list, Iterable):
-            ufacemark_or_list = [ufacemark_or_list]
+            ufacemark_or_list : List[UFaceMark] = [ufacemark_or_list]
 
         cur = self._cur
         cur.execute('BEGIN IMMEDIATE')
-        for ufacemark in ufacemark_or_list:
-            pickled_bytes = pickle.dumps(ufacemark)
-            uuid = ufacemark.get_uuid()
-            UImage_uuid = ufacemark.get_UImage_uuid()
-            UPerson_uuid = ufacemark.get_UPerson_uuid()
+        for ufm in ufacemark_or_list:
+            uuid = ufm.get_uuid()
+            UImage_uuid = ufm.get_UImage_uuid()
+            UPerson_uuid = ufm.get_UPerson_uuid()
+
+            data = pickle.dumps(ufm.dump_state())
 
             if cur.execute('SELECT COUNT(*) from UFaceMark where uuid=?', [uuid] ).fetchone()[0] != 0:
-                cur.execute('UPDATE UFaceMark SET UImage_uuid=?, UPerson_uuid=?, pickled_bytes=? WHERE uuid=?',
-                            [UImage_uuid, UPerson_uuid, pickled_bytes, uuid])
+                cur.execute('UPDATE UFaceMark SET UImage_uuid=?, UPerson_uuid=?, data=? WHERE uuid=?',
+                            [UImage_uuid, UPerson_uuid, data, uuid])
             else:
-                cur.execute('INSERT INTO UFaceMark VALUES (?, ?, ?, ?)', [uuid, UImage_uuid, UPerson_uuid, pickled_bytes])
+                cur.execute('INSERT INTO UFaceMark VALUES (?, ?, ?, ?)', [uuid, UImage_uuid, UPerson_uuid, data])
         cur.execute('COMMIT')
-
 
     def get_UFaceMark_count(self) -> int:
         return self._cur.execute('SELECT COUNT(*) FROM UFaceMark').fetchone()[0]
 
     def get_all_UFaceMark(self) -> List[UFaceMark]:
-        return [ pickle.loads(pickled_bytes) for pickled_bytes, in self._cur.execute('SELECT pickled_bytes FROM UFaceMark').fetchall() ]
-    
+        return [ self._UFaceMark_from_db_row(db_row) for db_row in self._cur.execute('SELECT * FROM UFaceMark').fetchall() ]
+
     def get_UFaceMark_by_uuid(self, uuid : bytes) -> Union[UFaceMark, None]:
         c = self._cur.execute('SELECT * FROM UFaceMark WHERE uuid=?', [uuid])
         db_row = c.fetchone()
         if db_row is None:
             return None
-        
+
         return self._UFaceMark_from_db_row(db_row)
-        
+
     def iter_UFaceMark(self) -> Generator[UFaceMark, None, None]:
         """
         returns Generator of UFaceMark
@@ -156,35 +159,44 @@ class Faceset:
     ###################
     ### UPerson
     ###################
+    def _UPerson_from_db_row(self, db_row) -> UPerson:
+        uuid, data = db_row
+        up = UPerson()
+        up.restore_state(pickle.loads(data))
+        return up
+
     def add_UPerson(self, uperson_or_list : UPerson):
         """
         add or update UPerson in DB
         """
         if not isinstance(uperson_or_list, Iterable):
-            uperson_or_list = [uperson_or_list]
+            uperson_or_list : List[UPerson] = [uperson_or_list]
 
         cur = self._cur
         cur.execute('BEGIN IMMEDIATE')
         for uperson in uperson_or_list:
             uuid = uperson.get_uuid()
-            name = uperson.get_name()
-            age = uperson.get_age()
+
+            data = pickle.dumps(uperson.dump_state())
+
             if cur.execute('SELECT COUNT(*) from UPerson where uuid=?', [uuid]).fetchone()[0] != 0:
-                cur.execute('UPDATE UPerson SET name=?, age=? WHERE uuid=?', [name, age, uuid])
+                cur.execute('UPDATE UPerson SET data=? WHERE uuid=?', [data])
             else:
-                cur.execute('INSERT INTO UPerson VALUES (?, ?, ?)', [uuid, name, age])
+                cur.execute('INSERT INTO UPerson VALUES (?, ?)', [uuid, data])
         cur.execute('COMMIT')
+
+    def get_UPerson_count(self) -> int:
+        return self._cur.execute('SELECT COUNT(*) FROM UPerson').fetchone()[0]
+
+    def get_all_UPerson(self) -> List[UPerson]:
+        return [ self._UPerson_from_db_row(db_row) for db_row in self._cur.execute('SELECT * FROM UPerson').fetchall() ]
 
     def iter_UPerson(self) -> Generator[UPerson, None, None]:
         """
         iterator of all UPerson's
         """
-        for uuid, name, age in self._cur.execute('SELECT * FROM UPerson').fetchall():
-            uperson = UPerson()
-            uperson.set_uuid(uuid)
-            uperson.set_name(name)
-            uperson.set_age(age)
-            yield uperson
+        for db_row in self._cur.execute('SELECT * FROM UPerson').fetchall():
+            yield self._UPerson_from_db_row(db_row)
 
     def delete_all_UPerson(self):
         """
@@ -211,7 +223,7 @@ class Faceset:
         """
         add or update UImage in DB
 
-         uimage       UImage object
+         uimage       UImage or list
 
          format('png')  webp    ( does not support lossless on 100 quality ! )
                         png     ( lossless )
@@ -229,13 +241,8 @@ class Faceset:
         if not isinstance(uimage_or_list, Iterable):
             uimage_or_list = [uimage_or_list]
 
-        cur = self._cur
-        cur.execute('BEGIN IMMEDIATE')
+        uimage_datas = []
         for uimage in uimage_or_list:
-            # TODO optimize move encoding to out of transaction
-            img = uimage.get_image()
-            uuid = uimage.get_uuid()
-
             if format == 'webp':
                 imencode_args = [int(cv2.IMWRITE_WEBP_QUALITY), quality]
             elif format == 'jpg':
@@ -244,15 +251,19 @@ class Faceset:
                 imencode_args = [int(cv2.IMWRITE_JPEG2000_COMPRESSION_X1000), quality*10]
             else:
                 imencode_args = []
-
-            ret, data_bytes = cv2.imencode( f'.{format}', img, imencode_args)
+            ret, data_bytes = cv2.imencode( f'.{format}', uimage.get_image(), imencode_args)
             if not ret:
                 raise Exception(f'Unable to encode image format {format}')
+            uimage_datas.append(data_bytes.data)
 
+        cur = self._cur
+        cur.execute('BEGIN IMMEDIATE')
+        for uimage, data in zip(uimage_or_list, uimage_datas):
+            uuid = uimage.get_uuid()
             if cur.execute('SELECT COUNT(*) from UImage where uuid=?', [uuid] ).fetchone()[0] != 0:
-                cur.execute('UPDATE UImage SET name=?, format=?, data=? WHERE uuid=?', [uimage.get_name(), format, data_bytes.data, uuid])
+                cur.execute('UPDATE UImage SET name=?, format=?, data=? WHERE uuid=?', [uimage.get_name(), format, data, uuid])
             else:
-                cur.execute('INSERT INTO UImage VALUES (?, ?, ?, ?)', [uuid, uimage.get_name(), format, data_bytes.data])
+                cur.execute('INSERT INTO UImage VALUES (?, ?, ?, ?)', [uuid, uimage.get_name(), format, data])
         cur.execute('COMMIT')
 
     def get_UImage_count(self) -> int: return self._cur.execute('SELECT COUNT(*) FROM UImage').fetchone()[0]
@@ -261,7 +272,7 @@ class Faceset:
         """
         if uuid is None:
             return None
-            
+
         db_row = self._cur.execute('SELECT * FROM UImage where uuid=?', [uuid]).fetchone()
         if db_row is None:
             return None

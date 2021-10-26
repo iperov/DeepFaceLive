@@ -3,27 +3,27 @@ from typing import Union
 
 import numpy as np
 
-class UImage:
+from .IState import IState
+
+
+class UImage(IState):
 
     def __init__(self):
         """
         represents uncompressed image uint8 HWC ( 1/3/4 channels )
         """
-        self._uuid : Union[bytes, None] = uuid.uuid4().bytes_le
+        self._uuid : Union[bytes, None] = None
         self._name : Union[str, None] = None
         self._image : np.ndarray = None
 
-    def __getstate__(self):
-        return self.__dict__.copy()
-
-    def __setstate__(self, d):
-        self.__init__()
-        self.__dict__.update(d)
-
-    def __str__(self): return f"UImage UUID:[...{self._uuid[-4:].hex()}] name:[{self._name}] image:[{ (self._image.shape, self._image.dtype) if self._image is not None else None}]"
+    def __str__(self): return f"UImage UUID:[...{self.get_uuid()[-4:].hex()}] name:[{self._name}] image:[{ (self._image.shape, self._image.dtype) if self._image is not None else None}]"
     def __repr__(self): return self.__str__()
 
-    def get_uuid(self) -> Union[bytes, None]: return self._uuid
+    def get_uuid(self) -> Union[bytes, None]:
+        if self._uuid is None:
+            self._uuid = uuid.uuid4().bytes_le
+        return self._uuid
+
     def set_uuid(self, uuid : Union[bytes, None]):
         if uuid is not None and not isinstance(uuid, bytes):
             raise ValueError(f'uuid must be an instance of bytes or None')
@@ -47,7 +47,7 @@ class UImage:
         if image is not None:
             if image.ndim == 2:
                 image = image[...,None]
-                
+
             if image.ndim != 3:
                 raise ValueError('image must have ndim == 3')
             _,_,C = image.shape

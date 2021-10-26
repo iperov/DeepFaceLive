@@ -1,26 +1,36 @@
 import uuid
 from typing import Union
 
+from .IState import IState
 
-class UPerson:
-    def __init__(self, _from_pickled=False):
+
+class UPerson(IState):
+    def __init__(self):
         """
         """
-        self._uuid : Union[bytes, None] = uuid.uuid4().bytes_le if not _from_pickled else None
+        self._uuid : Union[bytes, None] = None
         self._name : Union[str, None] = None
         self._age : Union[int, None] = None
-
-    def __getstate__(self):
-        return self.__dict__.copy()
-
-    def __setstate__(self, d):
-        self.__init__(_from_pickled=True)
-        self.__dict__.update(d)
 
     def __str__(self): return f"UPerson UUID:[...{self._uuid[-4:].hex()}] name:[{self._name}] age:[{self._age}]"
     def __repr__(self): return self.__str__()
 
-    def get_uuid(self) -> Union[bytes, None]: return self._uuid
+    def restore_state(self, state : dict):
+        self._uuid = state.get('_uuid', None)
+        self._name = state.get('_name', None)
+        self._age = state.get('_age', None)
+
+    def dump_state(self) -> dict:
+        return {'_uuid' : self._uuid,
+                '_name' : self._name,
+                '_age' : self._age,
+                }
+
+    def get_uuid(self) -> Union[bytes, None]:
+        if self._uuid is None:
+            self._uuid = uuid.uuid4().bytes_le
+        return self._uuid
+
     def set_uuid(self, uuid : Union[bytes, None]):
         if uuid is not None and not isinstance(uuid, bytes):
             raise ValueError(f'uuid must be an instance of bytes or None')

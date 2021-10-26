@@ -52,6 +52,14 @@ def main():
     p.add_argument('--delete-parts', action="store_true", default=False)
     p.set_defaults(func=run_merge_large_files)
 
+    def run_extract_FaceSynthetics(args):
+        from scripts import dev
+        dev.extract_FaceSynthetics(input_dir=args.input_dir)
+
+    p = dev_subparsers.add_parser('extract_FaceSynthetics')
+    p.add_argument('--input-dir', default=None, action=fixPathAction, help="FaceSynthetics directory.")
+    p.set_defaults(func=run_extract_FaceSynthetics)
+
     train_parser = subparsers.add_parser( "train", help="Train neural network.")
     train_parsers = train_parser.add_subparsers()
 
@@ -64,6 +72,15 @@ def main():
     p = train_parsers.add_parser('FaceAligner')
     p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs path")
     p.set_defaults(func=train_FaceAligner)
+    
+    def train_CTSOT(args):
+        from apps.trainers.CTSOT.CTSOTTrainerApp import run_app
+        run_app(userdata_path=Path(args.userdata_dir), faceset_path=Path(args.faceset_path))
+
+    p = train_parsers.add_parser('CTSOT')
+    p.add_argument('--userdata-dir', default=None, action=fixPathAction, help="Directory to save app data.")
+    p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs path")
+    p.set_defaults(func=train_CTSOT)
 
     def bad_args(arguments):
         parser.print_help()

@@ -7,9 +7,9 @@ import numpy.linalg as npla
 from ..math import Affine2DMat, Affine2DUniMat
 from .ELandmarks2D import ELandmarks2D
 from .FRect import FRect
+from .IState import IState
 
-
-class FLandmarks2D:
+class FLandmarks2D(IState):
     def __init__(self):
         """
         Describes 2D face landmarks in uniform float coordinates
@@ -17,19 +17,20 @@ class FLandmarks2D:
         self._type : ELandmarks2D = None
         self._ulmrks : np.ndarray = None
 
-    def __getstate__(self):
-        return self.__dict__.copy()
+    def restore_state(self, state : dict):
+        self._type = IState._restore_enum(ELandmarks2D, state.get('_type', None))
+        self._ulmrks = IState._restore_np_array(state.get('_ulmrks', None))
 
-    def __setstate__(self, d):
-        self.__init__()
-        self.__dict__.update(d)
+    def dump_state(self) -> dict:
+        return {'_type' : IState._dump_enum(self._type),
+                '_ulmrks' : IState._dump_np_array(self._ulmrks),
+               }
 
     @staticmethod
     def create( type : ELandmarks2D, ulmrks : np.ndarray):
         """
          ulmrks np.ndarray  (*,2|3)
         """
-
         if not isinstance(type, ELandmarks2D):
             raise ValueError('type must be ELandmarks2D')
 

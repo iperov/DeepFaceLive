@@ -1,21 +1,23 @@
 from typing import Tuple
+
 import numpy as np
+
 from .. import math as lib_math
+from .IState import IState
 
 
-class FPose:
+class FPose(IState):
     """
     Describes face pitch/yaw/roll
     """
     def __init__(self):
         self._pyr : np.ndarray = None
 
-    def __getstate__(self):
-        return self.__dict__.copy()
+    def restore_state(self, state : dict):
+        self._pyr = IState._restore_np_array(state.get('_pyr', None))
 
-    def __setstate__(self, d):
-        self.__init__()
-        self.__dict__.update(d)
+    def dump_state(self) -> dict:
+        return {'_pyr' : IState._dump_np_array(self._pyr)}
 
     def as_radians(self) -> Tuple[float, float, float]:
         """

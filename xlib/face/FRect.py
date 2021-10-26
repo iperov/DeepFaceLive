@@ -5,22 +5,24 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 import numpy.linalg as npla
+
 from .. import math as lib_math
 from ..math import Affine2DMat, Affine2DUniMat
+from .IState import IState
 
-class FRect:
+
+class FRect(IState):
     """
     Describes face rectangle in uniform float coordinates
     """
     def __init__(self):
-        self._pts = None
+        self._pts : np.ndarray = None
 
-    def __getstate__(self):
-        return self.__dict__.copy()
+    def restore_state(self, state : dict):
+        self._pts = IState._restore_np_array( state.get('_pts', None) )
 
-    def __setstate__(self, d):
-        self.__init__()
-        self.__dict__.update(d)
+    def dump_state(self) -> dict:
+        return {'_pts' : IState._dump_np_array(self._pts) }
 
     @staticmethod
     def sort_by_area_size(rects : List['FRect']):

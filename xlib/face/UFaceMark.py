@@ -1,41 +1,53 @@
 import uuid
-from typing import List, Tuple, Union
+from typing import List, Union
 
-from ..math import Affine2DMat
 from .ELandmarks2D import ELandmarks2D
 from .EMaskType import EMaskType
 from .FLandmarks2D import FLandmarks2D
 from .FPose import FPose
 from .FRect import FRect
+from .IState import IState
 
 
-class UFaceMark:
-    def __init__(self, _from_pickled=False):
+class UFaceMark(IState):
+    def __init__(self):
         """
         Describes single face in the image.
         """
-        self._uuid : Union[bytes, None] = uuid.uuid4().bytes_le if not _from_pickled else None
+        self._uuid : Union[bytes, None] = None
         self._UImage_uuid : Union[bytes, None] = None
         self._UPerson_uuid : Union[bytes, None] = None
         self._FRect : Union[FRect, None] = None
         self._FLandmarks2D_list : List[FLandmarks2D] = []
         self._FPose : Union[FPose, None] = None
-        self._mask_info_list : List = []
-        
-    def __getstate__(self):
-        return self.__dict__.copy()
+        #self._mask_info_list : List = []
 
-    def __setstate__(self, d):
-        self.__init__(_from_pickled=True)
-        self.__dict__.update(d)
-        
-    def __str__(self): 
-        s = "Masks: "
-        return f"UFaceMark UUID:[...{self._uuid[-4:].hex()}]"
-        
     def __repr__(self): return self.__str__()
-    
-    def get_uuid(self) -> Union[bytes, None]: return self._uuid
+    def __str__(self):
+        return f"UFaceMark UUID:[...{self.get_uuid()[-4:].hex()}]"
+
+    def restore_state(self, state : dict):
+        self._uuid = state.get('_uuid', None)
+        self._UImage_uuid = state.get('_UImage_uuid', None)
+        self._UPerson_uuid = state.get('_UPerson_uuid', None)
+        self._FRect = IState._restore_IState_obj(FRect, state.get('_FRect', None))
+        self._FLandmarks2D_list = [ IState._restore_IState_obj(FLandmarks2D, lmrks_state) for lmrks_state in state['_FLandmarks2D_list'] ]
+        self._FPose = IState._restore_IState_obj(FPose, state.get('_FPose', None))
+
+    def dump_state(self) -> dict:
+        return {'_uuid' : self._uuid,
+                '_UImage_uuid' : self._UImage_uuid,
+                '_UPerson_uuid' : self._UPerson_uuid,
+                '_FRect' : IState._dump_IState_obj(self._FRect),
+                '_FLandmarks2D_list': tuple( IState._dump_IState_obj(fl) for fl in self._FLandmarks2D_list),
+                '_FPose' : IState._dump_IState_obj(self._FPose),
+                }
+
+    def get_uuid(self) -> Union[bytes, None]:
+        if self._uuid is None:
+            self._uuid = uuid.uuid4().bytes_le
+        return self._uuid
+
     def set_uuid(self, uuid : Union[bytes, None]):
         if uuid is not None and not isinstance(uuid, bytes):
             raise ValueError(f'uuid must be an instance of bytes or None')
@@ -85,15 +97,15 @@ class UFaceMark:
             raise ValueError('face_pose must be an instance of FPose')
         self._FPose = face_pose
 
-    def get_mask_info_list(self) -> List[Tuple[EMaskType, bytes, Affine2DMat]]:
-        return self._mask_info_list
-        
-    def add_mask_info(self, mask_type : EMaskType, UImage_uuid : bytes, mask_to_mark_uni_mat : Affine2DMat):
-        if not isinstance(mask_type, EMaskType):
-            raise ValueError('mask_type must be an instance of EMaskType')
-        if not isinstance(UImage_uuid, bytes):
-            raise ValueError('UImage_uuid must be an instance of bytes')
-        if not isinstance(mask_to_mark_uni_mat, Affine2DMat):
-            raise ValueError('mask_to_mark_uni_mat must be an instance of Affine2DMat')
-            
-        self._mask_info_list.append( (mask_type, UImage_uuid, mask_to_mark_uni_mat) )
+    # def get_mask_info_list(self) -> List[Tuple[EMaskType, bytes, Affine2DMat]]:
+    #     return self._mask_info_list
+
+    # def add_mask_info(self, mask_type : EMaskType, UImage_uuid : bytes, mask_to_mark_uni_mat : Affine2DMat):
+    #     if not isinstance(mask_type, EMaskType):
+    #         raise ValueError('mask_type must be an instance of EMaskType')
+    #     if not isinstance(UImage_uuid, bytes):
+    #         raise ValueError('UImage_uuid must be an instance of bytes')
+    #     if not isinstance(mask_to_mark_uni_mat, Affine2DMat):
+    #         raise ValueError('mask_to_mark_uni_mat must be an instance of Affine2DMat')
+
+    #     self._mask_info_list.append( (mask_type, UImage_uuid, mask_to_mark_uni_mat) )

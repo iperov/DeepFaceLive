@@ -26,7 +26,7 @@ def split_large_files(delete_original=False):
         SplittedFile.split(filepath, part_size=part_size, delete_original=delete_original)
     print('Done')
 
-def extract_facesynthetics_dataset(input_dir):
+def extract_FaceSynthetics(input_dir):
     """
     extract FaceSynthetics dataset https://github.com/microsoft/FaceSynthetics
 
@@ -53,7 +53,7 @@ def extract_facesynthetics_dataset(input_dir):
     """
     input_path = Path(input_dir)
     faceset_path = input_path.parent / f'{input_path.name}.dfs'
-    
+  
     # fs = lib_face.Faceset(output_dbpath)
     # for ufm in fs.iter_UFaceMark():
     #     uimg = fs.get_UImage_by_uuid( ufm.get_UImage_uuid() )
@@ -65,7 +65,7 @@ def extract_facesynthetics_dataset(input_dir):
     filepaths = lib_path.get_files_paths(input_path)[:100] #TODO
     
     fs = lib_face.Faceset(faceset_path)
-    fs.clear_db()
+    fs.recreate()
 
 
     for filepath in lib_con.progress_bar_iterator(filepaths, 'Processing'):
@@ -104,6 +104,7 @@ def extract_facesynthetics_dataset(input_dir):
             
             fs.add_UImage(uimg, format='png')
             fs.add_UFaceMark(ufm)
+            
     
     fs.shrink()
     fs.close()
