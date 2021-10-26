@@ -6,9 +6,9 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### Install latest NVIDIA Drivers for your videocard.
+### Install latest Graphics Drivers for your videocard.
 
-<img src="dl_nvidia_drivers.jpg"></img>
+<img src="video_card_icon.png"></img>
 
 </td></tr>
 <tr><td colspan=2 align="center">
