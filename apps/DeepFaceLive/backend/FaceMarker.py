@@ -5,7 +5,7 @@ from modelhub import onnx as onnx_models
 from modelhub import cv as cv_models
 
 from xlib import os as lib_os
-from xlib.facemeta import ELandmarks2D, FLandmarks2D, FPose
+from xlib.face import ELandmarks2D, FLandmarks2D, FPose
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
 

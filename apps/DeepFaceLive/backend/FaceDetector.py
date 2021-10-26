@@ -4,7 +4,7 @@ from enum import IntEnum
 import numpy as np
 from modelhub import onnx as onnx_models
 from xlib import os as lib_os
-from xlib.facemeta import FRect
+from xlib.face import FRect
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None

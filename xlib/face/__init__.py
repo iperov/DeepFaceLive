@@ -1,10 +1,20 @@
 """
-facemeta library
+Facelib.
 
-Contains classes for effectively storing, manage, and transfering all face related data.
+Contains classes for effectively storing, manage, transfering and processing all face related data.
 
-All classes are picklable and expandable.
-All classes have noneable members accessed via get/set. No properties.
+##### 
+
+Faceset     
+        .List[UImage]
+        .List[UFaceMark]
+        .List[UPerson]
+        
+FaceWarper   A class for face augmentation with geometric transformations.
+
+##### META CLASSES
+
+F* U* classes are picklable and expandable, have noneable members accessed via get/set. No properties.
 
 E-classes are enums.
 U-classes are unique, have uuid and can be saved in Faceset.
@@ -41,21 +51,16 @@ UFaceMark  - face mark info referencing UImage from which the face was detected
     .FPose
     
     .List[ (EMaskType, FImage_uuid, uni_mat) ]   - list of FMask and AffineMat to transform mask image space to UFaceMark image space
-
     
-Faceset
-        .List[UImage]
-        .List[UFaceMark]
-        .List[UPerson]
 """
-
 from .ELandmarks2D import ELandmarks2D
 from .EMaskType import EMaskType
 from .Faceset import Faceset
-from .UImage import UImage
+from .FaceWarper import FaceWarper
 from .FLandmarks2D import FLandmarks2D
-from .UFaceMark import UFaceMark
 from .FMask import FMask
-from .UPerson import UPerson
 from .FPose import FPose
 from .FRect import FRect
+from .UFaceMark import UFaceMark
+from .UImage import UImage
+from .UPerson import UPerson

@@ -8,7 +8,7 @@ from xlib import time as lib_time
 from xlib.mp import csw as lib_csw
 from xlib.python.EventListener import EventListener
 
-from xlib.facemeta import FRect, FLandmarks2D, FPose
+from xlib.face import FRect, FLandmarks2D, FPose
 
 class BackendFaceSwapInfo:
     def __init__(self):

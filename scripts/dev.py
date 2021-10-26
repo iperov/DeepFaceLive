@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 from xlib import console as lib_con
-from xlib import facemeta as lib_fm
+from xlib import face as lib_face
 from xlib import path as lib_path
 from xlib.file import SplittedFile
 from xlib import cv as lib_cv
@@ -54,7 +54,7 @@ def extract_facesynthetics_dataset(input_dir):
     input_path = Path(input_dir)
     faceset_path = input_path.parent / f'{input_path.name}.dfs'
     
-    # fs = lib_fm.Faceset(output_dbpath)
+    # fs = lib_face.Faceset(output_dbpath)
     # for ufm in fs.iter_UFaceMark():
     #     uimg = fs.get_UImage_by_uuid( ufm.get_UImage_uuid() )
     #     img = uimg.get_image()
@@ -64,7 +64,7 @@ def extract_facesynthetics_dataset(input_dir):
         
     filepaths = lib_path.get_files_paths(input_path)[:100] #TODO
     
-    fs = lib_fm.Faceset(faceset_path)
+    fs = lib_face.Faceset(faceset_path)
     fs.clear_db()
 
 
@@ -91,13 +91,13 @@ def extract_facesynthetics_dataset(input_dir):
 
             lmrks = np.array(lmrks[:68], np.float32) / (H,W)
 
-            flmrks = lib_fm.FLandmarks2D.create(lib_fm.ELandmarks2D.L68, lmrks)
+            flmrks = lib_face.FLandmarks2D.create(lib_face.ELandmarks2D.L68, lmrks)
 
-            uimg = lib_fm.UImage()
+            uimg = lib_face.UImage()
             uimg.assign_image(img)
             uimg.set_name(image_filepath.stem)
 
-            ufm = lib_fm.UFaceMark()
+            ufm = lib_face.UFaceMark()
             ufm.set_UImage_uuid(uimg.get_uuid())
             ufm.set_FRect(flmrks.get_FRect())
             ufm.add_FLandmarks2D(flmrks)
@@ -148,10 +148,10 @@ def extract_facesynthetics_dataset(input_dir):
 #
 # from xlib import math as lib_math
 
-# fs1 = lib_fm.Faceset(r'D:\\1.dfs')
+# fs1 = lib_face.Faceset(r'D:\\1.dfs')
 # fs1.clear_db()
 
-# uimg = lib_fm.UImage()
+# uimg = lib_face.UImage()
 # uimg.assign_image( np.random.uniform(0, 255, size=(128,128,1) ).astype(np.uint8) )
 
 # fs1.add_UImage(uimg, format='jp2', quality=30)
@@ -161,23 +161,23 @@ def extract_facesynthetics_dataset(input_dir):
 # #fs1.add_UImage(uimg, format='jp2', quality=30)
 
 
-# up = lib_fm.UPerson()
+# up = lib_face.UPerson()
 # up.set_name('Man')
 # up.set_age(13)
 
 # fs1.add_UPerson(up)
 
-# ufm = lib_fm.UFaceMark()
+# ufm = lib_face.UFaceMark()
 # ufm.set_UPerson_uuid(up.get_uuid())
 # ufm.set_UImage_uuid(uimg.get_uuid())
-# ufm.add_mask_info( lib_fm.EMaskType.UNDEFINED, uimg.get_uuid(), lib_math.Affine2DUniMat.identity() )
+# ufm.add_mask_info( lib_face.EMaskType.UNDEFINED, uimg.get_uuid(), lib_math.Affine2DUniMat.identity() )
 
 # fs1.add_UFaceMark(ufm)
 
 # fs1.close()
 
 
-# fs = lib_fm.Faceset(r'D:\\1.dfs')
+# fs = lib_face.Faceset(r'D:\\1.dfs')
 # for uperson in fs.iter_UPerson():
 #     print(uperson)
 
@@ -193,10 +193,10 @@ def extract_facesynthetics_dataset(input_dir):
 # code.interact(local=dict(globals(), **locals()))
 
 
-# uimg2 = lib_fm.UImage()
+# uimg2 = lib_face.UImage()
 # uimg2.assign_image( np.random.uniform(0, 255, size=(128,128,1) ).astype(np.uint8) )
 
-# ufm = lib_fm.UFaceMark()
+# ufm = lib_face.UFaceMark()
 # ufm.set_UImage_uuid(uimg.get_uuid())
 
 

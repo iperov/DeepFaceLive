@@ -34,9 +34,11 @@ class Faceset:
         cur.execute('BEGIN IMMEDIATE')
         if not self._is_table_exists('FacesetInfo'):
             self.recreate(shrink=False, _transaction=False)
-        cur.execute('COMMIT')
-        self.shrink()
-
+            cur.execute('COMMIT')
+            self.shrink()
+        else:
+            cur.execute('END')
+            
     def __del__(self):
         self.close()
 
@@ -128,7 +130,15 @@ class Faceset:
 
     def get_all_UFaceMark(self) -> List[UFaceMark]:
         return [ pickle.loads(pickled_bytes) for pickled_bytes, in self._cur.execute('SELECT pickled_bytes FROM UFaceMark').fetchall() ]
-
+    
+    def get_UFaceMark_by_uuid(self, uuid : bytes) -> Union[UFaceMark, None]:
+        c = self._cur.execute('SELECT * FROM UFaceMark WHERE uuid=?', [uuid])
+        db_row = c.fetchone()
+        if db_row is None:
+            return None
+        
+        return self._UFaceMark_from_db_row(db_row)
+        
     def iter_UFaceMark(self) -> Generator[UFaceMark, None, None]:
         """
         returns Generator of UFaceMark
@@ -246,9 +256,12 @@ class Faceset:
         cur.execute('COMMIT')
 
     def get_UImage_count(self) -> int: return self._cur.execute('SELECT COUNT(*) FROM UImage').fetchone()[0]
-    def get_UImage_by_uuid(self, uuid : bytes) -> Union[UImage, None]:
+    def get_UImage_by_uuid(self, uuid : Union[bytes, None]) -> Union[UImage, None]:
         """
         """
+        if uuid is None:
+            return None
+            
         db_row = self._cur.execute('SELECT * FROM UImage where uuid=?', [uuid]).fetchone()
         if db_row is None:
             return None

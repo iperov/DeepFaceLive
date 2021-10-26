@@ -103,7 +103,7 @@ class FLandmarks2D:
         return FRect.from_ltrb( (l,t,r,b) )
 
     def calc_cut(self, h_w, coverage : float, output_size : int,
-                       exclude_moving_parts : bool,
+                       exclude_moving_parts : bool = False,
                        head_yaw : float = None,
                        x_offset : float = 0, y_offset : float = 0):
         """
