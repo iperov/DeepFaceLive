@@ -26,7 +26,7 @@ def split_large_files(delete_original=False):
         SplittedFile.split(filepath, part_size=part_size, delete_original=delete_original)
     print('Done')
 
-def extract_FaceSynthetics(input_dir):
+def extract_FaceSynthetics(inputdir_path : Path, faceset_path : Path):
     """
     extract FaceSynthetics dataset https://github.com/microsoft/FaceSynthetics
 
@@ -51,19 +51,11 @@ def extract_FaceSynthetics(input_dir):
     FACEWEAR = 18
     IGNORE = 255
     """
-    input_path = Path(input_dir)
-    faceset_path = input_path.parent / f'{input_path.name}.dfs'
-  
-    # fs = lib_face.Faceset(output_dbpath)
-    # for ufm in fs.iter_UFaceMark():
-    #     uimg = fs.get_UImage_by_uuid( ufm.get_UImage_uuid() )
-    #     img = uimg.get_image()
-        
-    #     cv2.imshow('', img)
-    #     cv2.waitKey(0)
-        
-    filepaths = lib_path.get_files_paths(input_path)[:100] #TODO
-    
+    if faceset_path.suffix != '.dfs':
+        raise ValueError('faceset_path must have .dfs extension.')
+
+    filepaths = lib_path.get_files_paths(inputdir_path)
+
     fs = lib_face.Faceset(faceset_path)
     fs.recreate()
 
@@ -75,7 +67,7 @@ def extract_FaceSynthetics(input_dir):
             if not image_filepath.exists():
                 print(f'{image_filepath} does not exist, skipping')
 
-            
+
             img = lib_cv.imread(image_filepath)
             H,W,C = img.shape
 
@@ -101,14 +93,14 @@ def extract_FaceSynthetics(input_dir):
             ufm.set_UImage_uuid(uimg.get_uuid())
             ufm.set_FRect(flmrks.get_FRect())
             ufm.add_FLandmarks2D(flmrks)
-            
+
             fs.add_UImage(uimg, format='png')
             fs.add_UFaceMark(ufm)
-            
-    
+
+
     fs.shrink()
     fs.close()
-    
+
     import code
     code.interact(local=dict(globals(), **locals()))
 
@@ -122,10 +114,10 @@ def extract_FaceSynthetics(input_dir):
 #     img_seg = img_seg[...,None]
 # if img_seg.shape[-1] != 1:
 #     raise Exception(f'{seg_filepath} wrong mask file. Must be 1 channel.')
-    
+
 # seg_hair = img_seg.copy()
 
-# seg_hair_inds = np.isin(img_seg, [13]) 
+# seg_hair_inds = np.isin(img_seg, [13])
 # seg_hair[~seg_hair_inds] = 0
 # seg_hair[seg_hair_inds] = 255
 
@@ -141,7 +133,7 @@ def extract_FaceSynthetics(input_dir):
 
 # cv2.imshow('', seg_hair)
 # cv2.waitKey(0)
-# img_seg_inds = np.isin(img_seg, [1,2,3,4,5,6,9,10,11,14]) 
+# img_seg_inds = np.isin(img_seg, [1,2,3,4,5,6,9,10,11,14])
 # img_seg[~img_seg_inds] = 0
 # img_seg[img_seg_inds] = 255
 # import numpy as np

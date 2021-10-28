@@ -1,5 +1,5 @@
 """
-Job processing in subprocesses.
+Job lib using subprocesses
 """
 
 import multiprocessing

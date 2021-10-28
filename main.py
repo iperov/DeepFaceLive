@@ -54,10 +54,15 @@ def main():
 
     def run_extract_FaceSynthetics(args):
         from scripts import dev
-        dev.extract_FaceSynthetics(input_dir=args.input_dir)
+        
+        inputdir_path = Path(args.input_dir)
+        faceset_path = Path(args.faceset_path)
+
+        dev.extract_FaceSynthetics(inputdir_path, faceset_path)
 
     p = dev_subparsers.add_parser('extract_FaceSynthetics')
     p.add_argument('--input-dir', default=None, action=fixPathAction, help="FaceSynthetics directory.")
+    p.add_argument('--faceset-path', default=None, action=fixPathAction, help="output .dfs path")
     p.set_defaults(func=run_extract_FaceSynthetics)
 
     train_parser = subparsers.add_parser( "train", help="Train neural network.")
