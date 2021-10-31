@@ -108,6 +108,10 @@ Make a backup before every stage !
 
 5) enable gan 0.1 gan_dims:32, train +300.000
 
+> reusing trained SAEHD RTM model
+
+Models that are trained without random_warp:OFF (before stage 3), can be reused. In this case you have to delete INTER_AB.NPY from the model folder and continue training from stage 2. Increase stage 2 up to 2.000.000 and more iters. You can delete inter_AB.npy every 1.000.000 iters to increase src-likeness. Trained model before random_warp:OFF also can be reused for new celeb face.
+
 </td></tr>
 <tr><td colspan=2 align="left">
 
