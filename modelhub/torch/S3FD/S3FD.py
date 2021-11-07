@@ -8,13 +8,13 @@ import torch.nn.functional as F
 from xlib import math as lib_math
 from xlib.file import SplittedFile
 from xlib.image import ImageProcessor
-from xlib.torch import TorchDeviceInfo, get_cpu_device
+from xlib.torch import TorchDeviceInfo, get_cpu_device_info
 
 
 class S3FD:
     def __init__(self, device_info : TorchDeviceInfo = None ):
         if device_info is None:
-            device_info = get_cpu_device()
+            device_info = get_cpu_device_info()
         self.device_info = device_info
         
         path = Path(__file__).parent / 'S3FD.pth'

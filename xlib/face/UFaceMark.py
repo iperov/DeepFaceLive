@@ -25,7 +25,13 @@ class UFaceMark(IState):
     def __repr__(self): return self.__str__()
     def __str__(self):
         return f"UFaceMark UUID:[...{self.get_uuid()[-4:].hex()}]"
-
+    
+    @staticmethod
+    def from_state(state : dict) -> 'UFaceMark':
+        ufm = UFaceMark()
+        ufm.restore_state(state)
+        return ufm
+    
     def restore_state(self, state : dict):
         self._uuid = state.get('_uuid', None)
         self._UImage_uuid = state.get('_UImage_uuid', None)
@@ -45,7 +51,7 @@ class UFaceMark(IState):
 
     def get_uuid(self) -> Union[bytes, None]:
         if self._uuid is None:
-            self._uuid = uuid.uuid4().bytes_le
+            self._uuid = uuid.uuid4().bytes
         return self._uuid
 
     def set_uuid(self, uuid : Union[bytes, None]):
@@ -72,6 +78,16 @@ class UFaceMark(IState):
         self._FRect = face_urect
 
     def get_all_FLandmarks2D(self) -> List[FLandmarks2D]: return self._FLandmarks2D_list
+    
+    def get_FLandmarks2D_best(self) -> Union[FLandmarks2D, None]:
+        """get best available FLandmarks2D """
+        lmrks = self.get_FLandmarks2D_by_type(ELandmarks2D.L468)
+        if lmrks is None:
+            lmrks = self.get_FLandmarks2D_by_type(ELandmarks2D.L68)
+        if lmrks is None:
+            lmrks = self.get_FLandmarks2D_by_type(ELandmarks2D.L5)
+        return lmrks
+        
     def get_FLandmarks2D_by_type(self, type : ELandmarks2D) -> Union[FLandmarks2D, None]:
         """get FLandmarks2D from list by type"""
         if not isinstance(type, ELandmarks2D):

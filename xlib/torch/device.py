@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Union
+
+import torch
 
 
 class TorchDeviceInfo:
@@ -45,96 +47,40 @@ class TorchDeviceInfo:
     def __repr__(self):
         return f'{self.__class__.__name__} object: ' + self.__str__()
 
-# class TorchDevicesInfo:
-#     """
-#     picklable list of TorchDeviceInfo
-#     """
-#     def __init__(self, devices : List[TorchDeviceInfo] = None):
-#         if devices is None:
-#             devices = []
-#         self._devices = devices
-
-#     def __getstate__(self):
-#         return self.__dict__.copy()
-
-#     def __setstate__(self, d):
-#         self.__init__()
-#         self.__dict__.update(d)
-
-#     def add(self, device_or_devices : TorchDeviceInfo):
-#         if isinstance(device_or_devices, TorchDeviceInfo):
-#             if device_or_devices not in self._devices:
-#                 self._devices.append(device_or_devices)
-#         elif isinstance(device_or_devices, TorchDevicesInfo):
-#             for device in device_or_devices:
-#                 self.add(device)
-
-#     def copy(self):
-#         return copy.deepcopy(self)
-
-#     def get_count(self): return len(self._devices)
-
-#     def get_largest_total_memory_device(self) -> TorchDeviceInfo:
-#         raise NotImplementedError()
-#         result = None
-#         idx_mem = 0
-#         for device in self._devices:
-#             mem = device.get_total_memory()
-#             if result is None or (mem is not None and mem > idx_mem):
-#                 result = device
-#                 idx_mem = mem
-#         return result
-
-#     def get_smallest_total_memory_device(self) -> TorchDeviceInfo:
-#         raise NotImplementedError()
-#         result = None
-#         idx_mem = sys.maxsize
-#         for device in self._devices:
-#             mem = device.get_total_memory()
-#             if result is None or (mem is not None and mem < idx_mem):
-#                 result = device
-#                 idx_mem = mem
-#         return result
-
-#     def __len__(self):
-#         return len(self._devices)
-
-#     def __getitem__(self, key):
-#         result = self._devices[key]
-#         if isinstance(key, slice):
-#             return self.__class__(result)
-#         return result
-
-#     def __iter__(self):
-#         for device in self._devices:
-#             yield device
-
-#     def __str__(self):  return f'{self.__class__.__name__}:[' + ', '.join([ device.__str__() for device in self._devices ]) + ']'
-#     def __repr__(self): return f'{self.__class__.__name__}:[' + ', '.join([ device.__repr__() for device in self._devices ]) + ']'
-
-
 _torch_devices = None
 
-def get_cpu_device() -> TorchDeviceInfo:
+def get_cpu_device_info() -> TorchDeviceInfo:
     return TorchDeviceInfo(index=-1, name='CPU', total_memory=0)
 
-def get_available_devices(include_cpu=True, cpu_only=False) -> List[TorchDeviceInfo]:
+def get_device_info_by_index(index) -> Union[TorchDeviceInfo, None]:
+    for device in get_available_devices_info(include_cpu=False):
+        if device.get_index() == index:
+            return device
+
+    return None
+
+def get_device(device_info : TorchDeviceInfo) -> torch.device:
+    if device_info.is_cpu():
+        return torch.device('cpu')
+    return torch.device(f'cuda:{device_info.get_index()}')
+        
+def get_available_devices_info(include_cpu=True, cpu_only=False) -> List[TorchDeviceInfo]:
     """
     returns a list of available TorchDeviceInfo
     """
-    global _torch_devices
-    if _torch_devices is None:
-        import torch
-        devices = []
-
-        if not cpu_only:
+    devices = []
+    if not cpu_only:
+        global _torch_devices
+        if _torch_devices is None:
+            
+            _torch_devices = []
             for i in range (torch.cuda.device_count()):
                 device_props = torch.cuda.get_device_properties(i)
-                devices.append ( TorchDeviceInfo(index=i, name=device_props.name, total_memory=device_props.total_memory))
+                _torch_devices.append ( TorchDeviceInfo(index=i, name=device_props.name, total_memory=device_props.total_memory))
+        devices += _torch_devices
 
-        if include_cpu or cpu_only:
-            devices.append ( get_cpu_device() )
+    if include_cpu:
+        devices.append ( get_cpu_device_info() )
 
-        _torch_devices = devices
-    return _torch_devices
+    return devices
 

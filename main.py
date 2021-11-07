@@ -79,12 +79,12 @@ def main():
     p.set_defaults(func=train_FaceAligner)
     
     def train_CTSOT(args):
-        from apps.trainers.CTSOT.CTSOTTrainerApp import run_app
-        run_app(userdata_path=Path(args.userdata_dir), faceset_path=Path(args.faceset_path))
+        from apps.trainers.CTSOT.CTSOTTrainerApp import CTSOTTrainerApp
+        CTSOTTrainerApp(workspace_path=Path(args.workspace_dir), faceset_path=Path(args.faceset_path))
 
     p = train_parsers.add_parser('CTSOT')
-    p.add_argument('--userdata-dir', default=None, action=fixPathAction, help="Directory to save app data.")
-    p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs path")
+    p.add_argument('--workspace-dir', default=None, action=fixPathAction, help="Workspace directory.")
+    p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs faceset path")
     p.set_defaults(func=train_CTSOT)
 
     def bad_args(arguments):

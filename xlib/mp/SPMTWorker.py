@@ -11,7 +11,6 @@ def _host_thread_proc(wref):
             break
         ref._host_process_messages(0.005)
         del ref
-    print('_host_thread_proc exit')
 
 class SPMTWorker:
     def __init__(self, *sub_args, **sub_kwargs):
@@ -152,7 +151,7 @@ class SPMTWorker:
                         break
 
         self._threads_running = False
-        
+
         self._threads_exit_barrier.wait()
 
         self._on_sub_finalize()

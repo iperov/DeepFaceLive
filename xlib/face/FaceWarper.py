@@ -52,8 +52,24 @@ class FaceWarper:
         self._rw_grid_tx         = rnd_state.uniform(*rw_grid_tx) if isinstance(rw_grid_tx, Iterable) else rw_grid_tx
         self._rw_grid_ty         = rnd_state.uniform(*rw_grid_ty) if isinstance(rw_grid_ty, Iterable) else rw_grid_ty
         
+        self._warp_rnd_mat = Affine2DUniMat.from_transformation(0.5, 0.5, self._rw_grid_rot_deg, 1.0+self._rw_grid_scale, self._rw_grid_tx, self._rw_grid_ty)
+        self._align_rnd_mat = Affine2DUniMat.from_transformation(0.5, 0.5, self._align_rot_deg, 1.0+self._align_scale, self._align_tx, self._align_ty)
+        
         self._rnd_state_state = rnd_state.get_state()
         self._cached = {}
+        
+    def get_aligned_random_transform_mat(self) -> Affine2DUniMat:
+        """
+        returns Affine2DUniMat that represents transformation from aligned face to randomly transformed aligned face
+        """
+        mat1 = self._img_to_face_uni_mat
+        mat2 = (self._face_to_img_uni_mat * self._align_rnd_mat).invert()
+        
+        pts = [ [0,0], [1,0], [1,1]]
+        src_pts = mat1.transform_points(pts)
+        dst_pts = mat2.transform_points(pts)
+        
+        return Affine2DUniMat.from_3_pairs(src_pts, dst_pts)
         
     def transform(self, img : np.ndarray, out_res : int, random_warp : bool = True) -> np.ndarray:
         """
@@ -91,9 +107,7 @@ class FaceWarper:
             face_warp_grid = FaceWarper._gen_random_warp_uni_grid_diff(out_res, self._rw_grid_cell_count, 0.12, rnd_state)
 
             # make a randomly transformable mat to transform face_warp_grid from face to image
-            face_warp_grid_mat = (self._face_to_img_uni_mat *
-                                  Affine2DUniMat.from_transformation(0.5, 0.5, self._rw_grid_rot_deg, 1.0+self._rw_grid_scale, self._rw_grid_tx, self._rw_grid_ty)
-                                  )
+            face_warp_grid_mat = self._face_to_img_uni_mat * self._warp_rnd_mat
 
             # warp face_warp_grid to the space of image and merge with image_grid
             image_grid += cv2.warpAffine(face_warp_grid, face_warp_grid_mat.to_exact_mat(out_res,out_res, W, H), (W,H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
@@ -101,9 +115,10 @@ class FaceWarper:
         # scale uniform grid from to image size
         image_grid *= (H-1, W-1)
 
-        # apply random transormations for align mat
-        img_to_face_rnd_mat = (self._face_to_img_uni_mat * Affine2DMat.from_transformation(0.5, 0.5, self._align_rot_deg, 1.0+self._align_scale, self._align_tx, self._align_ty)
-                                ).invert().to_exact_mat(W,H,out_res,out_res)
+        # apply random transformations for align mat
+        #img_to_face_rnd_uni_mat = (self._face_to_img_uni_mat * self._align_rnd_mat).invert()
+        
+        img_to_face_rnd_mat = (self._face_to_img_uni_mat * self._align_rnd_mat).invert().to_exact_mat(W,H,out_res,out_res)
 
         # warp image_grid to face space
         image_grid = cv2.warpAffine(image_grid, img_to_face_rnd_mat, (out_res,out_res), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE )

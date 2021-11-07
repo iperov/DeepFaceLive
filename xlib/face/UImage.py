@@ -18,10 +18,31 @@ class UImage(IState):
 
     def __str__(self): return f"UImage UUID:[...{self.get_uuid()[-4:].hex()}] name:[{self._name}] image:[{ (self._image.shape, self._image.dtype) if self._image is not None else None}]"
     def __repr__(self): return self.__str__()
+    
+    @staticmethod
+    def from_state(state : dict) -> 'UImage':
+        ufm = UImage()
+        ufm.restore_state(state)
+        return ufm
+        
+    def restore_state(self, state : dict):
+        self._uuid = state.get('_uuid', None)
+        self._name = state.get('_name', None)
+        self._image = state.get('_image', None)
 
+    def dump_state(self, exclude_image=False) -> dict:
+        d =  {'_uuid' : self._uuid,
+              '_name' : self._name,
+              }
+              
+        if not exclude_image:
+            d['_image'] = self._image
+            
+        return d
+                
     def get_uuid(self) -> Union[bytes, None]:
         if self._uuid is None:
-            self._uuid = uuid.uuid4().bytes_le
+            self._uuid = uuid.uuid4().bytes
         return self._uuid
 
     def set_uuid(self, uuid : Union[bytes, None]):

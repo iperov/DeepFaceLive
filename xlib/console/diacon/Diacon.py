@@ -3,112 +3,219 @@ import threading
 import time
 from enum import IntEnum
 from typing import Any, Callable, List, Tuple, Union
-
+from numbers import Number
 from ... import text as lib_text
 
 class EDlgMode(IntEnum):
-    UNDEFINED = 0
+    UNHANDLED = 0
     BACK = 1
     RELOAD = 2
     WRONG_INPUT = 3
-    SUCCESS = 4
+    HANDLED = 4
+
 
 
 class DlgChoice:
-    def __init__(self, name : str = None, row_desc : str = None):
-        super().__init__()
+    def __init__(self, name : str = None, 
+                       row_def : str = None, 
+                       on_choose : Callable = None):
         if len(name) == 0:
             raise ValueError('Zero len name is not valid.')
         self._name = name
-        self._row_desc = row_desc
-        
+        self._row_def = row_def
+        self._on_choose = on_choose
+
     def get_name(self) -> Union[str, None]: return self._name
-    def get_row_desc(self) -> Union[str, None]: return self._row_desc
-    
+    def get_row_def(self) -> Union[str, None]: return self._row_def
+    def get_on_choose(self) -> Callable: return self._on_choose
+
 class Dlg:
-    def __init__(self, title : str = None, has_go_back=True):
+    def __init__(self, on_recreate : Callable[ [], 'Dlg'] = None,
+                       on_back  : Callable = None,
+                       top_rows_def : Union[str, List[str]] = None, 
+                       bottom_rows_def : Union[str, List[str]] = None, 
+                       ):
         """
-
+        base class for Diacon dialogs.
         """
-        self._title = title
-        self._has_go_back = has_go_back
-
+        self._on_recreate = on_recreate
+        self._on_back = on_back
+        
+        self._top_rows_def = top_rows_def
+        self._bottom_rows_def = bottom_rows_def
+    
+    def recreate(self):
+        """
+        """
+        if self._on_recreate is not None:
+            return self._on_recreate(self)
+        else:
+            raise Exception('on_recreate() is not defined.')
+        
     def get_name(self) -> str: return self._name
-
-    def handle_user_input(self, s : str) -> EDlgMode:
+    
+    def set_current(self, print=True):
+        Diacon.update_dlg(self, print=print)
+    
+    def handle_user_input(self, s : str):
         """
-
         """
-        s = s.strip()
-
-        # ? and < available in any dialog, handle them first
-        s_len = len(s)
-        if s_len == 0:
+        mode = self.on_user_input(s.strip())
+        
+        if mode == EDlgMode.UNHANDLED:
+            mode = EDlgMode.RELOAD
+        if mode == EDlgMode.WRONG_INPUT:
+            print('\nWrong input')
+            mode = EDlgMode.RELOAD
+            
+        if mode == EDlgMode.RELOAD:
+            self.recreate().set_current()
+        if mode == EDlgMode.BACK:
+            if self._on_back is not None:
+                self._on_back(self)
+    
+    #overridable
+    def on_user_input(self, s : str) -> EDlgMode:
+        if len(s) == 0:
             return EDlgMode.RELOAD
-        if s_len == 1:
-            #if s == '?':
-            #    return EDlgMode.RELOAD
+        if self._on_back is not None and len(s) == 1:
             if s == '<':
                 return EDlgMode.BACK
-
-        return self.on_user_input(s)
-
+        return EDlgMode.UNHANDLED
+        
     def print(self, table_width_max=80, col_spacing = 3):
         """
         print dialog
         """
-        
-        # Gather table lines
         table_def : List[str]= []
         
-        if self._has_go_back:
+        trd = self._top_rows_def
+        brd = self._bottom_rows_def
+        if trd is not None:
+            if not isinstance(trd, (list,tuple)):
+                trd = [trd]
+            table_def += trd
+
+        if self._on_back is not None:
             table_def.append('| < | Go back.')
-            
+
         table_def.append('|99')
         table_def = self.on_print(table_def)
         
-        table = lib_text.ascii_table(table_def, max_table_width=80, 
-                                     left_border = None,
-                                     right_border = None,
+        if brd is not None:
+            if not isinstance(brd, (list,tuple)):
+                brd = [brd]
+            table_def += brd
+
+        table = lib_text.ascii_table(table_def, max_table_width=80,
+                                     left_border = '| ',
+                                     right_border = ' |',
                                      border = ' | ',
-                                     row_symbol = None)
+                                     row_symbol = None,
+                                     )
         print()
         print(table)
-        
+
 
     #overridable
     def on_print(self, table_lines : List[Tuple[str,str]]):
         return table_lines
 
+    
+
+class DlgNumber(Dlg):
+    def __init__(self, is_float : bool,
+                       current_value = None,
+                       min_value = None,
+                       max_value = None,
+                       clip_min_value = None,
+                       clip_max_value = None,
+                       on_value : Callable[ [Dlg, Number], None] = None,
+                       on_recreate : Callable[ [], 'Dlg'] = None,
+                       on_back : Callable = None,
+                       top_rows_def : Union[str, List[str]] = None, 
+                       bottom_rows_def : Union[str, List[str]] = None, ):
+        super().__init__(on_recreate=on_recreate, on_back=on_back, top_rows_def=top_rows_def, bottom_rows_def=bottom_rows_def)
+
+        if min_value is not None and max_value is not None and min_value > max_value:
+            raise ValueError('min_value > max_value')
+        if clip_min_value is not None and clip_max_value is not None and clip_min_value > clip_max_value:
+            raise ValueError('clip_min_value > clip_max_value')
+            
+        self._is_float = is_float
+        self._current_value = current_value
+        self._min_value = min_value
+        self._max_value = max_value
+        self._clip_min_value = clip_min_value
+        self._clip_max_value = clip_max_value
+        self._on_value = on_value
+
     #overridable
-    def on_user_input(self, s : str) -> EDlgMode:
-        """
-        handle user input
-        return False if input is invalid
-        """
-        return EDlgMode.UNDEFINED
+    def on_print(self, table_def : List[str]):
+
+        minv, maxv = self._min_value, self._max_value
+    
+        if self._is_float:
+            line = '| * | Enter float number'
+        else:
+            line = '| * | Enter integer number'
+        
+        if minv is not None and maxv is None:
+            line += f' in range: [{minv} ... )'
+        elif minv is None and maxv is not None:
+            line += f' in range: ( ... {maxv} ]'
+        elif minv is not None and maxv is not None:
+            line += f' in range: [{minv} ... {maxv} ]'
+    
+        table_def.append(line)
+    
+        return table_def
+
+    #overridable
+    def on_user_input(self, s : str) -> bool:
+        result = super().on_user_input(s)
+        if result == EDlgMode.UNHANDLED:
+            try:
+                print(s)
+                v = float(s) if self._is_float else int(s)
+
+                if self._min_value is not None:
+                    if v < self._min_value:
+                        return EDlgMode.WRONG_INPUT
+
+                if self._max_value is not None:
+                    if v > self._max_value:
+                        return EDlgMode.WRONG_INPUT
+
+                if self._clip_min_value is not None:
+                    if v < self._clip_min_value:
+                        v = self._clip_min_value
+
+                if self._clip_max_value is not None:
+                    if v > self._clip_max_value:
+                        v = self._clip_max_value
+                
+                if self._on_value is not None:
+                    self._on_value(self, v)
+                return EDlgMode.HANDLED
+            except:
+                return EDlgMode.WRONG_INPUT
+
+        return result
 
 class DlgChoices(Dlg):
-    def __init__(self, choices : List[DlgChoice], multiple_choices=False, title : str = None, has_go_back = True):
-        """
-
-        """
-        super().__init__(title=title, has_go_back=has_go_back)
+    def __init__(self, choices : List[DlgChoice],
+                       on_multi_choice : Callable[ [ List[DlgChoice] ], None] = None,
+                       on_recreate : Callable[ [Dlg], Dlg] = None,
+                       on_back : Callable = None,
+                       top_rows_def : Union[str, List[str]] = None, 
+                       bottom_rows_def : Union[str, List[str]] = None,
+                       ):
+        super().__init__(on_recreate=on_recreate, on_back=on_back, top_rows_def=top_rows_def, bottom_rows_def=bottom_rows_def)
         self._choices = choices
-        self._multiple_choices = multiple_choices
-
-        self._results = None
-        self._results_id = None
+        self._on_multi_choice = on_multi_choice
 
         self._short_names = [choice.get_name() for choice in choices]
-
-        # if any([x is not None for x in self._short_names]):
-        #     # Using short names from choices
-        #     if any([x is None for x in self._short_names]):
-        #         raise Exception('No short name for one of choices.')
-        #     if len(set(self._short_names)) != len(self._short_names):
-        #         raise ValueError(f'Contains duplicate short names: {self._short_names}')
-        # else:
 
         # Make short names for all choices
         names = [ choice.get_name() for choice in choices ]
@@ -139,27 +246,14 @@ class DlgChoices(Dlg):
                 break
         self._short_names = short_names
 
-
-
-    def get_selected_choices(self) -> List[DlgChoice]:
-        """
-        returns selected choices
-        """
-        return self._results
-
-    def get_selected_choices_id(self) -> List[int]:
-        """
-        returns selected choice
-        """
-        return self._results_id
-
     #overridable
     def on_print(self, table_def : List[str]):
+
         for short_name, choice in zip(self._short_names, self._choices):
             row_def = f'| {short_name}'
-            row_desc = choice.get_row_desc()
-            if row_desc is not None:
-                row_def += row_desc
+            x = choice.get_row_def()
+            if x is not None:
+                row_def += x
             table_def.append(row_def)
 
         return table_def
@@ -167,35 +261,36 @@ class DlgChoices(Dlg):
     #overridable
     def on_user_input(self, s : str) -> bool:
         result = super().on_user_input(s)
-        if result == EDlgMode.UNDEFINED:
+        if result == EDlgMode.UNHANDLED:
 
-            if self._multiple_choices:
+            if self._on_multi_choice is not None:
                 multi_s = s.split(',')
             else:
                 multi_s = [s]
 
-            results = []
-            results_id = []
+            choices_id = []
             for s in multi_s:
-                s = s.strip()
-
-                x = [ i for i,short_name in enumerate(self._short_names) if s == short_name  ]
+                x = [ i for i, short_name in enumerate(self._short_names) if s.strip() == short_name  ]
                 if len(x) == 0:
-                    # no short name match
+                    # No short name match
                     return EDlgMode.WRONG_INPUT
                 else:
                     id = x[0]
-                    results_id.append(id)
-                    results.append(self._choices[id])
-
-            if len(set(results_id)) != len(results_id):
+                    choices_id.append(id)
+            
+            if len(set(choices_id)) != len(choices_id):
                 # Duplicate input
                 return EDlgMode.WRONG_INPUT
 
-            self._results = results
-            self._results_id = results_id
+            for id in choices_id:
+                on_choose = self._choices[id].get_on_choose()
+                if on_choose is not None:
+                    on_choose(self)
+                    
+            if self._on_multi_choice is not None:
+                self._on_multi_choice(choices_id)
 
-            return EDlgMode.SUCCESS
+            return EDlgMode.HANDLED
 
         return result
 
@@ -204,42 +299,9 @@ class DlgChoices(Dlg):
 class _Diacon:
     """
     User dialog with via console.
-
-    Internal architecture:
-
-    [
-        Main-Thread
-
-        current thread from which __init__() called
-    ]
-
-    [
-        Dialog-Thread
-
-        separate thread where dialogs are handled and dynamically created
-
-        we need this thread, because main thread can be busy,
-        for example training neural network
-
-        calls on_dlg() provided with __init__
-
-        thus keep in mind on_dlg() works in separate thread
-
-        This thread must not be blocked inside on_dlg(),
-        because Diacon.stop() can be called that stops all threads.
-    ]
-
-    [
-        Input-Thread
-
-        separate thread where user input is accepted in non-blocking mode,
-        and transfered to processing thread
-    ]
     """
 
     def __init__(self):
-        self._on_dlg : Callable = None
-
         self._lock = threading.RLock()
         self._current_dlg : Dlg = None
         self._new_dlg : Dlg = None
@@ -250,11 +312,10 @@ class _Diacon:
         self._input_request = False
         self._input_result : str = None
 
-    def start(self, on_dlg : Callable):
+    def start(self):
         if self._started:
             raise Exception('Diacon already started.')
         self._started = True
-        self._on_dlg = on_dlg
 
         self._input_t = threading.Thread(target=self._input_thread, daemon=True)
         self._input_t.start()
@@ -285,8 +346,6 @@ class _Diacon:
 
 
     def _dialog_thread(self, ):
-        self._on_dlg(None, EDlgMode.RELOAD)
-
         while self._started:
 
             with self._lock:
@@ -303,13 +362,7 @@ class _Diacon:
                 if input_result is not None:
 
                     if self._current_dlg is not None:
-                        mode = self._current_dlg.handle_user_input(input_result)
-                        if mode == EDlgMode.WRONG_INPUT:
-                            print('\nWrong input')
-                            mode = EDlgMode.RELOAD
-                        if mode == EDlgMode.UNDEFINED:
-                            mode = EDlgMode.RELOAD
-                        self._on_dlg(self._current_dlg, mode)
+                        self._current_dlg.handle_user_input(input_result)                        
                         continue
 
             time.sleep(0.005)
@@ -332,6 +385,9 @@ class _Diacon:
         show current or set new Dialog
         Can be called from any thread.
         """
+        if not self._started:
+            self.start()
+            
         self._new_dlg = (new_dlg, print)
 
 Diacon = _Diacon()

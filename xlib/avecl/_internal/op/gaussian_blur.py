@@ -15,7 +15,7 @@ def gaussian_blur (input_t : Tensor, sigma, dtype=None) -> Tensor:
 
     """
     if sigma <= 0.0:
-        return input_t.copy() #TODO
+        return input_t.copy() 
 
     device = input_t.get_device()
 

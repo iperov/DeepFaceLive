@@ -247,7 +247,8 @@ def ascii_table(table_def : List[str],
     if row_line is not None:
         lines.append(row_line)
     for sub_rows in rows:
-
+        
+        
         for row in sub_rows:
             line = ''
 
@@ -288,7 +289,8 @@ def ascii_table(table_def : List[str],
                 line += right_border
 
             lines.append(line)
-        if row_line is not None:
+            
+        if len(sub_rows) != 0 and row_line is not None:
             lines.append(row_line)
 
     return '\n'.join(lines)

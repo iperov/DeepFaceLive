@@ -49,7 +49,7 @@ class MPWeakHeap:
 
         # Entire block
         fmv.seek(self._first_block_offset)
-        fmv.write_fmt('qq', self._heap_size-self._first_block_offset, 0), fmv.write(uuid.uuid4().bytes_le)
+        fmv.write_fmt('qq', self._heap_size-self._first_block_offset, 0), fmv.write(uuid.uuid4().bytes)
 
 
     def add_data(self, data : Union[bytes, bytearray, memoryview] ) -> 'MPWeakHeap.DataRef':
@@ -92,7 +92,7 @@ class MPWeakHeap:
                 if block_remain_size >= block_header_size:
                     # the remain space of the block is enough for next block, split the block
                     next_block_offset = cur_block_offset + block_new_size
-                    fmv.seek(next_block_offset), fmv.write_fmt('qq', block_remain_size, 0), fmv.write(uuid.uuid4().bytes_le)
+                    fmv.seek(next_block_offset), fmv.write_fmt('qq', block_remain_size, 0), fmv.write(uuid.uuid4().bytes)
                 else:
                     # otherwise do not split
                     next_block_offset = cur_block_offset + block_size
@@ -101,7 +101,7 @@ class MPWeakHeap:
                     block_new_size = block_size
 
                 # update current block structure
-                uid = uuid.uuid4().bytes_le
+                uid = uuid.uuid4().bytes
                 fmv.seek(cur_block_offset), fmv.write_fmt('qq', block_new_size, data_size ), fmv.write(uid)
 
                 # update ring_head_block_offset
@@ -135,7 +135,7 @@ class MPWeakHeap:
                     next_block_size, = fmv.get_fmt('q')
 
                     # erase data of next block
-                    fmv.write_fmt('qq', 0, 0), fmv.write(uuid.uuid4().bytes_le)
+                    fmv.write_fmt('qq', 0, 0), fmv.write(uuid.uuid4().bytes)
 
                     # overwrite current block size with expanded block size
                     fmv.seek(cur_block_offset)

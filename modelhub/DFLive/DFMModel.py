@@ -58,7 +58,7 @@ def get_available_devices() -> List[ORTDeviceInfo]:
 class DFMModel:
     def __init__(self, model_path : Path, device : ORTDeviceInfo = None):
         if device is None:
-            device = lib_ort.get_cpu_device()
+            device = lib_ort.get_cpu_device_info()
         self._model_path = model_path
 
         sess = self._sess = lib_ort.InferenceSession_with_device(str(model_path), device)

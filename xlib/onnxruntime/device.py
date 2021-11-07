@@ -67,33 +67,34 @@ class ORTDeviceInfo:
 
 _ort_devices_info = None
 
-def get_cpu_device() -> ORTDeviceInfo:
+def get_cpu_device_info() -> ORTDeviceInfo:
     return ORTDeviceInfo(index=-1, execution_provider='CPUExecutionProvider', name='CPU', total_memory=0, free_memory=0)
 
 def get_available_devices_info(include_cpu=True, cpu_only=False) -> List[ORTDeviceInfo]:
     """
     returns a list of available ORTDeviceInfo
     """
-    global _ort_devices_info
-    if _ort_devices_info is None:
-        _initialize_ort_devices()
-        devices = []
-        if not cpu_only:
+    devices = []
+    if not cpu_only: 
+        global _ort_devices_info
+        if _ort_devices_info is None:
+            _initialize_ort_devices_info()
+            _ort_devices_info = []
             for i in range ( int(os.environ.get('ORT_DEVICES_COUNT',0)) ):
-                devices.append ( ORTDeviceInfo(index=int(os.environ[f'ORT_DEVICE_{i}_INDEX']),
-                                               execution_provider=os.environ[f'ORT_DEVICE_{i}_EP'],
-                                               name=os.environ[f'ORT_DEVICE_{i}_NAME'],
-                                               total_memory=int(os.environ[f'ORT_DEVICE_{i}_TOTAL_MEM']),
-                                               free_memory=int(os.environ[f'ORT_DEVICE_{i}_FREE_MEM']),
-                                              ) )
-        if include_cpu or cpu_only:
-            devices.append(get_cpu_device())
-        _ort_devices_info = devices
+                _ort_devices_info.append ( ORTDeviceInfo(index=int(os.environ[f'ORT_DEVICE_{i}_INDEX']),
+                                            execution_provider=os.environ[f'ORT_DEVICE_{i}_EP'],
+                                            name=os.environ[f'ORT_DEVICE_{i}_NAME'],
+                                            total_memory=int(os.environ[f'ORT_DEVICE_{i}_TOTAL_MEM']),
+                                            free_memory=int(os.environ[f'ORT_DEVICE_{i}_FREE_MEM']),
+                                            ) )
+        devices += _ort_devices_info
+    if include_cpu:
+        devices.append(get_cpu_device_info())
 
-    return _ort_devices_info
+    return devices
 
 
-def _initialize_ort_devices():
+def _initialize_ort_devices_info():
     """
     Determine available ORT devices, and place info about them to os.environ,
     they will be available in spawned subprocesses.
@@ -184,4 +185,4 @@ def _initialize_ort_devices():
             os.environ[f'ORT_DEVICE_{i}_TOTAL_MEM'] = str(device['total_mem'])
             os.environ[f'ORT_DEVICE_{i}_FREE_MEM'] = str(device['free_mem'])
         
-_initialize_ort_devices()
+_initialize_ort_devices_info()

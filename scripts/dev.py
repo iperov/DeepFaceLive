@@ -53,14 +53,10 @@ def extract_FaceSynthetics(inputdir_path : Path, faceset_path : Path):
     """
     if faceset_path.suffix != '.dfs':
         raise ValueError('faceset_path must have .dfs extension.')
-
+        
     filepaths = lib_path.get_files_paths(inputdir_path)
-
-    fs = lib_face.Faceset(faceset_path)
-    fs.recreate()
-
-
-    for filepath in lib_con.progress_bar_iterator(filepaths, 'Processing'):
+    fs = lib_face.Faceset(faceset_path, write_access=True, recreate=True)
+    for filepath in lib_con.progress_bar_iterator(filepaths, desc='Processing'):
         if filepath.suffix == '.txt':
 
             image_filepath = filepath.parent / f'{filepath.name.split("_")[0]}.png'
@@ -93,16 +89,12 @@ def extract_FaceSynthetics(inputdir_path : Path, faceset_path : Path):
             ufm.set_UImage_uuid(uimg.get_uuid())
             ufm.set_FRect(flmrks.get_FRect())
             ufm.add_FLandmarks2D(flmrks)
-
+            
+            fs.add_UFaceMark(ufm)            
             fs.add_UImage(uimg, format='png')
-            fs.add_UFaceMark(ufm)
-
-
-    fs.shrink()
+            
+    fs.optimize()
     fs.close()
-
-    import code
-    code.interact(local=dict(globals(), **locals()))
 
 # seg_filepath = input_path / ( Path(image_filepath).stem + '_seg.png')
 # if not seg_filepath.exists():

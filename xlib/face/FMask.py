@@ -9,7 +9,7 @@ class FMask:
     def __init__(self, _from_pickled=False):
         """
         """
-        self._uuid : Union[bytes, None] = uuid.uuid4().bytes_le if not _from_pickled else None
+        self._uuid : Union[bytes, None] = uuid.uuid4().bytes if not _from_pickled else None
         self._mask_type : Union[FMask.Type, None] = None
         self._FImage_uuid : Union[bytes, None] = None
         

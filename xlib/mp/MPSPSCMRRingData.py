@@ -37,7 +37,7 @@ class MPSPSCMRRingData:
 
         # Initialize first block at 0 index
         wid = 0
-        wid_uuid = uuid.uuid4().bytes_le
+        wid_uuid = uuid.uuid4().bytes
         wid_heap_offset = 0
         wid_data_size = 0
 
@@ -82,7 +82,7 @@ class MPSPSCMRRingData:
             raise Exception('data_size more than heap_size')
 
         fmv = FormattedMemoryViewIO(self._shared_mem.get_mv())
-        wid_uuid = uuid.uuid4().bytes_le
+        wid_uuid = uuid.uuid4().bytes
 
         if self._write_lock is not None:
             self._write_lock.acquire()

@@ -15,6 +15,12 @@ class UPerson(IState):
     def __str__(self): return f"UPerson UUID:[...{self._uuid[-4:].hex()}] name:[{self._name}] age:[{self._age}]"
     def __repr__(self): return self.__str__()
 
+    @staticmethod
+    def from_state(state : dict) -> 'UPerson':
+        ufm = UPerson()
+        ufm.restore_state(state)
+        return ufm
+        
     def restore_state(self, state : dict):
         self._uuid = state.get('_uuid', None)
         self._name = state.get('_name', None)
@@ -28,7 +34,7 @@ class UPerson(IState):
 
     def get_uuid(self) -> Union[bytes, None]:
         if self._uuid is None:
-            self._uuid = uuid.uuid4().bytes_le
+            self._uuid = uuid.uuid4().bytes
         return self._uuid
 
     def set_uuid(self, uuid : Union[bytes, None]):
