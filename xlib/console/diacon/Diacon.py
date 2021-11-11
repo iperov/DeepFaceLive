@@ -16,16 +16,16 @@ class EDlgMode(IntEnum):
 
 
 class DlgChoice:
-    def __init__(self, name : str = None, 
+    def __init__(self, short_name : str = None, 
                        row_def : str = None, 
                        on_choose : Callable = None):
-        if len(name) == 0:
-            raise ValueError('Zero len name is not valid.')
-        self._name = name
+        if len(short_name) == 0:
+            raise ValueError('Zero len short_name is not valid.')
+        self._short_name = short_name
         self._row_def = row_def
         self._on_choose = on_choose
 
-    def get_name(self) -> Union[str, None]: return self._name
+    def get_short_name(self) -> Union[str, None]: return self._short_name
     def get_row_def(self) -> Union[str, None]: return self._row_def
     def get_on_choose(self) -> Callable: return self._on_choose
 
@@ -52,8 +52,6 @@ class Dlg:
         else:
             raise Exception('on_recreate() is not defined.')
         
-    def get_name(self) -> str: return self._name
-    
     def set_current(self, print=True):
         Diacon.update_dlg(self, print=print)
     
@@ -215,36 +213,13 @@ class DlgChoices(Dlg):
         self._choices = choices
         self._on_multi_choice = on_multi_choice
 
-        self._short_names = [choice.get_name() for choice in choices]
+        self._short_names = [choice.get_short_name() for choice in choices]
 
         # Make short names for all choices
-        names = [ choice.get_name() for choice in choices ]
-        names_len = len(names)
+        if len(set(self._short_names)) != len(self._short_names):
+            raise ValueError(f'Contains duplicate short name : {self._short_names}')
 
-        if len(set(names)) != names_len:
-            raise ValueError(f'Contains duplicate name of choice : {names}')
 
-        short_names_len = [1]*names_len
-        while True:
-            short_names = [ name[:short_names_len[i_name]] for i_name, name in enumerate(names) ]
-
-            has_dup = False
-            for i in range(names_len):
-                i_short_name = short_names[i]
-
-                match_count = 0
-                for j in range(names_len):
-                    j_short_name = short_names[j]
-                    if i_short_name == j_short_name:
-                        match_count += 1
-
-                if match_count > 1:
-                    has_dup = True
-                    short_names_len[i] += 1
-
-            if not has_dup:
-                break
-        self._short_names = short_names
 
     #overridable
     def on_print(self, table_def : List[str]):
@@ -326,9 +301,7 @@ class _Diacon:
         if not self._started:
             raise Exception('Diacon not started.')
         self._started = False
-        self._dialog_t.join()
         self._dialog_t = None
-        self._input_t.join()
         self._input_t = None
 
     def _input_thread(self,):
