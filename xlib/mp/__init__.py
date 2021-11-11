@@ -6,4 +6,4 @@ from .PMPI import PMPI
 from .MPAtomicInt32 import MPAtomicInt32
 from .MPSPSCMRRingData import MPSPSCMRRingData
 from .MPWeakHeap import MPWeakHeap
-from .SPMTWorker import SPMTWorker
+from .MPWorker import MPWorker
