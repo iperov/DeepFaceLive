@@ -39,7 +39,7 @@ class ImageProcessor:
         """
         """
         ip = ImageProcessor.__new__(ImageProcessor)
-        ip._img = self._img
+        ip._img = self._img.copy()
         return ip
 
     def get_dims(self) -> Tuple[int,int,int,int]:
@@ -53,18 +53,24 @@ class ImageProcessor:
     def get_dtype(self):
         return self._img.dtype
 
-    def adjust_gamma(self, red : float, green : float, blue : float) -> 'ImageProcessor':
+    def gamma(self, red : float, green : float, blue : float, mask=None) -> 'ImageProcessor':
         dtype = self.get_dtype()
         self.to_ufloat32()
-        img = self._img
-        np.power(img, np.array([1.0 / blue, 1.0 / green, 1.0 / red], np.float32), out=img)
+        img = orig_img = self._img
+        
+        img = np.power(img, np.array([1.0 / blue, 1.0 / green, 1.0 / red], np.float32) )
         np.clip(img, 0, 1.0, out=img)
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+        
         self._img = img
         self.to_dtype(dtype)
         return self
 
 
-    def apply(self, func) -> 'ImageProcessor':
+    def apply(self, func, mask=None) -> 'ImageProcessor':
         """
         apply your own function on internal image
 
@@ -76,12 +82,16 @@ class ImageProcessor:
 
          .apply( lambda img: img-[102,127,63] )
         """
-        img = self._img
-        dtype = img.dtype
-        new_img = func(self._img).astype(dtype)
-        if new_img.ndim != 4:
+        img = orig_img = self._img
+        img = func(img).astype(orig_img.dtype)
+        if img.ndim != 4:
             raise Exception('func used in ImageProcessor.apply changed format of image')
-        self._img = new_img
+            
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask').astype(orig_img.dtype)
+            
+        self._img = img
         return self
 
     def fit_in (self, TW = None, TH = None, pad_to_target : bool = False, allow_upscale : bool = False, interpolation : 'ImageProcessor.Interpolation' = None) -> float:
@@ -147,7 +157,7 @@ class ImageProcessor:
         img[h] = high_val
         return self
 
-    def degrade_resize(self, power : float, interpolation : 'ImageProcessor.Interpolation' = None) -> 'ImageProcessor':
+    def reresize(self, power : float, interpolation : 'ImageProcessor.Interpolation' = None, mask = None) -> 'ImageProcessor':
         """
 
          power  float   0 .. 1.0
@@ -159,7 +169,7 @@ class ImageProcessor:
         if interpolation is None:
             interpolation = ImageProcessor.Interpolation.LINEAR
 
-        img = self._img
+        img = orig_img = self._img
 
         N,H,W,C = img.shape
         W_lr = max(4, int(W*(1.0-power)))
@@ -168,41 +178,196 @@ class ImageProcessor:
         img = cv2.resize (img, (W_lr,H_lr), interpolation=_cv_inter[interpolation])
         img = cv2.resize (img, (W,H)      , interpolation=_cv_inter[interpolation])
         img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask').astype(orig_img.dtype)
 
         self._img = img
         return self
 
-
-    def median_blur(self, size : int, power : float) -> 'ImageProcessor':
+    def box_sharpen(self, size : int, power : float, mask = None) -> 'ImageProcessor':
         """
-         size   int     median kernel size
+         size   int     kernel size
 
-         power  float   0 .. 1.0
+         power  float   0 .. 1.0 (or higher)
         """
-        power = min(1, max(0, power))
+        power = max(0, power)
         if power == 0:
+            return self
+            
+        if size % 2 == 0:
+            size += 1
+
+        dtype = self.get_dtype()
+        self.to_ufloat32()
+
+        img = orig_img = self._img
+        N,H,W,C = img.shape
+
+        img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
+        
+        kernel = np.zeros( (size, size), dtype=np.float32)
+        kernel[ size//2, size//2] = 1.0
+        box_filter = np.ones( (size, size), dtype=np.float32) / (size**2)
+        kernel = kernel + (kernel - box_filter) * (power)
+        img = cv2.filter2D(img, -1, kernel)
+        img = np.clip(img, 0, 1, out=img)
+
+        img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+        
+        self._img = img
+        self.to_dtype(dtype)
+        return self
+    
+    def gaussian_sharpen(self, sigma : float, power : float, mask = None) -> 'ImageProcessor':
+        """
+         sigma  float
+
+         power  float   0 .. 1.0 and higher
+        """
+        sigma = max(0, sigma)
+        if sigma == 0:
             return self
 
         dtype = self.get_dtype()
         self.to_ufloat32()
 
-        img = self._img
+        img = orig_img = self._img
         N,H,W,C = img.shape
 
         img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
-
-        img_blur = cv2.medianBlur(img, size)
-        img = ne.evaluate('img*(1.0-power) + img_blur*power')
-
+            
+        img = cv2.addWeighted(img, 1.0 + power, 
+                              cv2.GaussianBlur(img, (0, 0), sigma), -power, 0)
+        img = np.clip(img, 0, 1, out=img)
         img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+            
         self._img = img
 
         self.to_dtype(dtype)
         return self
 
+    def gaussian_blur(self, sigma : float, opacity : float = 1.0, mask = None) -> 'ImageProcessor':
+        """
+         sigma  float
+
+         opacity  float   0 .. 1.0
+        """
+        sigma = max(0, sigma)
+        if sigma == 0:
+            return self
+        opacity = np.float32( min(1, max(0, opacity)) )
+        if opacity == 0:
+            return self
+            
+        dtype = self.get_dtype()
+        self.to_ufloat32()
+
+        img = orig_img = self._img
+        N,H,W,C = img.shape
+
+        img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
+
+        img_blur = cv2.GaussianBlur(img, (0,0), sigma)
+        f32_1 = np.float32(1.0)
+        img = ne.evaluate('img*(f32_1-opacity) + img_blur*opacity')
+        
+        img = np.clip(img, 0, 1, out=img)
+        img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+            
+        self._img = img
+
+        self.to_dtype(dtype)
+        return self
+        
+    def median_blur(self, size : int, opacity : float, mask = None) -> 'ImageProcessor':
+        """
+         size   int     median kernel size
+
+         opacity  float   0 .. 1.0
+        """
+        opacity = min(1, max(0, opacity))
+        if opacity == 0:
+            return self
+
+        dtype = self.get_dtype()
+        self.to_ufloat32()
+
+        img = orig_img = self._img
+        N,H,W,C = img.shape
+
+        img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
+
+        img_blur = cv2.medianBlur(img, size)
+        f32_1 = np.float32(1.0)
+        img = ne.evaluate('img*(f32_1-opacity) + img_blur*opacity')
+        img = np.clip(img, 0, 1, out=img)
+        img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+            
+        self._img = img
+
+        self.to_dtype(dtype)
+        return self
+    
+    def motion_blur( self, size, angle, mask=None ):
+        """
+            size [1..]
+            
+            angle   degrees
+            
+            mask    H,W
+                    H,W,C
+                    N,H,W,C int/float 0-1 will be applied
+        """
+        if size % 2 == 0:
+            size += 1
+            
+        dtype = self.get_dtype()
+        self.to_ufloat32()
+
+        img = orig_img = self._img
+        N,H,W,C = img.shape
+
+        img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
+    
+        k = np.zeros((size, size), dtype=np.float32)
+        k[ (size-1)// 2 , :] = np.ones(size, dtype=np.float32)
+        k = cv2.warpAffine(k, cv2.getRotationMatrix2D( (size / 2 -0.5 , size / 2 -0.5 ) , angle, 1.0), (size, size) )
+        k = k * ( 1.0 / np.sum(k) )
+        
+        img = cv2.filter2D(img, -1, k)
+        img = np.clip(img, 0, 1, out=img)
+        img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+        
+        self._img = img
+        self.to_dtype(dtype)
+        return self
+        
+        
     def erode_blur(self, erode : int, blur : int, fade_to_border : bool = False) -> 'ImageProcessor':
         """
-        apply erode and blur to the image
+        apply erode and blur to the mask image
 
          erode  int     != 0
          blur   int     > 0
@@ -244,7 +409,126 @@ class ImageProcessor:
 
         self._img = img
         return self
+        
+    def levels(self, in_bwg_out_bw, mask = None) -> 'ImageProcessor':
+        """
+         in_bwg_out_bw  ( [N],[C], 5)
+                        optional per channel/batch input black,white,gamma and out black,white floats
+                        
+                        in black = [0.0 .. 1.0] default:0.0
+                        in white = [0.0 .. 1.0] default:1.0
+                        in gamma = [0.0 .. 2.0++] default:1.0
+                        
+                        out black = [0.0 .. 1.0] default:0.0
+                        out white = [0.0 .. 1.0] default:1.0
+        """
+        dtype = self.get_dtype()
+        self.to_ufloat32()
+        
+        img = orig_img = self._img
+        N,H,W,C = img.shape
+        
+        v = np.array(in_bwg_out_bw, np.float32)
 
+        if v.ndim == 1:
+            v = v[None,None,...]
+            v = np.tile(v, (N,C,1))
+        elif v.ndim == 2:
+            v = v[None,...]
+            v = np.tile(v, (N,1,1))
+        elif v.ndim > 3:
+            raise ValueError('in_bwg_out_bw.ndim > 3')
+        
+        VN, VC, VD = v.shape
+        if N != VN or C != VC or VD != 5:
+            raise ValueError('wrong in_bwg_out_bw size. Must have 5 floats at last dim.')
+        
+        v = v[:,None,None,:,:]
+        
+        img = np.clip( (img - v[...,0]) / (v[...,1] - v[...,0]), 0, 1 )
+        
+        img = ( img ** (1/v[...,2]) ) *  (v[...,4] - v[...,3]) + v[...,3]
+        img = np.clip(img, 0, 1, out=img)
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+        
+        self._img = img
+        self.to_dtype(dtype)
+        return self
+ 
+    def hsv(self, h_diff : float, s_diff : float, v_diff : float, mask = None) -> 'ImageProcessor':
+        """
+        apply HSV modification for BGR image
+            
+            h_diff = [-360.0 .. 360.0]
+            s_diff = [-1.0 .. 1.0]
+            s_diff = [-1.0 .. 1.0]
+        """
+        dtype = self.get_dtype()
+        self.to_ufloat32()
+        
+        img = orig_img = self._img
+        N,H,W,C = img.shape
+        if C != 3:
+            raise Exception('Image channels must be == 3')
+            
+        img = img.reshape( (N*H,W,C) )
+        
+        h, s, v = cv2.split(cv2.cvtColor(img, cv2.COLOR_BGR2HSV))
+        h = ( h + h_diff ) % 360
+        
+        s += s_diff
+        np.clip (s, 0, 1, out=s )
+        
+        v += v_diff
+        np.clip (v, 0, 1, out=v )
+
+        img = np.clip( cv2.cvtColor(cv2.merge([h, s, v]), cv2.COLOR_HSV2BGR) , 0, 1 )
+        img = img.reshape( (N,H,W,C) )
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask')
+            
+        self._img = img
+        self.to_dtype(dtype)
+        return self
+
+    def jpeg_recompress(self, quality : int, mask = None ) -> 'ImageProcessor':
+        """
+         quality    0-100
+        """
+        dtype = self.get_dtype()
+        self.to_uint8()
+        
+        img = orig_img = self._img
+        _,_,_,C = img.shape
+        if C != 3:
+            raise Exception('Image channels must be == 3')
+        
+        new_imgs = []
+        for x in img:
+            ret, result = cv2.imencode('.jpg', x, [int(cv2.IMWRITE_JPEG_QUALITY), quality] )
+            if not ret:
+                raise Exception('unable to compress jpeg')
+            x = cv2.imdecode(result, flags=cv2.IMREAD_UNCHANGED)
+            
+            new_imgs.append(x)
+            
+        img = np.array(new_imgs)
+        
+        
+        if mask is not None:
+            mask = self._check_normalize_mask(mask)
+            img = ne.evaluate('orig_img*(1-mask) + img*mask').astype(np.uint8)
+
+        self._img = img
+        self.to_dtype(dtype)
+        
+        return self
+        
     def rotate90(self) -> 'ImageProcessor':
         self._img = np.rot90(self._img, k=1, axes=(1,2) )
         return self
@@ -301,18 +585,6 @@ class ImageProcessor:
 
         if w_pad != 0 or h_pad != 0:
             img = np.pad(img, ( (0,0), (0,h_pad), (0,w_pad), (0,0) ))
-
-        self._img = img
-        return self
-
-    def sharpen(self, factor : float, kernel_size=3) -> 'ImageProcessor':
-        img = self._img
-
-        N,H,W,C = img.shape
-        img = img.transpose( (1,2,0,3) ).reshape( (H,W,N*C) )
-        blur = cv2.GaussianBlur(img, (kernel_size, kernel_size) , 0)
-        img = cv2.addWeighted(img, 1.0 + (0.5 * factor), blur, -(0.5 * factor), 0)
-        img = img.reshape( (H,W,N,C) ).transpose( (2,0,1,3) )
 
         self._img = img
         return self
@@ -395,7 +667,7 @@ class ImageProcessor:
 
         return self
 
-    def resize(self, size : Tuple, interpolation : 'ImageProcessor.Interpolation' = None, new_ip=False ) -> 'ImageProcessor':
+    def resize(self, size : Tuple, interpolation : 'ImageProcessor.Interpolation' = None ) -> 'ImageProcessor':
         """
         resize to (W,H)
         """
@@ -411,14 +683,11 @@ class ImageProcessor:
             img = cv2.resize (img, (TW, TH), interpolation=_cv_inter[interpolation])
             img = img.reshape( (TH,TW,N,C) ).transpose( (2,0,1,3) )
 
-            if new_ip:
-                return ImageProcessor(img)
-
             self._img = img
 
         return self
 
-    def warpAffine(self, mat, out_width, out_height, interpolation : 'ImageProcessor.Interpolation' = None ) -> 'ImageProcessor':
+    def warp_affine(self, mat, out_width, out_height, interpolation : 'ImageProcessor.Interpolation' = None ) -> 'ImageProcessor':
         """
         img    HWC
         """
@@ -489,12 +758,36 @@ class ImageProcessor:
         self._img = img.astype(np.uint8, copy=False)
         return self
 
+    def _check_normalize_mask(self, mask : np.ndarray):
+        N,H,W,C = self._img.shape
+        
+        if mask.ndim == 2:
+            mask = mask[None,...,None]
+        elif mask.ndim == 3:
+            mask = mask[None,...]
+        
+        if mask.ndim != 4:
+            raise ValueError('mask must have ndim == 4')    
+        
+        MN, MH, MW, MC = mask.shape
+        if H != MH or W != MW:
+            raise ValueError('mask H,W, mismatch')
+        
+        if MN != 1 and N != MN:
+            raise ValueError(f'mask N dim must be 1 or == {N}')
+        if MC != 1 and C != MC:
+            raise ValueError(f'mask C dim must be 1 or == {C}')
+            
+        return mask
+        
     class Interpolation(IntEnum):
-        LINEAR = 0
-        CUBIC = 1
+        NEAREST = 0,
+        LINEAR = 1
+        CUBIC = 2,
         LANCZOS4 = 4
 
-_cv_inter = { ImageProcessor.Interpolation.LINEAR : cv2.INTER_LINEAR,
+_cv_inter = { ImageProcessor.Interpolation.NEAREST : cv2.INTER_NEAREST,
+              ImageProcessor.Interpolation.LINEAR : cv2.INTER_LINEAR,
               ImageProcessor.Interpolation.CUBIC : cv2.INTER_CUBIC,
               ImageProcessor.Interpolation.LANCZOS4 : cv2.INTER_LANCZOS4,
                }

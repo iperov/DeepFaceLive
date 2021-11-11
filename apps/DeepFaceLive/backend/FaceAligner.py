@@ -135,7 +135,7 @@ class FaceAlignerWorker(BackendWorker):
                                                                   exclude_moving_parts=state.exclude_moving_parts,
                                                                   head_yaw=head_yaw,
                                                                   x_offset=state.x_offset,
-                                                                  y_offset=state.y_offset)
+                                                                  y_offset=state.y_offset-0.08)
 
                             fsi.face_align_image_name = f'{frame_image_name}_{face_id}_aligned'
                             fsi.image_to_align_uni_mat = uni_mat

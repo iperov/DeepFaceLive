@@ -77,8 +77,8 @@ class FrameAdjusterWorker(BackendWorker):
 
                 if frame_image is not None:
                     frame_image_ip = ImageProcessor(frame_image)
-                    frame_image_ip.median_blur(5, state.median_blur_per / 100.0 )
-                    frame_image_ip.degrade_resize( state.degrade_bicubic_per / 100.0, interpolation=ImageProcessor.Interpolation.CUBIC)
+                    frame_image_ip.median_blur(5, opacity=state.median_blur_per / 100.0 )
+                    frame_image_ip.reresize( state.degrade_bicubic_per / 100.0, interpolation=ImageProcessor.Interpolation.CUBIC)
 
                     frame_image = frame_image_ip.get_image('HWC')
                     bcd.set_image(frame_image_name, frame_image)

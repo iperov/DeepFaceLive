@@ -102,6 +102,8 @@ class FLandmarks2D(IState):
         r = max(xrt[0], xrb[0])
         b = max(xlb[1], xrb[1])
         return FRect.from_ltrb( (l,t,r,b) )
+        
+        
 
     def calc_cut(self, h_w, coverage : float, output_size : int,
                        exclude_moving_parts : bool = False,
@@ -143,19 +145,18 @@ class FLandmarks2D(IState):
         bt_diag_vec = (g_p[1]-g_p[3]).astype(np.float32)
         bt_diag_vec /= npla.norm(bt_diag_vec)
 
-        # calc modifier of diagonal vectors for scale and coverage value
-        scale = 1.0
-        mod = (1.0 / scale)* ( npla.norm(g_p[0]-g_p[2])*( coverage * 0.5) )
-
-        # adjust vertical offset to cover more forehead
-        h_vec = (g_p[1]-g_p[0]).astype(np.float32)
-        v_vec = (g_p[3]-g_p[0]).astype(np.float32)
+        # calc modifier of diagonal vectors for coverage value
+        mod = npla.norm(g_p[0]-g_p[2])*(coverage*0.5)
 
         if head_yaw is not None:
             # Damp near zero
             x_offset += -(head_yaw * np.abs(np.tanh(head_yaw*2)) ) * 0.5
 
-        g_c += h_vec*x_offset + v_vec*(y_offset-0.08)
+        # adjust vertical offset to cover more forehead
+        h_vec = (g_p[1]-g_p[0]).astype(np.float32)
+        v_vec = (g_p[3]-g_p[0]).astype(np.float32)
+        
+        g_c += h_vec*x_offset + v_vec*y_offset
 
         l_t = np.array( [ g_c - tb_diag_vec*mod,
                           g_c + bt_diag_vec*mod,
@@ -174,7 +175,7 @@ class FLandmarks2D(IState):
                   exclude_moving_parts : bool = False,
                   head_yaw : float = None,
                   x_offset : float = 0,
-                  y_offset : float = 0) -> Tuple[Affine2DMat, Affine2DUniMat]:
+                  y_offset : float = 0) -> Tuple[np.ndarray, Affine2DUniMat]:
         """
         Cut the face to square of output_size from img using landmarks with given parameters
 

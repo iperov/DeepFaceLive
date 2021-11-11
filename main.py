@@ -4,6 +4,7 @@ import platform
 from pathlib import Path
 
 from xlib import appargs as lib_appargs
+from xlib import os as lib_os
 
 # onnxruntime==1.8.0 requires CUDA_PATH_V11_2, but 1.8.1 don't
 # keep the code if they return that behaviour
@@ -54,7 +55,7 @@ def main():
 
     def run_extract_FaceSynthetics(args):
         from scripts import dev
-        
+
         inputdir_path = Path(args.input_dir)
         faceset_path = Path(args.faceset_path)
 
@@ -69,23 +70,14 @@ def main():
     train_parsers = train_parser.add_subparsers()
 
     def train_FaceAligner(args):
-        faceset_path = Path(args.faceset_path)
-
-        from apps.trainers.FaceAligner.FaceAlignerTrainer import FaceAlignerTrainer
-        FaceAlignerTrainer(faceset_path=faceset_path).run()
+        lib_os.set_process_priority(lib_os.ProcessPriority.IDLE)
+        from apps.trainers.FaceAligner.FaceAlignerTrainerApp import FaceAlignerTrainerApp
+        FaceAlignerTrainerApp(workspace_path=Path(args.workspace_dir), faceset_path=Path(args.faceset_path))
 
     p = train_parsers.add_parser('FaceAligner')
+    p.add_argument('--workspace-dir', default=None, action=fixPathAction, help="Workspace directory.")
     p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs path")
     p.set_defaults(func=train_FaceAligner)
-    
-    def train_CTSOT(args):
-        from apps.trainers.CTSOT.CTSOTTrainerApp import CTSOTTrainerApp
-        CTSOTTrainerApp(workspace_path=Path(args.workspace_dir), faceset_path=Path(args.faceset_path))
-
-    p = train_parsers.add_parser('CTSOT')
-    p.add_argument('--workspace-dir', default=None, action=fixPathAction, help="Workspace directory.")
-    p.add_argument('--faceset-path', default=None, action=fixPathAction, help=".dfs faceset path")
-    p.set_defaults(func=train_CTSOT)
 
     def bad_args(arguments):
         parser.print_help()

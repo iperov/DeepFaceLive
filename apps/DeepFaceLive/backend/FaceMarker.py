@@ -164,7 +164,7 @@ class FaceMarkerWorker(BackendWorker):
                             if fsi.face_urect is not None:
                                 # Cut the face to feed to the face marker
                                 face_image, face_uni_mat = fsi.face_urect.cut(frame_image, marker_state.marker_coverage, 256 if is_opencv_lbf else \
-                                                                                                                            192 if is_google_facemesh else 0 )
+                                                                                                                         192 if is_google_facemesh else 0 )
                                 _,H,W,_ = ImageProcessor(face_image).get_dims()
 
                                 if is_opencv_lbf:

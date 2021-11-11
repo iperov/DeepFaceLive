@@ -251,10 +251,10 @@ class FaceSwapperWorker(BackendWorker):
 
                                 fai_ip = ImageProcessor(face_align_image)
                                 if model_state.presharpen_amount != 0:
-                                    fai_ip.sharpen(factor=model_state.presharpen_amount)
+                                    fai_ip.gaussian_sharpen(sigma=1.0, power=model_state.presharpen_amount)
 
                                 if pre_gamma_red != 1.0 or pre_gamma_green != 1.0 or pre_gamma_blue != 1.0:
-                                    fai_ip.adjust_gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
+                                    fai_ip.gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
                                 face_align_image = fai_ip.get_image('HWC')
 
                                 celeb_face, celeb_face_mask_img, face_align_mask_img = dfm_model.convert(face_align_image, morph_factor=model_state.morph_factor)
