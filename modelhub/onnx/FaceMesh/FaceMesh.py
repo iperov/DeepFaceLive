@@ -30,6 +30,9 @@ class FaceMesh:
             raise Exception(f'device_info {device_info} is not in available devices for FaceMesh')
 
         path = Path(__file__).parent / 'FaceMesh.onnx'
+        if not path.exists():
+            raise FileNotFoundError(f'{path} not found')
+            
         self._sess = sess = InferenceSession_with_device(str(path), device_info)
         self._input_name = sess.get_inputs()[0].name
         self._input_width = 192
