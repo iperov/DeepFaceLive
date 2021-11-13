@@ -369,9 +369,11 @@ class FaceAlignerTrainerApp:
             d = len(lh) // max_lines
 
             lh_ar = np.array(lh[-d*max_lines:], np.float32)
-            lh_ar = lh_ar.reshape( (max_lines, d)).mean(-1)
-
-            print( '\n'.join( f'{value:.5f}' for value in lh_ar ) )
+            lh_ar = lh_ar.reshape( (max_lines, d))
+            lh_ar_max, lh_ar_min, lh_ar_mean, lh_ar_median = lh_ar.max(-1), lh_ar.min(-1), lh_ar.mean(-1), np.median(lh_ar, -1)
+            
+            
+            print( '\n'.join( f'max:[{max_value:.5f}] min:[{min_value:.5f}] mean:[{mean_value:.5f}] median:[{median_value:.5f}]' for max_value, min_value, mean_value, median_value in zip(lh_ar_max, lh_ar_min, lh_ar_mean, lh_ar_median) ) )
 
         dlg.recreate().set_current()
 
