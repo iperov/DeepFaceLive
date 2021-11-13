@@ -34,10 +34,11 @@ class DFMModelInfo:
 def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
     # predefined list of celebs with urls
     dfm_models = [
-            DFMModelInfo(name='Alexandra Daddario', model_path=models_path / f'Alexandra_Daddario.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ALEXANDRA_DADDARIO/Alexandra_Daddario.dfm'),
-            DFMModelInfo(name='Margot Robbie', model_path=models_path / f'Margot_Robbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MARGOT_ROBBIE/Margot_Robbie.dfm'),
-            DFMModelInfo(name='Sylvester Stallone', model_path=models_path / f'Sylvester_Stallone.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/SYLVESTER_STALLONE/Sylvester_Stallone.dfm'),
-            DFMModelInfo(name='Tom Cruise', model_path=models_path / f'Tom_Cruise.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TOM_CRUISE/Tom_Cruise.dfm'),
+            DFMModelInfo(name='Ava de Addario', model_path=models_path / f'Ava_de_Addario.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/AVA_DE_ADDARIO/Ava_de_Addario.dfm'),
+            DFMModelInfo(name='Ewon Spice', model_path=models_path / f'Ewon_Spice.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/EWON_SPICE/Ewon_Spice.dfm'),
+            DFMModelInfo(name='Matilda Bobbie', model_path=models_path / f'Matilda_Bobbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MATILDA_BOBBIE/Matilda_Bobbie.dfm'),
+            DFMModelInfo(name='Silwan Stillwone', model_path=models_path / f'Silwan_Stillwone.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/SILWAN_STILLWONE/Silwan_Stillwone.dfm'),
+            DFMModelInfo(name='Tim Chrys', model_path=models_path / f'Tim_Chrys.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_CHRYS/Tim_Chrys.dfm'),
         ]
 
     # scan additional models in directory

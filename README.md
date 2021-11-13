@@ -14,37 +14,47 @@
 
 <tr><td colspan=2 align="center">
 
-## Available ready-to-use face models:
+## Available ready-to-use public face models.
+
+## These persons do not exists. Similarities with real people are accidental.
 
 </td></tr>
 
 <tr><td colspan=2 align="center">
 
 <table align="center" border="0">
+
 <tr><td align="center">
-Alexandra Daddario
+Ewon Spice
 
-<img src="doc/celebs/Alexandra_Daddario/Alexandra_Daddario.jpg" width=128></img>
+<img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
 
-<a href="doc/celebs/Alexandra_Daddario/examples.md">examples</a>
+<a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
+
 </td><td align="center">
-Margot Robbie
+Ava de Addario
 
-<img src="doc/celebs/Margot_Robbie/Margot_Robbie.png" width=128></img>
+<img src="doc/celebs/Ava_de_Addario/Ava_de_Addario.png" width=128></img>
 
-<a href="doc/celebs/Margot_Robbie/examples.md">examples</a>
+<a href="doc/celebs/Ava_de_Addario/examples.md">examples</a>
 </td><td align="center">
-Sylvester Stallone
+Matilda Bobbie
 
-<img src="doc/celebs/Sylvester_Stallone/Sylvester_Stallone.jpg" width=128></img>
+<img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
 
-<a href="doc/celebs/Sylvester_Stallone/examples.md">examples</a>
+<a href="doc/celebs/Matilda_Bobbie/examples.md">examples</a>
 </td><td align="center">
-Tom Cruise
+Silwan Stillwone
 
-<img src="doc/celebs/Tom_Cruise/Tom_Cruise.jpg" width=128></img>
+<img src="doc/celebs/Silwan_Stillwone/Silwan_Stillwone.png" width=128></img>
 
-<a href="doc/celebs/Tom_Cruise/examples.md">examples</a>
+<a href="doc/celebs/Silwan_Stillwone/examples.md">examples</a>
+</td><td align="center">
+Tim Chrys
+
+<img src="doc/celebs/Tim_Chrys/Tim_Chrys.png" width=128></img>
+
+<a href="doc/celebs/Tim_Chrys/examples.md">examples</a>
 
 </td></tr>
 </table>
