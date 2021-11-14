@@ -470,8 +470,9 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
                                    clear_release_path=True)
 
     # PIP INSTALLATIONS
-
+    
     builder.install_pip_package('numpy==1.21.3')
+    builder.install_pip_package('h5py')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.3.56')
     builder.install_pip_package('opencv-contrib-python==4.5.3.56')
