@@ -156,7 +156,7 @@ class HKernel:
 
         out +=[f'#define NDIM{ndim}_IDX_MOD(' + \
                 ','.join([f't{i}' for i in range(ndim)] + [f'T{i}' for i in range(ndim)]) + \
-                ') (' + '+'.join([f'((size_t)(t{i}) % T{i})' + ''.join(f'*T{j}' for j in range(i+1,ndim)) for i in range(ndim) ]) + ')']
+                ') (' + '+'.join([f'( (((size_t)(t{i}) % T{i}) + T{i}) % T{i} )    ' + ''.join(f'*T{j}' for j in range(i+1,ndim)) for i in range(ndim) ]) + ')']
 
         return '\n'.join(out)
 
@@ -190,7 +190,7 @@ class HKernel:
                  '+'.join([f'((size_t)({name_lower}{i}))'              + ''.join(f'*{shape[j]}' for j in range(i+1,ndim)) for i in range(ndim)]) + ')']
 
         out += [f'#define {name_upper}_IDX_MOD({HKernel.axes_seq_enum(name, ndim)}) (' + \
-                 '+'.join([f'((size_t)({name_lower}{i}) % {shape[i]})' + ''.join(f'*{shape[j]}' for j in range(i+1,ndim)) for i in range(ndim)]) + ')']
+                 '+'.join([f'( (( (size_t)({name_lower}{i}) % {shape[i]} ) + {shape[i]}) % {shape[i]} )' + ''.join(f'*{shape[j]}' for j in range(i+1,ndim)) for i in range(ndim)]) + ')']
 
         return '\n'.join(out)
 
