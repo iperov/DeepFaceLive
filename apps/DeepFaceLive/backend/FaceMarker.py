@@ -98,7 +98,7 @@ class FaceMarkerWorker(BackendWorker):
                 if marker_type == MarkerType.OPENCV_LBF:
                     marker_coverage = 1.1
                 elif marker_type == MarkerType.GOOGLE_FACEMESH:
-                    marker_coverage = 1.3
+                    marker_coverage = 1.4
             cs.marker_coverage.set_number(marker_coverage)
 
             cs.temporal_smoothing.enable()
