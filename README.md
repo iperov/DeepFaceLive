@@ -25,6 +25,12 @@
 <table align="center" border="0">
 
 <tr><td align="center">
+Ava de Addario
+
+<img src="doc/celebs/Ava_de_Addario/Ava_de_Addario.png" width=128></img>
+
+<a href="doc/celebs/Ava_de_Addario/examples.md">examples</a>
+</td><td align="center">
 Ewon Spice
 
 <img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
@@ -32,11 +38,12 @@ Ewon Spice
 <a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
 
 </td><td align="center">
-Ava de Addario
+Kim Jarrey
 
-<img src="doc/celebs/Ava_de_Addario/Ava_de_Addario.png" width=128></img>
+<img src="doc/celebs/Kim_Jarrey/Kim_Jarrey.png" width=128></img>
 
-<a href="doc/celebs/Ava_de_Addario/examples.md">examples</a>
+<a href="doc/celebs/Kim_Jarrey/examples.md">examples</a>
+
 </td><td align="center">
 Matilda Bobbie
 
