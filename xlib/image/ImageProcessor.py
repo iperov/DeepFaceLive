@@ -293,12 +293,16 @@ class ImageProcessor:
         self.to_dtype(dtype)
         return self
         
-    def median_blur(self, size : int, opacity : float, mask = None) -> 'ImageProcessor':
+    def median_blur(self, size : int, opacity : float = 1.0, mask = None) -> 'ImageProcessor':
         """
          size   int     median kernel size
 
          opacity  float   0 .. 1.0
         """
+        if size % 2 == 0:
+            size += 1
+        size = max(1, size)
+            
         opacity = min(1, max(0, opacity))
         if opacity == 0:
             return self
