@@ -23,18 +23,16 @@ class FaceWarper:
                  rnd_state : np.random.RandomState = None,
                 ):
         """
-        Max quality one-pass face augmentation via geometric transformations with provided values.
+        Max quality one-pass face augmentation via geometric transformations with provided random range or exact values.
         
             img_to_face_uni_mat    Affine2DUniMat
             
         Affine2DUniMat given from FLandmarks2D.calc_cut
         it is an uniform affineMat to transform original image to aligned face
 
-            align_* rw_grid_*
-            
+            align_* rw_grid_*   
+        
         exact augmentation parameters or range for random generation.
-        
-        
         """
         self._img_to_face_uni_mat = img_to_face_uni_mat
         self._face_to_img_uni_mat = img_to_face_uni_mat.invert()
@@ -98,7 +96,9 @@ class FaceWarper:
         return new_img
         
     def _gen(self, H, W, random_warp, out_res, rnd_state):
-
+        """generate grid and mask"""
+        
+        # make identity grid
         image_grid = np.stack(np.meshgrid(np.linspace(0., 1.0, H, dtype=np.float32),
                                           np.linspace(0., 1.0, W, dtype=np.float32)), -1)
         
@@ -106,25 +106,20 @@ class FaceWarper:
             # make a random face_warp_grid in the space of the face
             face_warp_grid = FaceWarper._gen_random_warp_uni_grid_diff(out_res, self._rw_grid_cell_count, 0.12, rnd_state)
 
-            # make a randomly transformable mat to transform face_warp_grid from face to image
-            face_warp_grid_mat = self._face_to_img_uni_mat * self._warp_rnd_mat
+            # apply random transformation mat of face_warp_grid to mat that transforms face to image
+            face_warp_grid_uni_mat = self._face_to_img_uni_mat * self._warp_rnd_mat
 
-            # warp face_warp_grid to the space of image and merge with image_grid
-            image_grid += cv2.warpAffine(face_warp_grid, face_warp_grid_mat.to_exact_mat(out_res,out_res, W, H), (W,H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+            # warp face_warp_grid to the space of image using previous mat and merge with image_grid
+            image_grid += cv2.warpAffine(face_warp_grid, face_warp_grid_uni_mat.to_exact_mat(out_res,out_res, W, H), (W,H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
-        # scale uniform grid from to image size
+        # scale uniform grid to image size
         image_grid *= (H-1, W-1)
 
         # apply random transformations for align mat
-        #img_to_face_rnd_uni_mat = (self._face_to_img_uni_mat * self._align_rnd_mat).invert()
-        
         img_to_face_rnd_mat = (self._face_to_img_uni_mat * self._align_rnd_mat).invert().to_exact_mat(W,H,out_res,out_res)
 
         # warp image_grid to face space
         image_grid = cv2.warpAffine(image_grid, img_to_face_rnd_mat, (out_res,out_res), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE )
-
-        # One-pass remap from original image to aligned face with all transformations
-        #new_img = cv2.remap(img, image_grid, None, interpolation=cv2.INTER_LANCZOS4)
 
         # make mask to refine image-boundary visible in face space
         face_mask = cv2.warpAffine( np.ones( (H,W), dtype=np.uint8), img_to_face_rnd_mat, (out_res,out_res), flags=cv2.INTER_NEAREST)[...,None]
