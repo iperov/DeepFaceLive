@@ -44,7 +44,8 @@ Kim Jarrey
 
 <a href="doc/celebs/Kim_Jarrey/examples.md">examples</a>
 
-</td><td align="center">
+</td></tr>
+<tr><td align="center">
 Matilda Bobbie
 
 <img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
