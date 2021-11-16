@@ -16,8 +16,8 @@ class EDlgMode(IntEnum):
 
 
 class DlgChoice:
-    def __init__(self, short_name : str = None, 
-                       row_def : str = None, 
+    def __init__(self, short_name : str = None,
+                       row_def : str = None,
                        on_choose : Callable = None):
         if len(short_name) == 0:
             raise ValueError('Zero len short_name is not valid.')
@@ -32,18 +32,18 @@ class DlgChoice:
 class Dlg:
     def __init__(self, on_recreate : Callable[ [], 'Dlg'] = None,
                        on_back  : Callable = None,
-                       top_rows_def : Union[str, List[str]] = None, 
-                       bottom_rows_def : Union[str, List[str]] = None, 
+                       top_rows_def : Union[str, List[str]] = None,
+                       bottom_rows_def : Union[str, List[str]] = None,
                        ):
         """
         base class for Diacon dialogs.
         """
         self._on_recreate = on_recreate
         self._on_back = on_back
-        
+
         self._top_rows_def = top_rows_def
         self._bottom_rows_def = bottom_rows_def
-    
+
     def recreate(self):
         """
         """
@@ -51,27 +51,27 @@ class Dlg:
             return self._on_recreate(self)
         else:
             raise Exception('on_recreate() is not defined.')
-        
+
     def set_current(self, print=True):
         Diacon.update_dlg(self, print=print)
-    
+
     def handle_user_input(self, s : str):
         """
         """
         mode = self.on_user_input(s.strip())
-        
+
         if mode == EDlgMode.UNHANDLED:
             mode = EDlgMode.RELOAD
         if mode == EDlgMode.WRONG_INPUT:
             print('\nWrong input')
             mode = EDlgMode.RELOAD
-            
+
         if mode == EDlgMode.RELOAD:
             self.recreate().set_current()
         if mode == EDlgMode.BACK:
             if self._on_back is not None:
                 self._on_back(self)
-    
+
     #overridable
     def on_user_input(self, s : str) -> EDlgMode:
         if len(s) == 0:
@@ -80,13 +80,13 @@ class Dlg:
             if s == '<':
                 return EDlgMode.BACK
         return EDlgMode.UNHANDLED
-        
+
     def print(self, table_width_max=80, col_spacing = 3):
         """
         print dialog
         """
         table_def : List[str]= []
-        
+
         trd = self._top_rows_def
         brd = self._bottom_rows_def
         if trd is not None:
@@ -99,7 +99,7 @@ class Dlg:
 
         table_def.append('|99')
         table_def = self.on_print(table_def)
-        
+
         if brd is not None:
             if not isinstance(brd, (list,tuple)):
                 brd = [brd]
@@ -119,7 +119,7 @@ class Dlg:
     def on_print(self, table_lines : List[Tuple[str,str]]):
         return table_lines
 
-    
+
 
 class DlgNumber(Dlg):
     def __init__(self, is_float : bool,
@@ -131,7 +131,7 @@ class DlgNumber(Dlg):
                        on_value : Callable[ [Dlg, Number], None] = None,
                        on_recreate : Callable[ [], 'Dlg'] = None,
                        on_back : Callable = None,
-                       top_rows_def : Union[str, List[str]] = None, 
+                       top_rows_def : Union[str, List[str]] = None,
                        bottom_rows_def : Union[str, List[str]] = None, ):
         super().__init__(on_recreate=on_recreate, on_back=on_back, top_rows_def=top_rows_def, bottom_rows_def=bottom_rows_def)
 
@@ -139,7 +139,7 @@ class DlgNumber(Dlg):
             raise ValueError('min_value > max_value')
         if clip_min_value is not None and clip_max_value is not None and clip_min_value > clip_max_value:
             raise ValueError('clip_min_value > clip_max_value')
-            
+
         self._is_float = is_float
         self._current_value = current_value
         self._min_value = min_value
@@ -152,21 +152,21 @@ class DlgNumber(Dlg):
     def on_print(self, table_def : List[str]):
 
         minv, maxv = self._min_value, self._max_value
-    
+
         if self._is_float:
             line = '| * | Enter float number'
         else:
             line = '| * | Enter integer number'
-        
+
         if minv is not None and maxv is None:
             line += f' in range: [{minv} ... )'
         elif minv is None and maxv is not None:
             line += f' in range: ( ... {maxv} ]'
         elif minv is not None and maxv is not None:
             line += f' in range: [{minv} ... {maxv} ]'
-    
+
         table_def.append(line)
-    
+
         return table_def
 
     #overridable
@@ -192,7 +192,7 @@ class DlgNumber(Dlg):
                 if self._clip_max_value is not None:
                     if v > self._clip_max_value:
                         v = self._clip_max_value
-                
+
                 if self._on_value is not None:
                     self._on_value(self, v)
                 return EDlgMode.HANDLED
@@ -206,7 +206,7 @@ class DlgChoices(Dlg):
                        on_multi_choice : Callable[ [ List[DlgChoice] ], None] = None,
                        on_recreate : Callable[ [Dlg], Dlg] = None,
                        on_back : Callable = None,
-                       top_rows_def : Union[str, List[str]] = None, 
+                       top_rows_def : Union[str, List[str]] = None,
                        bottom_rows_def : Union[str, List[str]] = None,
                        ):
         super().__init__(on_recreate=on_recreate, on_back=on_back, top_rows_def=top_rows_def, bottom_rows_def=bottom_rows_def)
@@ -252,7 +252,7 @@ class DlgChoices(Dlg):
                 else:
                     id = x[0]
                     choices_id.append(id)
-            
+
             if len(set(choices_id)) != len(choices_id):
                 # Duplicate input
                 return EDlgMode.WRONG_INPUT
@@ -261,7 +261,7 @@ class DlgChoices(Dlg):
                 on_choose = self._choices[id].get_on_choose()
                 if on_choose is not None:
                     on_choose(self)
-                    
+
             if self._on_multi_choice is not None:
                 self._on_multi_choice(choices_id)
 
@@ -304,6 +304,9 @@ class _Diacon:
         self._dialog_t = None
         self._input_t = None
 
+    def get_current_dlg(self) -> Union[Dlg, None]:
+        return self._current_dlg
+
     def _input_thread(self,):
         while self._started:
             if self._input_request:
@@ -335,7 +338,7 @@ class _Diacon:
                 if input_result is not None:
 
                     if self._current_dlg is not None:
-                        self._current_dlg.handle_user_input(input_result)                        
+                        self._current_dlg.handle_user_input(input_result)
                         continue
 
             time.sleep(0.005)
@@ -360,7 +363,7 @@ class _Diacon:
         """
         if not self._started:
             self.start()
-            
+
         self._new_dlg = (new_dlg, print)
 
 Diacon = _Diacon()
