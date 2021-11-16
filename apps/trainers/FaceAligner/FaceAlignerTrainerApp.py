@@ -7,15 +7,17 @@ import cv2
 import numpy as np
 import torch
 import torch.autograd
+import torchvision.models as tv
 from localization import L, Localization
 from modelhub import torch as torch_models
+from xlib import math as lib_math
 from xlib import torch as lib_torch
 from xlib.console import diacon as dc
-from xlib.torch.optim import AdaBelief
 from xlib.torch.device import TorchDeviceInfo
-import torchvision.models as tv
-from xlib import math as lib_math
+from xlib.torch.optim import AdaBelief
+
 from .TrainingDataGenerator import Data, TrainingDataGenerator
+
 
 class FaceAlignerTrainerApp:
     def __init__(self, workspace_path : Path, faceset_path : Path):
