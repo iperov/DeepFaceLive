@@ -99,7 +99,7 @@ class FaceMergerWorker(BackendWorker):
             cs.color_transfer.call_on_selected(self.on_cs_color_transfer)
             cs.color_transfer.enable()
             cs.color_transfer.set_choices(['none','rct'])
-            cs.color_transfer.select(state.color_transfer if state.color_transfer is not None else 'none')
+            cs.color_transfer.select(state.color_transfer if state.color_transfer is not None else 'rct')
 
             cs.interpolation.call_on_selected(self.on_cs_interpolation)
             cs.interpolation.enable()
