@@ -88,8 +88,9 @@ class FaceWarper:
         if data is None:
             rnd_state = np.random.RandomState()
             rnd_state.set_state( self._rnd_state_state )
+            self._cached[key] = data = self._gen(H,W, random_warp, out_res, rnd_state=rnd_state )
             
-            image_grid, face_mask = self._cached[key] = self._gen(H,W, random_warp, out_res, rnd_state=rnd_state )
+        image_grid, face_mask = data
             
         new_img = cv2.remap(img, image_grid, None, interpolation=cv2.INTER_LANCZOS4)
         new_img *= face_mask
@@ -128,7 +129,8 @@ class FaceWarper:
         
     def _gen_random_warp_uni_grid_diff(size: int, cell_count, cell_mod, rnd_state) -> np.ndarray:
         """
-        generates square uniform random warp
+        generates square uniform random warp coordinate differences
+        
         grid of shape (size, size, 2)  (x,y)
 
         cell_count(3)        3+
