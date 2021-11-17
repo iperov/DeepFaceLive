@@ -1,4 +1,42 @@
 
+# import cv2
+# import numpy as np
+# from xlib.math import Affine2DMat
+
+# # x = Affine2DMat([ [0.5, 0, 5],
+# #                   [0, 0.5, 5] ] )
+                  
+# # y = Affine2DMat([ [0.75, 0, 3],
+# #                   [0, 0.75, 3] ] )                    
+# x = Affine2DMat.from_3_pairs( np.float32([ [900,900],[910,900],[900,910] ]), 
+#                               np.float32([ [0,0],[1,0],[0,1] ]) )
+ 
+# y = Affine2DMat([ [2.0, 0, 1],
+#                   [0, 1.0, 0] ] )                           
+
+# # #w = y.transform_points([ [1,1]])
+# q = x.invert().transform_points([ [1,1]])                              
+# #e = z.transform_points([ [1,1]])
+# #r = y.transform_points(q)
+
+# w = x.invert()*y
+# z = w.transform_points([ [0,0]])    
+
+# """
+# Ax+B
+
+# 10x + 900
+
+# """
+
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+
+
+
 # import onnx
 # import onnx.parser
 # import onnx.checker
