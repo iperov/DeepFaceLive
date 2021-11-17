@@ -336,7 +336,7 @@ class Localization:
                 'en-US' : 'Increase stabilization by excluding landmarks of moving parts of the face, such as mouth and other.',
                 'ru-RU' : 'Улучшить стабилизацию исключением лицевых точек\nдвижущихся частей лица, таких как рот и других.',
                 'zh-CN' : '通过排除面部移动部分（例如嘴巴和其他你懂的）的特征点来提高稳定性。'},
-    
+
     'QFaceAligner.head_mode':{
                 'en-US' : 'Head mode',
                 'ru-RU' : 'Режим головы',
@@ -536,7 +536,7 @@ class Localization:
                 'en-US' : 'Face mask type',
                 'ru-RU' : 'Тип маски лица',
                 'zh-CN' : '人脸遮罩类型'},
-    
+
     'QFaceMerger.face_mask_erode':{
                 'en-US' : 'Face mask erode',
                 'ru-RU' : 'Укорочение маски',
@@ -546,17 +546,17 @@ class Localization:
                 'en-US' : 'Face mask blur',
                 'ru-RU' : 'Размытие маски',
                 'zh-CN' : '遮罩边缘羽化'},
-                
+
     'QFaceMerger.help.color_transfer':{
                 'en-US' : 'Match the color distribution of the replaced face to the original face.',
                 'ru-RU' : 'Совместить цветовое распределение заменённого лица с исходным.',
                 'zh-CN' : '将被替换的面孔的颜色分布与原始面孔相匹配。'},
-                
+
     'QFaceMerger.color_transfer':{
                 'en-US' : 'Color transfer',
                 'ru-RU' : 'Перенос цвета',
                 'zh-CN' : '彩色转印'},
-                
+
     'QFaceMerger.interpolation':{
                 'en-US' : 'Interpolation',
                 'ru-RU' : 'Интерполяция',
@@ -566,7 +566,7 @@ class Localization:
                 'en-US' : 'Color compression',
                 'ru-RU' : 'Сжатие цвета',
                 'zh-CN' : '颜色压缩'},
-                    
+
     'QFaceMerger.face_opacity':{
                 'en-US' : 'Face opacity',
                 'ru-RU' : 'Непрозрач. лица',
@@ -696,7 +696,7 @@ class Localization:
                 'en-US' : 'Downloading model...',
                 'ru-RU' : 'Загрузка модели...',
                 'zh-CN' : '下载模型中...'},
-                
+
     'StreamOutput.SourceType.SOURCE_FRAME':{
                 'en-US' : 'Source frame',
                 'ru-RU' : 'Исходный кадр',
@@ -717,9 +717,18 @@ class Localization:
                 'ru-RU' : 'Склеенный кадр',
                 'zh-CN' : '合成后的画面'},
 
+    'StreamOutput.SourceType.MERGED_FRAME_OR_SOURCE_FRAME':{
+                'en-US' : 'Merged frame or source frame',
+                'ru-RU' : 'Склеенный кадр или исходный кадр',
+                'zh-CN' : '合成后的画面否则源帧'},
+
     'StreamOutput.SourceType.SOURCE_N_MERGED_FRAME':{
                 'en-US' : 'Source and merged frame',
                 'ru-RU' : 'Исходный и склеенный кадр',
                 'zh-CN' : '源和融合后的帧'},
-    
+
+    'StreamOutput.SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME':{
+                'en-US' : 'Source and merged frame or source frame',
+                'ru-RU' : 'Исходный и склеенный кадр или исходный кадр',
+                'zh-CN' : '源和融合后的帧则源帧'},
     }

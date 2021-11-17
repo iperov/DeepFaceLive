@@ -39,10 +39,18 @@ class SourceType(IntEnum):
     ALIGNED_FACE = 1
     SWAPPED_FACE = 2
     MERGED_FRAME = 3
-    SOURCE_N_MERGED_FRAME = 4
+    MERGED_FRAME_OR_SOURCE_FRAME = 4
+    SOURCE_N_MERGED_FRAME = 5
+    SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME = 6
 
-ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME', '@StreamOutput.SourceType.ALIGNED_FACE', '@StreamOutput.SourceType.SWAPPED_FACE',
-                 '@StreamOutput.SourceType.MERGED_FRAME', '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME']
+ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME', 
+                 '@StreamOutput.SourceType.ALIGNED_FACE', 
+                 '@StreamOutput.SourceType.SWAPPED_FACE',
+                 '@StreamOutput.SourceType.MERGED_FRAME', 
+                 '@StreamOutput.SourceType.MERGED_FRAME_OR_SOURCE_FRAME', 
+                 '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME',
+                 '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME',
+                 ]
 
 
 class StreamOutputWorker(BackendWorker):
@@ -70,7 +78,7 @@ class StreamOutputWorker(BackendWorker):
 
         state, cs = self.get_state(), self.get_control_sheet()
 
-        cs.source_type.call_on_selected(self.on_cs_mode)
+        cs.source_type.call_on_selected(self.on_cs_source_type)
         cs.show_hide_window.call_on_signal(self.on_cs_show_hide_window_signal)
         cs.aligned_face_id.call_on_number(self.on_cs_aligned_face_id)
         cs.target_delay.call_on_number(self.on_cs_target_delay)
@@ -109,7 +117,7 @@ class StreamOutputWorker(BackendWorker):
 
 
 
-    def on_cs_mode(self, idx, source_type):
+    def on_cs_source_type(self, idx, source_type):
         state, cs = self.get_state(), self.get_control_sheet()
         if source_type == SourceType.ALIGNED_FACE:
             cs.aligned_face_id.enable()
@@ -117,11 +125,11 @@ class StreamOutputWorker(BackendWorker):
             cs.aligned_face_id.set_number(state.aligned_face_id or 0)
         else:
             cs.aligned_face_id.disable()
-
         state.source_type = source_type
+        
         self.save_state()
         self.reemit_frame_signal.send()
-
+        
     def show_window(self):
         state, cs = self.get_state(), self.get_control_sheet()
         cv2.namedWindow(self._wnd_name)
@@ -203,8 +211,10 @@ class StreamOutputWorker(BackendWorker):
 
                 if source_type == SourceType.SOURCE_FRAME:
                     view_image = bcd.get_image(bcd.get_frame_image_name())
-                elif source_type == SourceType.MERGED_FRAME:
+                elif source_type in [SourceType.MERGED_FRAME, SourceType.MERGED_FRAME_OR_SOURCE_FRAME]:
                     view_image = bcd.get_image(bcd.get_merged_image_name())
+                    if view_image is None and source_type == SourceType.MERGED_FRAME_OR_SOURCE_FRAME:                       
+                        view_image = bcd.get_image(bcd.get_frame_image_name())
 
                 elif source_type == SourceType.ALIGNED_FACE:
                     aligned_face_id = state.aligned_face_id
@@ -218,14 +228,19 @@ class StreamOutputWorker(BackendWorker):
                         view_image = bcd.get_image(fsi.face_swap_image_name)
                         if view_image is not None:
                             break
-
-                elif source_type == SourceType.SOURCE_N_MERGED_FRAME:
+                    
+                elif source_type in [SourceType.SOURCE_N_MERGED_FRAME, SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME]:
                     source_frame = bcd.get_image(bcd.get_frame_image_name())
-                    merged_frame = bcd.get_image(bcd.get_merged_image_name())
-                    if source_frame is not None and merged_frame is not None:
+                    if source_frame is not None:
                         source_frame = ImageProcessor(source_frame).to_ufloat32().get_image('HWC')
+                    
+                    merged_frame = bcd.get_image(bcd.get_merged_image_name())
+                    
+                    if merged_frame is None and source_type == SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME:                       
+                        merged_frame = source_frame
+                    
+                    if source_frame is not None and merged_frame is not None:
                         view_image = np.concatenate( (source_frame, merged_frame), 1 )
-
 
                 if view_image is not None:
                     buffered_frames.add_buffer( bcd.get_frame_timestamp(), view_image )

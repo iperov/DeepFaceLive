@@ -193,7 +193,7 @@ class FaceMarkerWorker(BackendWorker):
                                 fsi.face_ulmrks = face_ulmrks
 
                     self.stop_profile_timing()
-                    self.pending_bcd = bcd
+                self.pending_bcd = bcd
 
         if self.pending_bcd is not None:
             if self.bc_out.is_full_read(1):
