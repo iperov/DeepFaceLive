@@ -114,9 +114,11 @@ Windows 10
 </td></tr>
 <tr><td align="right"> <a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
 </td><td align="left">
+Contains stand-alone zero-dependency all-in-one ready-to-use portable self-extracting folder! You don't need to install anything other than video drivers.
+<br><br>
 DirectX12 build : NVIDIA, AMD, Intel videocards.
-
-NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. 
+<br><br>
+NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. FaceMerger can work also on AMD/Intel.
 </td></tr>
 <tr><td colspan=2 align="center">
 
@@ -138,7 +140,7 @@ NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12.
 </td></tr>
 <tr><td colspan=2 align="center">
 I need the computing power to train models. 
-
+<br>
 If you have a free computer with 2080TI or better card with 12GB+ VRAM, you can give me remote access to it. I will train 1 model in a month. Contact me(iperov#6528) in Discord channel.
 </td></tr>
 <tr><td colspan=2 align="center">
