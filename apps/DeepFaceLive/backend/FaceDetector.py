@@ -83,7 +83,7 @@ class FaceDetectorWorker(BackendWorker):
         cs.temporal_smoothing.call_on_number(self.on_cs_temporal_smoothing)
 
         cs.detector_type.enable()
-        cs.detector_type.set_choices(DetectorType, DetectorTypeNames, none_choice_name='@misc.menu_select')
+        cs.detector_type.set_choices(DetectorType, DetectorTypeNames, none_choice_name=None)
         cs.detector_type.select(state.detector_type if state.detector_type is not None else DetectorType.YOLOV5)
 
 

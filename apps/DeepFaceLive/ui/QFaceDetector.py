@@ -38,7 +38,7 @@ class QFaceDetector(QBackendPanel):
         q_device              = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
         q_fixed_window_size_label = QLabelPopupInfo(label=L('@QFaceDetector.window_size'), popup_info_text=L('@QFaceDetector.help.window_size') )
-        q_fixed_window_size   = QSpinBoxCSWNumber(cs.fixed_window_size, reflect_state_widgets=[q_fixed_window_size_label])
+        q_fixed_window_size   = QSpinBoxCSWNumber(cs.fixed_window_size, reflect_state_widgets=[q_fixed_window_size_label, q_detected_faces])
 
         q_threshold_label    = QLabelPopupInfo(label=L('@QFaceDetector.threshold'), popup_info_text=L('@QFaceDetector.help.threshold') )
         q_threshold          = QSpinBoxCSWNumber(cs.threshold, reflect_state_widgets=[q_threshold_label])

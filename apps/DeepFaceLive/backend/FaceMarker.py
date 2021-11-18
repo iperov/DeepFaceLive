@@ -57,7 +57,7 @@ class FaceMarkerWorker(BackendWorker):
         cs.temporal_smoothing.call_on_number(self.on_cs_temporal_smoothing)
 
         cs.marker_type.enable()
-        cs.marker_type.set_choices(MarkerType, MarkerTypeNames, none_choice_name='@misc.menu_select')
+        cs.marker_type.set_choices(MarkerType, MarkerTypeNames, none_choice_name=None)
         cs.marker_type.select(state.marker_type if state.marker_type is not None else MarkerType.GOOGLE_FACEMESH)
 
     def on_cs_marker_type(self, idx, marker_type):
