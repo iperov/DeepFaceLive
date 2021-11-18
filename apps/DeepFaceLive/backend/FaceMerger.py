@@ -208,7 +208,7 @@ class FaceMergerWorker(BackendWorker):
     _cpu_interp = {'bilinear' : ImageProcessor.Interpolation.LINEAR,
                    'bicubic'  : ImageProcessor.Interpolation.CUBIC,
                    'lanczos4' : ImageProcessor.Interpolation.LANCZOS4}
-    def _merge_on_cpu(self, out_merged_frame, frame_image, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
+    def _merge_on_cpu(self, frame_image, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression ):
         state = self.get_state()
 
         interpolation = self._cpu_interp[state.interpolation]
@@ -247,11 +247,11 @@ class FaceMergerWorker(BackendWorker):
         opacity = np.float32(state.face_opacity)
         one_f = np.float32(1.0)
         if opacity == 1.0:
-            ne.evaluate('frame_image*(one_f-frame_face_mask) + frame_face_swap_img*frame_face_mask', out=out_merged_frame)
+            out_merged_frame = ne.evaluate('frame_image*(one_f-frame_face_mask) + frame_face_swap_img*frame_face_mask')
         else:
-            ne.evaluate('frame_image*(one_f-frame_face_mask) + frame_image*frame_face_mask*(one_f-opacity) + frame_face_swap_img*frame_face_mask*opacity', out=out_merged_frame)
+            out_merged_frame = ne.evaluate('frame_image*(one_f-frame_face_mask) + frame_image*frame_face_mask*(one_f-opacity) + frame_face_swap_img*frame_face_mask*opacity')
 
-        if state.color_compression != 0:
+        if do_color_compression and state.color_compression != 0:
             color_compression = max(4, (127.0 - state.color_compression) )
             out_merged_frame *= color_compression
             np.floor(out_merged_frame, out=out_merged_frame)
@@ -266,7 +266,7 @@ class FaceMergerWorker(BackendWorker):
 
     _n_mask_multiply_op_text = [ f"float X = {'*'.join([f'(((float)I{i}) / 255.0)' for i in range(n)])}; O = (X <= 0.5 ? 0 : 1);" for n in range(5) ]
 
-    def _merge_on_gpu(self, out_merged_frame, frame_image, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height ):
+    def _merge_on_gpu(self, frame_image, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression ):
         state = self.get_state()
         interpolation = self._gpu_interp[state.interpolation]
 
@@ -294,21 +294,20 @@ class FaceMergerWorker(BackendWorker):
         frame_face_mask_t     = lib_cl.remap_np_affine(face_mask_t,     aligned_to_source_uni_mat, interpolation=lib_cl.EInterpolation.LINEAR, output_size=(frame_height, frame_width), post_op_text='O = (O <= (1.0/255.0) ? 0.0 : O > 1.0 ? 1.0 : O);' )
         frame_face_swap_img_t = lib_cl.remap_np_affine(face_swap_img_t, aligned_to_source_uni_mat, interpolation=interpolation, output_size=(frame_height, frame_width), post_op_text='O = clamp(O, 0.0, 1.0);' )
 
-        frame_image_t = lib_cl.Tensor.from_value(frame_image).transpose( (2,0,1) )
+        frame_image_t = lib_cl.Tensor.from_value(frame_image).transpose( (2,0,1), op_text='O = ((float)I) / 255.0;' if frame_image.dtype == np.uint8 else None,
+                                                                                  dtype=np.float32 if frame_image.dtype == np.uint8 else None)
 
         opacity = state.face_opacity
         if opacity == 1.0:
-            frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); O = I0f*(1.0-I1) + I2*I1', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, dtype=np.float32)
+            frame_final_t = lib_cl.any_wise('O = I0*(1.0-I1) + I2*I1', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, dtype=np.float32)
         else:
-            frame_final_t = lib_cl.any_wise('float I0f = (((float)I0) / 255.0); O = I0f*(1.0-I1) + I0f*I1*(1.0-I3) + I2*I1*I3', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, np.float32(opacity), dtype=np.float32)
+            frame_final_t = lib_cl.any_wise('O = I0*(1.0-I1) + I0*I1*(1.0-I3) + I2*I1*I3', frame_image_t, frame_face_mask_t, frame_face_swap_img_t, np.float32(opacity), dtype=np.float32)
 
-        color_compression = state.color_compression
-        if color_compression != 0:
-            color_compression = max(4, (127.0 - color_compression) )
+        if do_color_compression and state.color_compression != 0:
+            color_compression = max(4, (127.0 - state.color_compression) )
             frame_final_t = lib_cl.any_wise('O = ( floor(I0 * I1) / I1 ) + (2.0 / I1);', frame_final_t, np.float32(color_compression))
 
-        frame_final_t.transpose( (1,2,0) ).np(out=out_merged_frame)
-        return out_merged_frame
+        return frame_final_t.transpose( (1,2,0) ).np()
 
     def on_tick(self):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -321,41 +320,42 @@ class FaceMergerWorker(BackendWorker):
                 bcd.assign_weak_heap(self.weak_heap)
 
                 frame_image_name = bcd.get_frame_image_name()
-                frame_image = bcd.get_image(frame_image_name)
+                merged_frame = bcd.get_image(frame_image_name)
 
-                if frame_image is not None:
-                    for fsi in bcd.get_face_swap_info_list():
-                        face_align_img      = bcd.get_image(fsi.face_align_image_name)
-                        face_align_lmrks_mask_img = bcd.get_image(fsi.face_align_lmrks_mask_name)
-                        face_align_mask_img = bcd.get_image(fsi.face_align_mask_name)
-                        face_swap_img       = bcd.get_image(fsi.face_swap_image_name)
-                        face_swap_mask_img  = bcd.get_image(fsi.face_swap_mask_name)
+                if merged_frame is not None:
+                    fsi_list = bcd.get_face_swap_info_list()
+                    fsi_list_len = len(fsi_list)
+                    has_merged_faces = False
+                    for fsi_id, fsi in enumerate(fsi_list):
                         image_to_align_uni_mat = fsi.image_to_align_uni_mat
+                        face_resolution        = fsi.face_resolution
 
-                        face_resolution = fsi.face_resolution
+                        face_align_img            = bcd.get_image(fsi.face_align_image_name)
+                        face_align_lmrks_mask_img = bcd.get_image(fsi.face_align_lmrks_mask_name)
+                        face_align_mask_img       = bcd.get_image(fsi.face_align_mask_name)
+                        face_swap_img             = bcd.get_image(fsi.face_swap_image_name)
+                        face_swap_mask_img        = bcd.get_image(fsi.face_swap_mask_name)
 
                         if all_is_not_None(face_resolution, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, image_to_align_uni_mat):
+                            has_merged_faces = True
                             face_height, face_width = face_align_img.shape[:2]
-                            frame_height, frame_width = frame_image.shape[:2]
+                            frame_height, frame_width = merged_frame.shape[:2]
                             aligned_to_source_uni_mat = image_to_align_uni_mat.invert()
                             aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_translated(-state.face_x_offset, -state.face_y_offset)
                             aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_scaled_around_center(state.face_scale,state.face_scale)
                             aligned_to_source_uni_mat = aligned_to_source_uni_mat.to_exact_mat (face_width, face_height, frame_width, frame_height)
 
-                            out_merged_frame = self.out_merged_frame
-                            if out_merged_frame is None or out_merged_frame.shape[:2] != (frame_height, frame_width):
-                                out_merged_frame = self.out_merged_frame = np.empty_like(frame_image, np.float32)
-
+                            do_color_compression = fsi_id == fsi_list_len-1
                             if state.device == 'CPU':
-                                merged_frame = self._merge_on_cpu(out_merged_frame, frame_image, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
+                                merged_frame = self._merge_on_cpu(merged_frame, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression=do_color_compression )
                             else:
-                                merged_frame = self._merge_on_gpu(out_merged_frame, frame_image, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height )
+                                merged_frame = self._merge_on_gpu(merged_frame, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression=do_color_compression )
 
-                            # keep image in float32 in order not to extra load FaceMerger
-                            merged_image_name = f'{frame_image_name}_merged'
-                            bcd.set_merged_image_name(merged_image_name)
-                            bcd.set_image(merged_image_name, merged_frame)
-                            break
+                    if has_merged_faces:
+                        # keep image in float32 in order not to extra load FaceMerger
+                        merged_image_name = f'{frame_image_name}_merged'
+                        bcd.set_merged_image_name(merged_image_name)
+                        bcd.set_image(merged_image_name, merged_frame)
 
                 self.stop_profile_timing()
                 self.pending_bcd = bcd
@@ -425,3 +425,7 @@ class WorkerState(BackendWorkerState):
     interpolation = None
     color_compression : int = None
     face_opacity : float = None
+
+# out_merged_frame = self.out_merged_frame
+# if out_merged_frame is None or out_merged_frame.shape[:2] != (frame_height, frame_width):
+#     out_merged_frame = self.out_merged_frame = np.empty_like(frame_image, np.float32)

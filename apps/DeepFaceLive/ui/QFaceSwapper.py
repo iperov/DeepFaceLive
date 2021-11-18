@@ -39,6 +39,9 @@ class QFaceSwapper(QBackendPanel):
         q_device_label  = QLabelPopupInfo(label=L('@QFaceSwapper.device'), popup_info_text=L('@QFaceSwapper.help.device') )
         q_device        = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
+        q_swap_all_faces_label = QLabelPopupInfo(label=L('@QFaceSwapper.swap_all_faces') )
+        q_swap_all_faces       = QCheckBoxCSWFlag(cs.swap_all_faces, reflect_state_widgets=[q_swap_all_faces_label])
+
         q_face_id_label  = QLabelPopupInfo(label=L('@QFaceSwapper.face_id'), popup_info_text=L('@QFaceSwapper.help.face_id') )
         q_face_id        = QSpinBoxCSWNumber(cs.face_id, reflect_state_widgets=[q_face_id_label])
 
@@ -69,8 +72,8 @@ class QFaceSwapper(QBackendPanel):
         grid_l.addWidget(q_device_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
         grid_l.addWidget(q_device, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
         row += 1
-        grid_l.addWidget(q_face_id_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_face_id, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget( q_swap_all_faces_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addLayout( lib_qt.QXHBoxLayout([q_swap_all_faces, 4, q_face_id_label, 4, q_face_id ]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
         row += 1
         grid_l.addWidget(q_morph_factor_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
         grid_l.addWidget(q_morph_factor, row, 1)

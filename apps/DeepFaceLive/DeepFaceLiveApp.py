@@ -23,7 +23,7 @@ from .ui.QFrameAdjuster import QFrameAdjuster
 from .ui.QStreamOutput import QStreamOutput
 from .ui.widgets.QBCFaceAlignViewer import QBCFaceAlignViewer
 from .ui.widgets.QBCFaceSwapViewer import QBCFaceSwapViewer
-from .ui.widgets.QBCFinalFrameViewer import QBCFinalFrameViewer
+from .ui.widgets.QBCMergedFrameViewer import QBCMergedFrameViewer
 from .ui.widgets.QBCFrameViewer import QBCFrameViewer
 
 
@@ -77,7 +77,7 @@ class QLiveSwap(lib_qt.QXWidget):
         self.q_ds_frame_viewer = QBCFrameViewer(backed_weak_heap, multi_sources_bc_out)
         self.q_ds_fa_viewer    = QBCFaceAlignViewer(backed_weak_heap, face_aligner_bc_out, preview_width=256)
         self.q_ds_fc_viewer    = QBCFaceSwapViewer(backed_weak_heap, face_swapper_bc_out, preview_width=256)
-        self.q_ds_merged_frame_viewer = QBCFinalFrameViewer(backed_weak_heap, face_merger_bc_out)
+        self.q_ds_merged_frame_viewer = QBCMergedFrameViewer(backed_weak_heap, face_merger_bc_out)
 
         q_nodes = lib_qt.QXWidget(size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed),
                      layout=lib_qt.QXHBoxLayout([

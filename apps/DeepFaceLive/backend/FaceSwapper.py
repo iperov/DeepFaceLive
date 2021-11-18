@@ -14,7 +14,9 @@ from .BackendBase import (BackendConnection, BackendDB, BackendHost,
 
 
 class FaceSwapper(BackendHost):
-    def __init__(self, weak_heap : BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection, dfm_models_path : Path, backend_db : BackendDB = None):
+    def __init__(self, weak_heap : BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection, dfm_models_path : Path, backend_db : BackendDB = None,
+                  id : int = 0):
+        self._id = id
         super().__init__(backend_db=backend_db,
                          sheet_cls=Sheet,
                          worker_cls=FaceSwapperWorker,
@@ -22,7 +24,9 @@ class FaceSwapper(BackendHost):
                          worker_start_args=[weak_heap, reemit_frame_signal, bc_in, bc_out, dfm_models_path])
 
     def get_control_sheet(self) -> 'Sheet.Host': return super().get_control_sheet()
-
+    
+    def _get_name(self):
+        return super()._get_name()# + f'{self._id}'
 
 class FaceSwapperWorker(BackendWorker):
     def get_state(self) -> 'WorkerState': return super().get_state()
@@ -46,6 +50,7 @@ class FaceSwapperWorker(BackendWorker):
 
         cs.model.call_on_selected(self.on_cs_model_info)
         cs.device.call_on_selected(self.on_cs_device)
+        cs.swap_all_faces.call_on_flag(self.on_cs_swap_all_faces)
         cs.face_id.call_on_number(self.on_cs_face_id)
         cs.morph_factor.call_on_number(self.on_cs_morph_factor)
         cs.presharpen_amount.call_on_number(self.on_cs_presharpen_amount)
@@ -83,11 +88,28 @@ class FaceSwapperWorker(BackendWorker):
             self.save_state()
             self.restart()
 
+    def on_cs_swap_all_faces(self, swap_all_faces):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        if model_state is not None:
+            model_state.swap_all_faces = swap_all_faces
+
+            if not swap_all_faces:
+                cs.face_id.enable()
+                cs.face_id.set_config(lib_csw.Number.Config(min=0, max=999, step=1, decimals=0, allow_instant_update=True))
+                cs.face_id.set_number(state.model_state.face_id if state.model_state.face_id is not None else 0)
+            else:
+                cs.face_id.disable()
+
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+
     def on_cs_face_id(self, face_id):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
-        cfg = cs.face_id.get_config()
         if model_state is not None:
+            cfg = cs.face_id.get_config()
             face_id = model_state.face_id = int(np.clip(face_id, cfg.min, cfg.max))
             cs.face_id.set_number(face_id)
             self.save_state()
@@ -96,8 +118,8 @@ class FaceSwapperWorker(BackendWorker):
     def on_cs_presharpen_amount(self, presharpen_amount):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
-        cfg = cs.presharpen_amount.get_config()
         if model_state is not None:
+            cfg = cs.presharpen_amount.get_config()
             presharpen_amount = model_state.presharpen_amount = float(np.clip(presharpen_amount, cfg.min, cfg.max))
             cs.presharpen_amount.set_number(presharpen_amount)
             self.save_state()
@@ -106,8 +128,8 @@ class FaceSwapperWorker(BackendWorker):
     def on_cs_morph_factor(self, morph_factor):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
-        cfg = cs.morph_factor.get_config()
         if model_state is not None:
+            cfg = cs.morph_factor.get_config()
             morph_factor = model_state.morph_factor = float(np.clip(morph_factor, cfg.min, cfg.max))
             cs.morph_factor.set_number(morph_factor)
             self.save_state()
@@ -116,8 +138,8 @@ class FaceSwapperWorker(BackendWorker):
     def on_cs_gamma_red(self, pre_gamma_red):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
-        cfg = cs.pre_gamma_red.get_config()
         if model_state is not None:
+            cfg = cs.pre_gamma_red.get_config()
             pre_gamma_red = model_state.pre_gamma_red = float(np.clip(pre_gamma_red, cfg.min, cfg.max))
             cs.pre_gamma_red.set_number(pre_gamma_red)
             self.save_state()
@@ -126,8 +148,8 @@ class FaceSwapperWorker(BackendWorker):
     def on_cs_pre_gamma_green(self, pre_gamma_green):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
-        cfg = cs.pre_gamma_green.get_config()
         if model_state is not None:
+            cfg = cs.pre_gamma_green.get_config()
             pre_gamma_green = model_state.pre_gamma_green = float(np.clip(pre_gamma_green, cfg.min, cfg.max))
             cs.pre_gamma_green.set_number(pre_gamma_green)
             self.save_state()
@@ -136,8 +158,8 @@ class FaceSwapperWorker(BackendWorker):
     def on_cs_pre_gamma_blue(self, pre_gamma_blue):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
-        cfg = cs.pre_gamma_blue.get_config()
         if model_state is not None:
+            cfg = cs.pre_gamma_blue.get_config()
             pre_gamma_blue = model_state.pre_gamma_blue = float(np.clip(pre_gamma_blue, cfg.min, cfg.max))
             cs.pre_gamma_blue.set_number(pre_gamma_blue)
             self.save_state()
@@ -186,9 +208,9 @@ class FaceSwapperWorker(BackendWorker):
                                                                 '',
                                                                 f'@FaceSwapper.resolution',
                                                                 f'{model_width}x{model_height}']) )
-                cs.face_id.enable()
-                cs.face_id.set_config(lib_csw.Number.Config(min=0, max=16, step=1, decimals=0, allow_instant_update=True))
-                cs.face_id.set_number(state.model_state.face_id if state.model_state.face_id is not None else 0)
+
+                cs.swap_all_faces.enable()
+                cs.swap_all_faces.set_flag( state.model_state.swap_all_faces if state.model_state.swap_all_faces is not None else False)
 
                 if self.dfm_model.has_morph_value():
                     cs.morph_factor.enable()
@@ -225,7 +247,6 @@ class FaceSwapperWorker(BackendWorker):
             if events.download_progress is not None:
                 cs.model_dl_progress.set_progress(events.download_progress)
 
-
         if self.pending_bcd is None:
             self.start_profile_timing()
 
@@ -236,41 +257,40 @@ class FaceSwapperWorker(BackendWorker):
                 model_state = state.model_state
                 dfm_model = self.dfm_model
                 if all_is_not_None(dfm_model, model_state):
-                    face_id = model_state.face_id
-                    if face_id is not None:
-                        for i, fsi in enumerate(bcd.get_face_swap_info_list()):
-                            if face_id != i:
-                                continue
 
-                            face_align_image = bcd.get_image(fsi.face_align_image_name)
-                            if face_align_image is not None:
+                    for i, fsi in enumerate(bcd.get_face_swap_info_list()):
+                        if not model_state.swap_all_faces and model_state.face_id != i:
+                            continue
 
-                                pre_gamma_red = model_state.pre_gamma_red
-                                pre_gamma_green = model_state.pre_gamma_green
-                                pre_gamma_blue = model_state.pre_gamma_blue
+                        face_align_image = bcd.get_image(fsi.face_align_image_name)
+                        if face_align_image is not None:
 
-                                fai_ip = ImageProcessor(face_align_image)
-                                if model_state.presharpen_amount != 0:
-                                    fai_ip.gaussian_sharpen(sigma=1.0, power=model_state.presharpen_amount)
+                            pre_gamma_red = model_state.pre_gamma_red
+                            pre_gamma_green = model_state.pre_gamma_green
+                            pre_gamma_blue = model_state.pre_gamma_blue
 
-                                if pre_gamma_red != 1.0 or pre_gamma_green != 1.0 or pre_gamma_blue != 1.0:
-                                    fai_ip.gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
-                                face_align_image = fai_ip.get_image('HWC')
+                            fai_ip = ImageProcessor(face_align_image)
+                            if model_state.presharpen_amount != 0:
+                                fai_ip.gaussian_sharpen(sigma=1.0, power=model_state.presharpen_amount)
 
-                                celeb_face, celeb_face_mask_img, face_align_mask_img = dfm_model.convert(face_align_image, morph_factor=model_state.morph_factor)
-                                celeb_face, celeb_face_mask_img, face_align_mask_img = celeb_face[0], celeb_face_mask_img[0], face_align_mask_img[0]
+                            if pre_gamma_red != 1.0 or pre_gamma_green != 1.0 or pre_gamma_blue != 1.0:
+                                fai_ip.gamma(pre_gamma_red, pre_gamma_green, pre_gamma_blue)
+                            face_align_image = fai_ip.get_image('HWC')
 
-                                if model_state.two_pass:
-                                    celeb_face, celeb_face_mask_img, _ = dfm_model.convert(celeb_face, morph_factor=model_state.morph_factor)
-                                    celeb_face, celeb_face_mask_img = celeb_face[0], celeb_face_mask_img[0]
+                            celeb_face, celeb_face_mask_img, face_align_mask_img = dfm_model.convert(face_align_image, morph_factor=model_state.morph_factor)
+                            celeb_face, celeb_face_mask_img, face_align_mask_img = celeb_face[0], celeb_face_mask_img[0], face_align_mask_img[0]
 
-                                fsi.face_align_mask_name = f'{fsi.face_align_image_name}_mask'
-                                fsi.face_swap_image_name = f'{fsi.face_align_image_name}_swapped'
-                                fsi.face_swap_mask_name  = f'{fsi.face_swap_image_name}_mask'
+                            if model_state.two_pass:
+                                celeb_face, celeb_face_mask_img, _ = dfm_model.convert(celeb_face, morph_factor=model_state.morph_factor)
+                                celeb_face, celeb_face_mask_img = celeb_face[0], celeb_face_mask_img[0]
 
-                                bcd.set_image(fsi.face_align_mask_name, face_align_mask_img)
-                                bcd.set_image(fsi.face_swap_image_name, celeb_face)
-                                bcd.set_image(fsi.face_swap_mask_name, celeb_face_mask_img)
+                            fsi.face_align_mask_name = f'{fsi.face_align_image_name}_mask'
+                            fsi.face_swap_image_name = f'{fsi.face_align_image_name}_swapped'
+                            fsi.face_swap_mask_name  = f'{fsi.face_swap_image_name}_mask'
+
+                            bcd.set_image(fsi.face_align_mask_name, face_align_mask_img)
+                            bcd.set_image(fsi.face_swap_image_name, celeb_face)
+                            bcd.set_image(fsi.face_swap_mask_name, celeb_face_mask_img)
 
                 self.stop_profile_timing()
                 self.pending_bcd = bcd
@@ -291,6 +311,7 @@ class Sheet:
             self.model_dl_progress = lib_csw.Progress.Client()
             self.model_dl_error = lib_csw.Error.Client()
             self.device = lib_csw.DynamicSingleSwitch.Client()
+            self.swap_all_faces = lib_csw.Flag.Client()
             self.face_id = lib_csw.Number.Client()
             self.morph_factor = lib_csw.Number.Client()
             self.presharpen_amount = lib_csw.Number.Client()
@@ -307,6 +328,7 @@ class Sheet:
             self.model_dl_progress = lib_csw.Progress.Host()
             self.model_dl_error = lib_csw.Error.Host()
             self.device = lib_csw.DynamicSingleSwitch.Host()
+            self.swap_all_faces = lib_csw.Flag.Host()
             self.face_id = lib_csw.Number.Host()
             self.morph_factor = lib_csw.Number.Host()
             self.presharpen_amount = lib_csw.Number.Host()
@@ -317,6 +339,7 @@ class Sheet:
 
 class ModelState(BackendWorkerState):
     device = None
+    swap_all_faces : bool = None
     face_id : int = None
     morph_factor : float = None
     presharpen_amount : float = None

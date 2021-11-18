@@ -10,7 +10,7 @@ from xlib import qt as lib_qt
 from ... import backend
 
 
-class QBCFinalFrameViewer(lib_qt.QXCollapsibleSection):
+class QBCMergedFrameViewer(lib_qt.QXCollapsibleSection):
     def __init__(self,  backed_weak_heap : backend.BackendWeakHeap,
                         bc : backend.BackendConnection,
                         preview_width=256):
@@ -27,7 +27,7 @@ class QBCFinalFrameViewer(lib_qt.QXCollapsibleSection):
         main_l = lib_qt.QXVBoxLayout([ (layered_images, Qt.AlignmentFlag.AlignCenter),
                                        (info_label, Qt.AlignmentFlag.AlignCenter),
                                      ], spacing=0)
-        super().__init__(title=L('@QBCFinalFrameViewer.title'), content_layout=main_l)
+        super().__init__(title=L('@QBCMergedFrameViewer.title'), content_layout=main_l)
 
     def _on_timer_16ms(self):
         top_qx = self.get_top_QXWindow()

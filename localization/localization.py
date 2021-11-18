@@ -426,7 +426,12 @@ class Localization:
                 'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
                 'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
                 'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率'},
-
+    
+    'QFaceSwapper.swap_all_faces':{
+                'en-US' : 'Swap all faces',
+                'ru-RU' : 'Заменить все лица',
+                'zh-CN' : '改变所有面孔'},
+                
     'QFaceSwapper.face_id':{
                 'en-US' : 'Face ID',
                 'ru-RU' : 'Номер лица',
@@ -652,10 +657,10 @@ class Localization:
                 'ru-RU' : 'Заменённое лицо',
                 'zh-CN' : '换后的脸'},
 
-    'QBCFinalFrameViewer.title':{
-                'en-US' : 'Final frame',
-                'ru-RU' : 'Финальный кадр',
-                'zh-CN' : '结果'},
+    'QBCMergedFrameViewer.title':{
+                'en-US' : 'Merged frame',
+                'ru-RU' : 'Склеенный кадр',
+                'zh-CN' : '合成后的画面'},
 
     'FileSource.image_folder':{
                 'en-US' : 'Image folder',
