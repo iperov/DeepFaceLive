@@ -18,6 +18,10 @@ class FRect(IState):
     def __init__(self):
         self._pts : np.ndarray = None
 
+    def __repr__(self): return self.__str__()
+    def __str__(self):
+        return f'FRect: {self._pts}'
+
     def restore_state(self, state : dict):
         self._pts = IState._restore_np_array( state.get('_pts', None) )
 
@@ -35,13 +39,39 @@ class FRect(IState):
         return rects
 
     @staticmethod
-    def sort_by_dist_from_center(rects : List['FRect']):
+    def sort_by_dist_from_2D_point(rects : List['FRect'], x, y):
         """
         sort list of FRect by nearest distance from center to center of rects descent
+
+        x,y     in [0 .. 1.0]
         """
-        c = np.float32([0.5,0.5])
+        c = np.float32([x,y])
 
         rects = [ (rect, npla.norm( rect.get_center_point()-c )) for rect in rects ]
+        rects = sorted(rects, key=operator.itemgetter(1) )
+        rects = [ x[0] for x in rects]
+        return rects
+
+    @staticmethod
+    def sort_by_dist_from_horizontal_point(rects : List['FRect'], x):
+        """
+        sort list of FRect by nearest distance from center to center of rects descent
+
+        x     in [0 .. 1.0]
+        """
+        rects = [ (rect,  abs(rect.get_center_point()[0]-x) ) for rect in rects ]
+        rects = sorted(rects, key=operator.itemgetter(1) )
+        rects = [ x[0] for x in rects]
+        return rects
+
+    @staticmethod
+    def sort_by_dist_from_vertical_point(rects : List['FRect'], y):
+        """
+        sort list of FRect by nearest distance from center to center of rects descent
+
+        y     in [0 .. 1.0]
+        """
+        rects = [ (rect, abs(rect.get_center_point()[1]-y) ) for rect in rects ]
         rects = sorted(rects, key=operator.itemgetter(1) )
         rects = [ x[0] for x in rects]
         return rects

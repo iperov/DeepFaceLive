@@ -283,9 +283,9 @@ class Localization:
                 'zh-CN' : '排序'},
 
     'QFaceDetector.help.sort_by':{
-                'en-US' : 'Sort faces by method.',
-                'ru-RU' : 'Сортировать лица по выбранному методу.',
-                'zh-CN' : '人脸排序方法'},
+                'en-US' : 'Sort faces by method. For example, for "RIGHT TO LEFT" the Face ID 0 will be at the rightmost part of the screen.',
+                'ru-RU' : 'Сортировать лица по выбранному методу. Например, для "СПРАВА НАЛЕВО" лица с идентификатором 0 будет находиться в самой правой части экрана.',
+                'zh-CN' : '人脸排序方法 例如，对于 "从右到左"，Face ID 0将在屏幕的最右边'},
 
     'QFaceDetector.temporal_smoothing':{
                 'en-US' : 'Temporal smoothing',
@@ -426,12 +426,12 @@ class Localization:
                 'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
                 'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
                 'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率'},
-    
+
     'QFaceSwapper.swap_all_faces':{
                 'en-US' : 'Swap all faces',
                 'ru-RU' : 'Заменить все лица',
                 'zh-CN' : '改变所有面孔'},
-                
+
     'QFaceSwapper.face_id':{
                 'en-US' : 'Face ID',
                 'ru-RU' : 'Номер лица',
@@ -672,15 +672,35 @@ class Localization:
                 'ru-RU' : 'Видео файл',
                 'zh-CN' : '视频文件'},
 
-    'FaceDetector.largest':{
+    'FaceDetector.LARGEST':{
                 'en-US' : 'Largest',
                 'ru-RU' : 'Наибольшему',
                 'zh-CN' : '最大'},
 
-    'FaceDetector.dist_from_center':{
+    'FaceDetector.DIST_FROM_CENTER':{
                 'en-US' : 'Dist from center',
                 'ru-RU' : 'Расстоянию от центра',
                 'zh-CN' : '离中心的距离'},
+
+    'FaceDetector.LEFT_RIGHT':{
+                'en-US' : 'From left to right',
+                'ru-RU' : 'Слева направо',
+                'zh-CN' : '从左至右'},
+
+    'FaceDetector.RIGHT_LEFT':{
+                'en-US' : 'From right to left',
+                'ru-RU' : 'Справа налево',
+                'zh-CN' : '从右到左'},
+
+    'FaceDetector.TOP_BOTTOM':{
+                'en-US' : 'From top to bottom',
+                'ru-RU' : 'Сверху вниз',
+                'zh-CN' : '从左至右'},
+
+    'FaceDetector.BOTTOM_TOP':{
+                'en-US' : 'From bottom to top',
+                'ru-RU' : 'Снизу вверх',
+                'zh-CN' : '从下到上'},
 
     'FaceSwapper.model_information':{
                 'en-US' : 'Model information',

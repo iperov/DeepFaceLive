@@ -24,8 +24,14 @@ DetectorTypeNames = ['CenterFace', 'S3FD', 'YoloV5']
 class FaceSortBy(IntEnum):
     LARGEST = 0
     DIST_FROM_CENTER = 1
+    LEFT_RIGHT = 2
+    RIGHT_LEFT = 3
+    TOP_BOTTOM = 4
+    BOTTOM_TOP = 5
 
-FaceSortByNames = ['@FaceDetector.largest', '@FaceDetector.dist_from_center']
+FaceSortByNames = ['@FaceDetector.LARGEST', '@FaceDetector.DIST_FROM_CENTER',
+                   '@FaceDetector.LEFT_RIGHT', '@FaceDetector.RIGHT_LEFT',
+                   '@FaceDetector.TOP_BOTTOM', '@FaceDetector.BOTTOM_TOP' ]
 
 class FaceDetector(BackendHost):
     def __init__(self,  weak_heap :  BackendWeakHeap,
@@ -234,7 +240,15 @@ class FaceDetectorWorker(BackendWorker):
                         if detector_state.sort_by == FaceSortBy.LARGEST:
                             rects = FRect.sort_by_area_size(rects)
                         elif detector_state.sort_by == FaceSortBy.DIST_FROM_CENTER:
-                            rects = FRect.sort_by_dist_from_center(rects)
+                            rects = FRect.sort_by_dist_from_2D_point(rects, 0.5, 0.5)
+                        elif detector_state.sort_by == FaceSortBy.LEFT_RIGHT:
+                            rects = FRect.sort_by_dist_from_horizontal_point(rects, 0)
+                        elif detector_state.sort_by == FaceSortBy.RIGHT_LEFT:
+                            rects = FRect.sort_by_dist_from_horizontal_point(rects, 1)
+                        elif detector_state.sort_by == FaceSortBy.TOP_BOTTOM:
+                            rects = FRect.sort_by_dist_from_vertical_point(rects, 0)
+                        elif detector_state.sort_by == FaceSortBy.BOTTOM_TOP:
+                            rects = FRect.sort_by_dist_from_vertical_point(rects, 1)
 
                         if len(rects) != 0:
                             max_faces = detector_state.max_faces
