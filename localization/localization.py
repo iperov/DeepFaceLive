@@ -388,9 +388,9 @@ class Localization:
                 'zh-CN' : '特征点覆盖范围'},
 
     'QFaceMarker.help.marker_coverage':{
-                'en-US' : 'Controls rectangle size of the detected face to feed into the FaceMarker.\nAdjust it as you wish.',
-                'ru-RU' : 'Размер прямоугольника детектированного лица при поступлении в маркер лица.\nНастройте по своему усмотрению.',
-                'zh-CN' : '控制检测到的人脸矩形框大小，以输入人脸特征点识别器。\n按需调整。'},
+                'en-US' : 'Controls rectangle size of the detected face to feed into the FaceMarker.\nGreen facial points must exactly match the face.\nLook at "Aligned Face" window and adjust it as you wish.',
+                'ru-RU' : 'Размер прямоугольника детектированного лица при поступлении в маркер лица.\nЗеленые лицевые точки должны точно соответстовать лицу.\nСмотрите на окно "Выровненное лицо" и настройте по своему усмотрению.',
+                'zh-CN' : '控制检测到的人脸矩形框大小，以输入人脸特征点识别器。\n绿色面部点必须与面部完全匹配\n查看 "对齐的面 "窗口，并按你的意愿进行调整。'},
 
     'QFaceMarker.temporal_smoothing':{
                 'en-US' : 'Temporal smoothing',
