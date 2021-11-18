@@ -84,7 +84,7 @@ class FaceDetectorWorker(BackendWorker):
 
         cs.detector_type.enable()
         cs.detector_type.set_choices(DetectorType, DetectorTypeNames, none_choice_name='@misc.menu_select')
-        cs.detector_type.select(state.detector_type)
+        cs.detector_type.select(state.detector_type if state.detector_type is not None else DetectorType.YOLOV5)
 
 
     def on_cs_detector_type(self, idx, detector_type):

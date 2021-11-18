@@ -58,7 +58,7 @@ class FaceMarkerWorker(BackendWorker):
 
         cs.marker_type.enable()
         cs.marker_type.set_choices(MarkerType, MarkerTypeNames, none_choice_name='@misc.menu_select')
-        cs.marker_type.select(state.marker_type)
+        cs.marker_type.select(state.marker_type if state.marker_type is not None else MarkerType.GOOGLE_FACEMESH)
 
     def on_cs_marker_type(self, idx, marker_type):
         state, cs = self.get_state(), self.get_control_sheet()
