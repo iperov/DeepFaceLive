@@ -139,7 +139,6 @@ class StreamOutputWorker(BackendWorker):
         state, cs = self.get_state(), self.get_control_sheet()
         if self._wnd_showing:
             cv2.destroyAllWindows()
-            #cv2.destroyWindow(self._wnd_name) # requires check if window exists
             self._wnd_showing = False
 
     def on_cs_show_hide_window_signal(self,):
@@ -149,7 +148,7 @@ class StreamOutputWorker(BackendWorker):
         if state.is_showing_window:
             cv2.namedWindow(self._wnd_name)
         else:
-            cv2.destroyWindow(self._wnd_name)
+            cv2.destroyAllWindows()
         self.save_state()
         self.reemit_frame_signal.send()
 
