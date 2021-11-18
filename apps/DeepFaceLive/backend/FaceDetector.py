@@ -128,11 +128,11 @@ class FaceDetectorWorker(BackendWorker):
             if detector_type in [DetectorType.CENTER_FACE, DetectorType.S3FD, DetectorType.YOLOV5]:
                 cs.fixed_window_size.enable()
                 cs.fixed_window_size.set_config(lib_csw.Number.Config(min=0, max=4096, step=32, decimals=0, zero_is_auto=True, allow_instant_update=True))
-                cs.fixed_window_size.set_number(detector_state.fixed_window_size or 0)
+                cs.fixed_window_size.set_number(detector_state.fixed_window_size if detector_state.fixed_window_size is not None else 480)
 
                 cs.threshold.enable()
                 cs.threshold.set_config(lib_csw.Number.Config(min=0.01, max=1.0, step=0.01, decimals=2, allow_instant_update=True))
-                cs.threshold.set_number(detector_state.threshold or 0.5)
+                cs.threshold.set_number(detector_state.threshold if detector_state.threshold is not None else 0.5)
 
                 cs.sort_by.enable()
                 cs.sort_by.set_choices(FaceSortBy, FaceSortByNames)
@@ -140,7 +140,7 @@ class FaceDetectorWorker(BackendWorker):
 
                 cs.temporal_smoothing.enable()
                 cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=10, step=1, allow_instant_update=True))
-                cs.temporal_smoothing.set_number(detector_state.temporal_smoothing or 1)
+                cs.temporal_smoothing.set_number(detector_state.temporal_smoothing if detector_state.temporal_smoothing is not None else 1)
 
             if detector_type == DetectorType.CENTER_FACE:
                 self.CenterFace = onnx_models.CenterFace(device)
