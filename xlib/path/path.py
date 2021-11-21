@@ -1,5 +1,6 @@
 from os import scandir
 from pathlib import Path
+from typing import List
 
 # image_extensions = [".jpg", ".jpeg", ".png", ".tif", ".tiff"]
 
@@ -22,7 +23,7 @@ def scantree(path):
             yield entry
 
 
-def get_files_paths(dir_path, extensions=None, subdirs=False):
+def get_files_paths(dir_path, extensions=None, subdirs=False) -> List[Path]:
     """
     returns array of Path() of files
     """

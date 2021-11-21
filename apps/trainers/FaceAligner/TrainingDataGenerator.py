@@ -60,6 +60,9 @@ class TrainingDataGenerator(lib_mp.MPWorker):
 
     def set_resolution(self, resolution):
         self._send_msg('resolution', resolution)
+        
+    def set_random_warp(self, random_warp):
+        self._send_msg('random_warp', random_warp)
 
     ###### IMPL HOST
     def _on_host_sub_message(self, process_id, name, *args, **kwargs):
@@ -78,6 +81,7 @@ class TrainingDataGenerator(lib_mp.MPWorker):
         self._running = False
         self._batch_size = None
         self._resolution = None
+        self._random_warp = None
         
         self._n_batch = 0
         self._img_aligned_list = []
@@ -97,6 +101,8 @@ class TrainingDataGenerator(lib_mp.MPWorker):
             self._batch_size, = args
         elif name == 'resolution':
             self._resolution, = args
+        elif name == 'random_warp':
+            self._random_warp, = args
         elif name == 'running':
             self._running , = args
 
@@ -110,7 +116,10 @@ class TrainingDataGenerator(lib_mp.MPWorker):
             if self._resolution is None:
                 print('Unable to start TrainingGenerator: resolution must be set')
                 running = False
-        
+            if self._random_warp is None:
+                print('Unable to start TrainingGenerator: random_warp must be set')
+                running = False
+                
         if running:        
             if self._sent_buffers_count < 2:
                 batch_size = self._batch_size
@@ -182,7 +191,7 @@ class TrainingDataGenerator(lib_mp.MPWorker):
                                                   rw_grid_ty=rw_grid_ty_range,
                                                 )
                        
-                        img_aligned_shifted = fw1.transform(img1, resolution, random_warp=True).astype(np.float32) / 255.0
+                        img_aligned_shifted = fw1.transform(img1, resolution, random_warp=self._random_warp).astype(np.float32) / 255.0
     
                         ip = lib_img.ImageProcessor(img_aligned_shifted)
                         rnd = np.random

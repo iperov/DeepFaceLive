@@ -53,6 +53,7 @@ class FaceAlignerTrainerApp:
         self._device_info = None
         self._batch_size = None
         self._resolution = None
+        self._random_warp = None
         self._iteration = None
         self._autosave_period = None
         self._is_training = False
@@ -89,6 +90,11 @@ class FaceAlignerTrainerApp:
         self._resolution = resolution
         self._training_generator.set_resolution(resolution)
 
+    def get_random_warp(self) -> bool: return self._random_warp
+    def set_random_warp(self, random_warp : bool):
+        self._random_warp = random_warp
+        self._training_generator.set_random_warp(random_warp)
+    
     def get_iteration(self) -> int: return self._iteration
     def set_iteration(self, iteration : int):
         self._iteration = iteration
@@ -112,6 +118,7 @@ class FaceAlignerTrainerApp:
         self.set_device_info( lib_torch.get_device_info_by_index(model_data.get('device_index', -1)) )
         self.set_batch_size( model_data.get('batch_size', 64) )
         self.set_resolution( model_data.get('resolution', 224) )
+        self.set_random_warp( model_data.get('random_warp', True) )
         self.set_iteration( model_data.get('iteration', 0) )
         self.set_autosave_period( model_data.get('autosave_period', 25) )
         self.set_is_training( model_data.get('training', False) )
@@ -123,8 +130,8 @@ class FaceAlignerTrainerApp:
 
     def reset_model(self, load : bool = True):
         while True:
-            model = tv.mobilenet.mobilenet_v3_large(num_classes=6)
-
+            #model = tv.mobilenet.mobilenet_v3_large(num_classes=6)
+            model = torch_models.FaceAlignerNet()
             model.train()
             model.to(self._device)
 
@@ -158,6 +165,7 @@ class FaceAlignerTrainerApp:
             d = {'device_index' : self._device_info.get_index(),
                 'batch_size' : self.get_batch_size(),
                 'resolution' : self.get_resolution(),
+                'random_warp' : self.get_random_warp(),
                 'iteration' : self.get_iteration(),
                 'autosave_period' : self.get_autosave_period(),
                 'training' : self.get_is_training(),
@@ -291,7 +299,7 @@ class FaceAlignerTrainerApp:
                         self._is_training:
                         # Inference for both preview and training
                         img_aligned_shifted_t = torch.tensor(training_data.img_aligned_shifted).to(self._device)
-                        shift_uni_mats_pred_t = self._model(img_aligned_shifted_t).view( (-1,2,3) )
+                        shift_uni_mats_pred_t = self._model(img_aligned_shifted_t)#.view( (-1,2,3) )
 
                     if self._is_training:
                         # Training optimization step
@@ -340,7 +348,7 @@ class FaceAlignerTrainerApp:
 
                 dc.DlgChoice(short_name='l', row_def=f'| Print loss history | Last loss = {last_loss:.5f} ',
                              on_choose=self.on_main_dlg_print_loss_history ),
-
+                
                 dc.DlgChoice(short_name='p', row_def='| Show current preview.',
                             on_choose=lambda dlg: (self._ev_request_preview.set(), dlg.recreate().set_current())),
 
@@ -393,6 +401,9 @@ class FaceAlignerTrainerApp:
             dc.DlgChoice(short_name='v', row_def=f'| Previewing samples | {self._is_previewing_samples}',
                          on_choose=self.on_sample_generator_dlg_previewing_last_samples,
                          ),
+                         
+            dc.DlgChoice(short_name='rw', row_def=f'| Random warp | {self.get_random_warp()}',
+                         on_choose=lambda dlg: (self.set_random_warp(not self.get_random_warp()), dlg.recreate().set_current()) ),
 
             dc.DlgChoice(short_name='r', row_def=f'| Running | {self._training_generator.is_running()}',
                          on_choose=lambda dlg: (self._training_generator.set_running(not self._training_generator.is_running()), dlg.recreate().set_current()) ),
