@@ -31,6 +31,7 @@ from .widgets.QXSaveableComboBox import QXSaveableComboBox
 from .widgets.QXScrollArea import QXScrollArea
 from .widgets.QXSlider import QXSlider
 from .widgets.QXSpinBox import QXSpinBox
+from .widgets.QXTextEdit import QXTextEdit
 from .widgets.QXToolButton import QXToolButton
 from .widgets.QXVBoxLayout import QXVBoxLayout
 from .widgets.QXVerticalLine import QXVerticalLine

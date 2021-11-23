@@ -1,20 +1,15 @@
-from typing import Union, Any
-
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
-from ..gui import QXImage
 from ._part_QXWidget import _part_QXWidget
 
 
-class QXLabel(QLabel, _part_QXWidget):
-    def __init__(self, text = None,
-                       color = None,
-                       image : QXImage = None,
-                       movie = None,
-                       word_wrap = False, scaled_contents = False,
-
+class QXTextEdit(QTextEdit, _part_QXWidget):
+    def __init__(self, placeholder_text=None,
+                       style_sheet=None,
+                       read_only=False,
+                       
                        font=None, tooltip_text=None,
                        size_policy=None,
                        minimum_size=None, minimum_width=None, minimum_height=None,
@@ -24,46 +19,21 @@ class QXLabel(QLabel, _part_QXWidget):
                        ):
 
         super().__init__()
-        self._default_pal = QPalette( self.palette() )
+        if placeholder_text is not None:
+            self.setPlaceholderText(placeholder_text)
 
-        if text is not None:
-            self.setText(text)
-        if movie is not None:
-            self.setMovie(movie)
-        if image is not None:
-            self.setPixmap(image.as_QXPixmap())
-        if word_wrap:
-            self.setWordWrap(True)
-
-        self.setScaledContents(scaled_contents)
-        self.set_color(color)
-
+        if style_sheet is not None:
+            self.setStyleSheet(style_sheet)
+        if read_only:
+            self.setReadOnly(True)
+        self.setWordWrapMode
+        #_part_QXWidget.connect_signal(editingFinished, self.editingFinished)
         _part_QXWidget.__init__(self,   font=font, tooltip_text=tooltip_text,
                                         size_policy=size_policy,
                                         minimum_size=minimum_size, minimum_width=minimum_width, minimum_height=minimum_height,
                                         maximum_size=maximum_size, maximum_width=maximum_width, maximum_height=maximum_height,
                                         fixed_size=fixed_size, fixed_width=fixed_width, fixed_height=fixed_height,
                                         hided=hided, enabled=enabled )
-        
-    def _update_color(self):
-        if self._color is not None:
-            pal = QPalette(self._default_pal)
-            pal.setColor( QPalette.ColorRole.WindowText, self._color )
-            self.setPalette(pal)
-        else:
-            self.setPalette(self._default_pal)
-
-
-    def set_color(self, color : Union[Any,None] ):
-        self._color = QColor(color) if color is not None else None
-        self._update_color()
-
-    def changeEvent(self, ev : QEvent):
-        super().changeEvent(ev)
-
-        if ev.type() == QEvent.Type.EnabledChange:
-            self._update_color()
-
 
     def focusInEvent(self, ev : QFocusEvent):
         super().focusInEvent(ev)
