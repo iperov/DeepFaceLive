@@ -154,8 +154,8 @@ class DFMModelInitializer:
 
         INITIALIZING, DOWNLOADING, INITIALIZED, ERROR, = range(4)
         downloader : ThreadFileDownloader = None
+        url = dfm_model_info.get_url()
         status = None
-
         while True:
             events = DFMModelInitializer.Events()
 
@@ -168,7 +168,7 @@ class DFMModelInitializer:
                 model_path = dfm_model_info.get_model_path()
 
                 if not model_path.exists():
-                    url = dfm_model_info.get_url()
+                    
                     if url is None:
                         new_status = ERROR
                         events.error = 'Model file is not found and URL is not defined.'
@@ -199,7 +199,7 @@ class DFMModelInitializer:
                         events.download_progress = progress
                 else:
                     new_status = ERROR
-                    events.error = error
+                    events.error = f'Unable to download {url}, error:' + error
 
             if new_status != status:
                 events.prev_status_initializing = status == INITIALIZING

@@ -10,7 +10,8 @@ from xlib.mp import csw as lib_csw
 
 from .QCSWControl import QCSWControl
 
-
+        
+        
 class QErrorCSWError(QCSWControl):
     """
     Implements lib_csw.Error control as widget
@@ -28,7 +29,7 @@ class QErrorCSWError(QCSWControl):
                                                              fixed_size=(32,32),
                                                               )
 
-        label = self._label = lib_qt.QXLabel(font=QXFontDB.get_default_font(size=7), word_wrap=True)
+        label = self._label = lib_qt.QXTextEdit( font=QXFontDB.get_default_font(size=7), read_only=True, fixed_height=80 )
 
         bar = lib_qt.QXFrame(layout=lib_qt.QXHBoxLayout(
                                 [   lib_qt.QXWidget(layout=lib_qt.QXHBoxLayout([label_warning]), size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)) ,

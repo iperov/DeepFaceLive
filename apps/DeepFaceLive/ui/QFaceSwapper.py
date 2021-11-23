@@ -60,7 +60,7 @@ class QFaceSwapper(QBackendPanel):
         q_two_pass_label = QLabelPopupInfo(label=L('@QFaceSwapper.two_pass'), popup_info_text=L('@QFaceSwapper.help.two_pass') )
         q_two_pass       = QCheckBoxCSWFlag(cs.two_pass, reflect_state_widgets=[q_two_pass_label])
 
-        grid_l = lib_qt.QXGridLayout(spacing=5)
+        grid_l = lib_qt.QXGridLayout( spacing=5)
         row = 0
         grid_l.addWidget(q_model_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
         grid_l.addLayout(lib_qt.QXHBoxLayout([q_model, 2, btn_open_folder, 2, q_model_info_label]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
