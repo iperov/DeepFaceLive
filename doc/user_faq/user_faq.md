@@ -94,23 +94,23 @@ Dst faceset is RTM WF faceset from the torrent.
 
 > Using SAEHD model.
 
-res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, random_hsv_power:0.1, batch:8. Others by default.
+res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
 
 Make a backup before every stage !
 
-1) train +1.000.000 iters with RTM WF faceset from the torrent as dst, deleting inter_AB.npy every 100k (save, delete, continue run)
+1) train +2.000.000 iters with RTM WF faceset from the torrent as dst, deleting inter_AB.npy every 500k (save, delete, continue run)
 
-2) random_warp:ON,  train +500.000
+2) random_warp still ON, train +500.000
 
-3) random_warp:OFF, train +500.000
+3) if swapped face looks more like dst, delete inter_AB, repeat from stage 2
 
-4) if swapped face looks more like dst, delete inter_AB, repeat from stage 2
+4) random_warp:OFF, train +500.000
 
-5) enable gan 0.1 gan_dims:32, train +300.000
+5) enable gan 0.1 gan_dims:32, train +800.000
 
 > reusing trained SAEHD RTM model
 
-Models that are trained without random_warp:OFF (before stage 3), can be reused. In this case you have to delete INTER_AB.NPY from the model folder and continue training from stage 2. Increase stage 2 up to 2.000.000 and more iters. You can delete inter_AB.npy every 1.000.000 iters to increase src-likeness. Trained model before random_warp:OFF also can be reused for new celeb face.
+Models that are trained without random_warp:OFF (before stage 4), can be reused. In this case you have to delete INTER_AB.NPY from the model folder and continue training from stage 2. Increase stage 2 up to 2.000.000 and more iters. You can delete inter_AB.npy every 500.000 iters to increase src-likeness. Trained model before random_warp:OFF also can be reused for new celeb face.
 
 </td></tr>
 <tr><td colspan=2 align="left">
