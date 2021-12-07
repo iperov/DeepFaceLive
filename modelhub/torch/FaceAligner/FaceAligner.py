@@ -44,6 +44,7 @@ class ConvNormActivation(nn.Sequential):
         if activation_layer is not None:
             layers.append(activation_layer())
         super().__init__(*layers)
+        self.out_ch = out_ch
         
 
 class InvertedResidual(nn.Module):
@@ -52,7 +53,6 @@ class InvertedResidual(nn.Module):
                        norm_layer = None,):
         super().__init__()
         
-        in_ch =  _make_divisible(in_ch * width_mult, 8)
         mid_ch = _make_divisible(mid_ch * width_mult, 8)
         out_ch = _make_divisible(out_ch * width_mult, 8)
         self._is_res_connect = stride == 1 and in_ch == out_ch
@@ -82,31 +82,31 @@ class InvertedResidual(nn.Module):
 class FaceAlignerNet(nn.Module):
     def __init__(self):
         super().__init__()
-      
         norm_layer = partial(nn.BatchNorm2d, eps=0.001, momentum=0.01)
         
-        self.c0 = ConvNormActivation(3, 16, kernel_size=3, stride=2, norm_layer=norm_layer, activation_layer=nn.Hardswish)
-
-        self.c1  = c1  = InvertedResidual ( 16,  16,  16,  3, 1, use_se=False, hs_act=False, norm_layer=norm_layer)
-        self.c2  = c2  = InvertedResidual ( 16,  64,  24,  3, 2, use_se=False, hs_act=False, norm_layer=norm_layer)
-        self.c3  = c3  = InvertedResidual ( 24,  72,  24,  3, 1, use_se=False, hs_act=False, norm_layer=norm_layer)
-        self.c4  = c4  = InvertedResidual ( 24,  72,  40,  5, 2, use_se=True,  hs_act=False, norm_layer=norm_layer)
-        self.c5  = c5  = InvertedResidual ( 40,  120, 40,  5, 1, use_se=True,  hs_act=False, norm_layer=norm_layer)
-        self.c6  = c6  = InvertedResidual ( 40,  120, 40,  5, 1, use_se=True,  hs_act=False, norm_layer=norm_layer)
-        self.c7  = c7  = InvertedResidual ( 40,  240, 80,  3, 2, use_se=False, hs_act=True, norm_layer=norm_layer)
-        self.c8  = c8  = InvertedResidual ( 80,  200, 80,  3, 1, use_se=False, hs_act=True, norm_layer=norm_layer)
-        self.c9  = c9  = InvertedResidual ( 80,  184, 80,  3, 1, use_se=False, hs_act=True, norm_layer=norm_layer)
-        self.c10 = c10 = InvertedResidual( 80,  184, 80,  3, 1, use_se=False, hs_act=True, norm_layer=norm_layer)
-        self.c11 = c11 = InvertedResidual( 80,  480, 112, 3, 1, use_se=True,  hs_act=True, norm_layer=norm_layer)
-        self.c12 = c12 = InvertedResidual( 112, 672, 112, 3, 1, use_se=True,  hs_act=True, norm_layer=norm_layer)
-        self.c13 = c13 = InvertedResidual( 112, 672, 160, 5, 2, use_se=True,  hs_act=True, norm_layer=norm_layer)
-        self.c14 = c14 = InvertedResidual( 160, 960, 160, 5, 1, use_se=True,  hs_act=True, norm_layer=norm_layer)
-        self.c15 = c15 = InvertedResidual( 160, 960, 160, 5, 1, use_se=True,  hs_act=True, norm_layer=norm_layer)
-    
-        conv_out_ch = sum([c1.out_ch, c3.out_ch, c6.out_ch, c10.out_ch, c13.out_ch, c15.out_ch])
-        #fc_in_ch = _make_divisible(conv_out_ch // 2, 8)
-        self.fc1 = nn.Linear(conv_out_ch, conv_out_ch  )
-        self.fc2 = nn.Linear(conv_out_ch, 4  )
+        width_mult = 1.66
+        
+        self.c0  = c0  = ConvNormActivation(3, _make_divisible(16 * width_mult, 8), kernel_size=3, stride=2, norm_layer=norm_layer, activation_layer=nn.Hardswish)
+        self.c1  = c1  = InvertedResidual ( c0.out_ch,  16,  16,  3, 1, use_se=False, hs_act=False, norm_layer=norm_layer, width_mult=width_mult)
+        self.c2  = c2  = InvertedResidual ( c1.out_ch,  64,  24,  3, 2, use_se=False, hs_act=False, norm_layer=norm_layer, width_mult=width_mult)
+        self.c3  = c3  = InvertedResidual ( c2.out_ch,  72,  24,  3, 1, use_se=False, hs_act=False, norm_layer=norm_layer, width_mult=width_mult)
+        self.c4  = c4  = InvertedResidual ( c3.out_ch,  72,  40,  5, 2, use_se=True,  hs_act=False, norm_layer=norm_layer, width_mult=width_mult)
+        self.c5  = c5  = InvertedResidual ( c4.out_ch,  120, 40,  5, 1, use_se=True,  hs_act=False, norm_layer=norm_layer, width_mult=width_mult)
+        self.c6  = c6  = InvertedResidual ( c5.out_ch,  120, 40,  5, 1, use_se=True,  hs_act=False, norm_layer=norm_layer, width_mult=width_mult)
+        self.c7  = c7  = InvertedResidual ( c6.out_ch,  240, 80,  3, 2, use_se=False, hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c8  = c8  = InvertedResidual ( c7.out_ch,  200, 80,  3, 1, use_se=False, hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c9  = c9  = InvertedResidual ( c8.out_ch,  184, 80,  3, 1, use_se=False, hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c10 = c10 = InvertedResidual ( c9.out_ch,  184, 80,  3, 1, use_se=False, hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c11 = c11 = InvertedResidual ( c10.out_ch, 480, 112, 3, 1, use_se=True,  hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c12 = c12 = InvertedResidual ( c11.out_ch, 672, 112, 3, 1, use_se=True,  hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c13 = c13 = InvertedResidual ( c12.out_ch, 672, 160, 5, 2, use_se=True,  hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c14 = c14 = InvertedResidual ( c13.out_ch, 960, 160, 5, 1, use_se=True,  hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c15 = c15 = InvertedResidual ( c14.out_ch, 960, 160, 5, 1, use_se=True,  hs_act=True,  norm_layer=norm_layer, width_mult=width_mult)
+        self.c16 = c16 = ConvNormActivation(c15.out_ch, _make_divisible(6*160*width_mult, 8), kernel_size=1, norm_layer=norm_layer, activation_layer=nn.Hardswish)
+        
+        self.fc1 = nn.Linear(c16.out_ch, _make_divisible(c16.out_ch*1.33, 8))
+        self.fc1_act = nn.Hardswish()
+        self.fc2 = nn.Linear(self.fc1.out_features, 4)
         
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -124,24 +124,27 @@ class FaceAlignerNet(nn.Module):
         x = inp     
         
         x = self.c0(x)
-        x = x1 = self.c1(x)
+        x = self.c1(x)
         x = self.c2(x)
-        x = x3 = self.c3(x)
+        x = self.c3(x)
         x = self.c4(x)
         x = self.c5(x)
-        x = x6 = self.c6(x)
+        x = self.c6(x)
         x = self.c7(x)
         x = self.c8(x)
         x = self.c9(x)
-        x = x10 = self.c10(x)
+        x = self.c10(x)
         x = self.c11(x)
         x = self.c12(x)
-        x = x13 = self.c13(x)
+        x = self.c13(x)
         x = self.c14(x)
-        x = x15 = self.c15(x)
+        x = self.c15(x)
+        x = self.c16(x)
         
-        x = torch.cat( [x1.mean((-2,-1)), x3.mean((-2,-1)), x6.mean((-2,-1)), x10.mean((-2,-1)), x13.mean((-2,-1)), x15.mean((-2,-1))], -1 )
+        x = x.mean((-2,-1))
         x = self.fc1(x)
+        x = self.fc1_act(x)
+        
         x = self.fc2(x)
         
         scale_t, angle_t, tx_t, ty_t = torch.split(x, 1, -1)
