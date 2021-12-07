@@ -1,8 +1,5 @@
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 from xlib.mp import csw as lib_csw
 
 from .QCSWControl import QCSWControl
@@ -10,22 +7,19 @@ from .QLabelPopupInfo import QLabelPopupInfo
 
 
 class QLabelPopupInfoCSWInfoLabel(QCSWControl):
-    """
-    Implements lib_csw.InfoLabel control as QLabelPopupInfo
-    """
     def __init__(self, csw_info_label : lib_csw.InfoLabel.Client):
+        """
+        Implements lib_csw.InfoLabel control as QLabelPopupInfo
+        """
         if not isinstance(csw_info_label, lib_csw.InfoLabel.Client):
             raise ValueError('csw_error must be an instance of InfoLabel.Client')
-
-        super().__init__(csw_control=csw_info_label)
 
         self._csw_info_label = csw_info_label
         csw_info_label.call_on_config(self._on_csw_config)
 
         label_popup_info = self._label_popup_info = QLabelPopupInfo()
 
-        self.setLayout(lib_qt.QXHBoxLayout([label_popup_info]))
-        self.hide()
+        super().__init__(csw_control=csw_info_label, layout=qtx.QXHBoxLayout([label_popup_info]))
 
     def _on_csw_state_change(self, state):
         super()._on_csw_state_change(state)

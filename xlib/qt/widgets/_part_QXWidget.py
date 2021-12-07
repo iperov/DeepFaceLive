@@ -1,18 +1,28 @@
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 
 from ..core.widget import BlockSignals
 from .QXMainApplication import QXMainApplication
 
+_size_policy_from_str = {
+    'fixed' : QSizePolicy.Policy.Fixed,
+    'minimum' : QSizePolicy.Policy.Minimum,
+    'maximum' : QSizePolicy.Policy.Maximum,
+    'preferred' : QSizePolicy.Policy.Preferred,
+    'minimumexpanding' : QSizePolicy.Policy.MinimumExpanding,
+    'expanding' : QSizePolicy.Policy.Expanding,
+    'ignored' : QSizePolicy.Policy.Ignored,
+}
 
 class _part_QXWidget:
     def __init__(self, layout=None,
                        font=None,
                        tooltip_text=None,
                        size_policy=None,
-                       minimum_size=None, minimum_width=None, minimum_height=None,
-                       maximum_size=None, maximum_width=None, maximum_height=None,
-                       fixed_size=None, fixed_width=None, fixed_height=None,
+                       minimum_width=None, maximum_width=None, fixed_width=None,
+                       minimum_height=None, maximum_height=None, fixed_height=None,
+                       minimum_size=None, maximum_size=None, fixed_size=None,
                        hided=False, enabled=True):
 
         self._registered = False
@@ -23,8 +33,16 @@ class _part_QXWidget:
             self.setFont(font)
         if tooltip_text is not None:
             self.setToolTip(tooltip_text)
+            
         if size_policy is not None:
+            x1, x2 = size_policy
+            if isinstance(x1, str):
+                x1 = _size_policy_from_str[x1.lower()]
+            if isinstance(x2, str):
+                x2 = _size_policy_from_str[x2.lower()]
+            size_policy = (x1, x2)
             self.setSizePolicy(*size_policy)
+            
         if layout is not None:
             self.setLayout(layout)
 
@@ -41,7 +59,7 @@ class _part_QXWidget:
             self.setMaximumWidth(maximum_width)
         if maximum_height is not None:
             self.setMaximumHeight(maximum_height)
-
+    
         if fixed_size is not None:
             fixed_width, fixed_height = fixed_size
         if fixed_width is not None:

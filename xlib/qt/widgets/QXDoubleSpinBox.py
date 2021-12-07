@@ -6,8 +6,11 @@ from ._part_QXWidget import _part_QXWidget
 
 
 class QXDoubleSpinBox(QDoubleSpinBox, _part_QXWidget):
-    def __init__(self, min=None, max=None, step=None, decimals=None, readonly=False, special_value_text=None, color=None, alignment=None, editingFinished=None, valueChanged=None, font=None, size_policy=None, hided=False, enabled=True):
+    def __init__(self, min=None, max=None, step=None, decimals=None, readonly=False, special_value_text=None, color=None, alignment=None, editingFinished=None, valueChanged=None, **kwargs):
         super().__init__()
+        _part_QXWidget.__init__(self, **kwargs)
+        _part_QXWidget.connect_signal(editingFinished, self.editingFinished)
+        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
 
         if min is not None:
             self.setMinimum(min)
@@ -26,11 +29,6 @@ class QXDoubleSpinBox(QDoubleSpinBox, _part_QXWidget):
 
         if color is not None:
             self.setStyleSheet(f'QDoubleSpinBox {{ color: {color};}}\n QDoubleSpinBox::disabled {{ color: dark-gray;}}')
-
-        _part_QXWidget.connect_signal(editingFinished, self.editingFinished)
-        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
-
-        _part_QXWidget.__init__(self, font=font, size_policy=size_policy, hided=hided, enabled=enabled )
 
 
     def focusInEvent(self, ev : QFocusEvent):

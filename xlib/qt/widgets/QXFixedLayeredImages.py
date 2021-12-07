@@ -14,10 +14,10 @@ class QXFixedLayeredImages(QXWidget):
 
     all images must have the same aspect ratio
     """
-    def __init__(self, fixed_width, fixed_height):
+    def __init__(self, fwidth, height):
         super().__init__()
-        self._fixed_width = fixed_width
-        self._fixed_height = fixed_height
+        self._fwidth = fwidth
+        self._height = height
         self._qp = QPainter()
         self._images : List = []
 
@@ -44,7 +44,7 @@ class QXFixedLayeredImages(QXWidget):
         self.update()
 
     def sizeHint(self):
-        return QSize(self._fixed_width, self._fixed_height)
+        return QSize(self._fwidth, self._height)
 
     def paintEvent(self, event):
         super().paintEvent(event)
@@ -53,8 +53,8 @@ class QXFixedLayeredImages(QXWidget):
         qp.begin(self)
         qp.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
 
-        w = self._fixed_width
-        h = self._fixed_height
+        w = self._fwidth
+        h = self._height
 
         w_half = w /2
         h_half = h /2

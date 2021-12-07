@@ -1,23 +1,18 @@
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 from xlib.mp import csw as lib_csw
 
 from .QCSWControl import QCSWControl
 
 
 class QSpinBoxCSWNumber(QCSWControl):
-    """
-    Implements lib_csw.Number control as SpinBox
-    """
     def __init__(self, csw_number : lib_csw.Number.Client, reflect_state_widgets=None):
-
+        """
+        Implements lib_csw.Number control as SpinBox
+        """
         if not isinstance(csw_number, lib_csw.Number.Client):
             raise ValueError('csw_number must be an instance of Number.Client')
-        super().__init__(csw_control=csw_number, reflect_state_widgets=reflect_state_widgets)
 
         self._csw_number = csw_number
         self._instant_update = False
@@ -27,16 +22,14 @@ class QSpinBoxCSWNumber(QCSWControl):
         csw_number.call_on_number(self._on_csw_number)
         csw_number.call_on_config(self._on_csw_config)
 
-        spinbox = self._spinbox = lib_qt.QXDoubleSpinBox( font=QXFontDB.Digital7_Mono(11, italic=True), min=0, max=999999999, step=1, decimals=0, readonly=self._read_only, valueChanged=self._on_spinbox_valueChanged, editingFinished=self._on_spinbox_editingFinished)
-        btn_auto = self._btn_auto = lib_qt.QXPushButton(text=L('@misc.auto'), hided=True, released=self._on_btn_auto_released, fixed_height=21)
+        spinbox = self._spinbox = qtx.QXDoubleSpinBox( font=QXFontDB.Digital7_Mono(11, italic=True), min=0, max=999999999, step=1, decimals=0, readonly=self._read_only, valueChanged=self._on_spinbox_valueChanged, editingFinished=self._on_spinbox_editingFinished)
+        btn_auto = self._btn_auto = qtx.QXPushButton(text=L('@misc.auto'), released=self._on_btn_auto_released, fixed_height=21, hided=True)
 
-        main_l = lib_qt.QXHBoxLayout([spinbox, 1, btn_auto])
-
-        self.setLayout(main_l)
-        self.hide()
+        super().__init__(csw_control=csw_number, reflect_state_widgets=reflect_state_widgets,
+                         layout=qtx.QXHBoxLayout([spinbox, 1, btn_auto]) )
 
     def _on_csw_number(self, number):
-        with lib_qt.BlockSignals(self._spinbox):
+        with qtx.BlockSignals(self._spinbox):
             self._spinbox.setValue(number)
             self._btn_auto_update()
 
@@ -64,9 +57,9 @@ class QSpinBoxCSWNumber(QCSWControl):
         self._read_only = cfg.read_only
         self._spinbox.setReadOnly(cfg.read_only)
         if cfg.read_only:
-            self._spinbox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
+            self._spinbox.setButtonSymbols(qtx.QAbstractSpinBox.ButtonSymbols.NoButtons)
         else:
-            self._spinbox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.UpDownArrows)
+            self._spinbox.setButtonSymbols(qtx.QAbstractSpinBox.ButtonSymbols.UpDownArrows)
 
         self._btn_auto_update()
 

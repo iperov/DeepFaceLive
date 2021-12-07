@@ -6,18 +6,14 @@ from ._part_QXWidget import _part_QXWidget
 
 
 class QXProgressBar(QProgressBar, _part_QXWidget):
-    def __init__(self, min=None,
-                       max=None,
-                       valueChanged=None,
-                       font=None, size_policy=None, hided=False, enabled=True, ):
-
+    def __init__(self, min=None, max=None, valueChanged=None, **kwargs):
         super().__init__()
+        _part_QXWidget.__init__(self, **kwargs)
+        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
         if min is not None:
             self.setMinimum(min)
         if max is not None:
             self.setMaximum(max)
-        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
-        _part_QXWidget.__init__(self, font=font, size_policy=size_policy, hided=hided, enabled=enabled )
 
     def focusInEvent(self, ev : QFocusEvent):
         super().focusInEvent(ev)

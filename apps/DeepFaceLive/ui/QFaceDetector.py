@@ -1,10 +1,7 @@
 import numpy as np
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from ..backend import FaceDetector
 from .widgets.QBackendPanel import QBackendPanel
@@ -23,11 +20,11 @@ class QFaceDetector(QBackendPanel):
         self._bc_out = backend.get_bc_out()
         self._weak_heap = backend.get_weak_heap()
         self._bcd_id = None
-        self._timer = lib_qt.QXTimer(interval=10, timeout=self._on_timer_10ms, start=True)
+        self._timer = qtx.QXTimer(interval=10, timeout=self._on_timer_10ms, start=True)
 
-        face_coords_label = self._q_face_coords_label = lib_qt.QXLabel(font=QXFontDB.get_fixedwidth_font(size=7), word_wrap=False)
-        q_detected_faces  = self._q_detected_faces    = lib_qt.QXCollapsibleSection(title=L('@QFaceDetector.detected_faces'),
-                                                                  content_layout=lib_qt.QXVBoxLayout([face_coords_label]), is_opened=True)
+        face_coords_label = self._q_face_coords_label = qtx.QXLabel(font=QXFontDB.get_fixedwidth_font(size=7), word_wrap=False)
+        q_detected_faces  = self._q_detected_faces    = qtx.QXCollapsibleSection(title=L('@QFaceDetector.detected_faces'),
+                                                                                 content_layout=qtx.QXVBoxLayout([face_coords_label]), is_opened=True)
 
         cs = backend.get_control_sheet()
 
@@ -52,28 +49,28 @@ class QFaceDetector(QBackendPanel):
         q_temporal_smoothing_label = QLabelPopupInfo(label=L('@QFaceDetector.temporal_smoothing'), popup_info_text=L('@QFaceDetector.help.temporal_smoothing') )
         q_temporal_smoothing = QSpinBoxCSWNumber(cs.temporal_smoothing, reflect_state_widgets=[q_temporal_smoothing_label])
 
-        grid_l = lib_qt.QXGridLayout(vertical_spacing=5, horizontal_spacing=5, )
+        grid_l = qtx.QXGridLayout(vertical_spacing=5, horizontal_spacing=5)
         row = 0
-        grid_l.addWidget(q_detector_type_label, row, 0, 1, 1, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_detector_type, row, 1, 1, 3, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_detector_type_label, row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_detector_type, row, 1, 1, 3)
         row += 1
-        grid_l.addWidget(q_device_label, row, 0, 1, 1, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_device, row, 1, 1, 3, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_device_label, row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_device, row, 1, 1, 3)
         row += 1
-        grid_l.addWidget(q_fixed_window_size_label, row, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_fixed_window_size, row, 2, 1, 2, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_fixed_window_size_label, row, 0, 1, 2, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_fixed_window_size, row, 2, 1, 2, alignment=qtx.AlignLeft)
         row += 1
-        grid_l.addWidget(q_threshold_label, row, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_threshold, row, 2, 1, 2, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_threshold_label, row, 0, 1, 2, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_threshold, row, 2, 1, 2, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_max_faces_label, 5, q_max_faces]), row, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_sort_by_label, 5,q_sort_by]), row, 2, 1,2,alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_max_faces_label, 5, q_max_faces]), row, 0, 1, 2, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addLayout( qtx.QXHBoxLayout([q_sort_by_label, 5,q_sort_by]), row, 2, 1,2, alignment=qtx.AlignLeft | qtx.AlignVCenter)
         row += 1
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_temporal_smoothing_label, 5, q_temporal_smoothing]), row, 0, 1, 4, alignment=Qt.AlignmentFlag.AlignCenter  )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_temporal_smoothing_label, 5, q_temporal_smoothing]), row, 0, 1, 4, alignment=qtx.AlignCenter)
         row += 1
         grid_l.addWidget(q_detected_faces, row, 0, 1, 4)
         row += 1
-        super().__init__(backend, L('@QFaceDetector.module_title'), layout=lib_qt.QXVBoxLayout([grid_l]))
+        super().__init__(backend, L('@QFaceDetector.module_title'), layout=qtx.QXVBoxLayout([grid_l]))
 
     def _on_backend_state_change(self, backend, started, starting, stopping, stopped, busy):
         super()._on_backend_state_change (backend, started, starting, stopping, stopped, busy)
@@ -101,7 +98,7 @@ class QFaceDetector(QBackendPanel):
                     info = []
                     for face_id, fsi in enumerate(bcd.get_face_swap_info_list()):
                         info_str = f'{face_id}: '
-                        
+
                         if fsi.face_urect is not None:
                             l,t,r,b = fsi.face_urect.as_ltrb_bbox(frame_image_w_h).astype(np.int)
                             info_str += f'[{l},{t},{r},{b}]'

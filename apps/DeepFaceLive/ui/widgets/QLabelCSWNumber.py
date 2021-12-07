@@ -1,8 +1,5 @@
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 from xlib.mp import csw as lib_csw
 
 from .QCSWControl import QCSWControl
@@ -16,7 +13,6 @@ class QLabelCSWNumber(QCSWControl):
 
         if not isinstance(csw_number, lib_csw.Number.Client):
             raise ValueError('csw_number must be an instance of Number.Client')
-        super().__init__(csw_control=csw_number, reflect_state_widgets=reflect_state_widgets)
 
         self._csw_number = csw_number
         self._decimals = 0
@@ -24,11 +20,10 @@ class QLabelCSWNumber(QCSWControl):
         csw_number.call_on_number(self._on_csw_number)
         csw_number.call_on_config(self._on_csw_config)
 
-        label = self._label = lib_qt.QXLabel( font=QXFontDB.Digital7_Mono(11, italic=True) )
-        main_l = lib_qt.QXHBoxLayout([label])
+        label = self._label = qtx.QXLabel( font=QXFontDB.Digital7_Mono(11, italic=True) )
 
-        self.setLayout(main_l)
-        self.hide()
+        super().__init__(csw_control=csw_number, reflect_state_widgets=reflect_state_widgets,
+                         layout=qtx.QXHBoxLayout([label]))
 
     def _on_csw_number(self, number):
         f = (10**self._decimals)

@@ -1,48 +1,35 @@
 from typing import Union
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
 from resources.gfx import QXImageDB
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 
-class QLabelPopupInfo(lib_qt.QXWidget):
-    """
-    text label with optional popup info on click
-    """
+class QLabelPopupInfo(qtx.QXWidget):
     def __init__(self, label : str = None, popup_info_text = None):
+        """
+        text label with optional popup info on click
+        """
         super().__init__()
 
         self._has_info_text = False
 
-        self._label = lib_qt.QXLabel(text='')
-        self._label.hide()
+        self._label = qtx.QXLabel(text='', hided=True)
 
-        wnd = self._popup_wnd = lib_qt.QXWindow()
-        wnd.setParent(self)
-        wnd.setWindowFlags(Qt.WindowType.Popup)
+        wnd_text_label = self._popup_wnd_text_label = qtx.QXLabel(text='', font=QXFontDB.get_default_font() )
 
-        info_btn = self._info_btn = lib_qt.QXPushButton(image=QXImageDB.information_circle_outline('light gray'), fixed_size=(24,22), released=self._on_info_btn_released)
-        info_btn.hide()
+        wnd = self._popup_wnd = qtx.QXPopupWindow(layout=qtx.QXHBoxLayout([
+                       qtx.QXFrame(bg_color= qtx.Qt.GlobalColor.black,
+                                   layout=qtx.QXHBoxLayout([
+                                          qtx.QXFrame(layout=qtx.QXHBoxLayout([qtx.QXLabel(image=QXImageDB.information_circle_outline('yellow'), scaled_contents=True, fixed_size=(24,24)),
+                                                                               wnd_text_label
+                                                                              ], contents_margins=2, spacing=2)),
+                       ], contents_margins=2, spacing=2), size_policy=('fixed', 'fixed') )
+                     ], contents_margins=0) )
 
-        wnd_text_label = self._popup_wnd_text_label = lib_qt.QXLabel(text='', font=QXFontDB.get_default_font() )
+        info_btn = self._info_btn = qtx.QXPushButton(image=QXImageDB.information_circle_outline('light gray'), released=self._on_info_btn_released, fixed_size=(24,22), hided=True)
 
-        wnd_layout = lib_qt.QXHBoxLayout([
-                       lib_qt.QXFrame(
-                       bg_color= Qt.GlobalColor.black,
-                       layout=lib_qt.QXHBoxLayout([
-
-                         lib_qt.QXFrame(layout=lib_qt.QXHBoxLayout([lib_qt.QXLabel(image=QXImageDB.information_circle_outline('yellow'), scaled_contents=True, fixed_size=(24,24)),
-                                                                    wnd_text_label
-                                                                    ], contents_margins=2, spacing=2)),
-                       ], contents_margins=2, spacing=2), size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed) )
-                     ], contents_margins=0)
-
-        wnd.setLayout(wnd_layout)
-
-        self.setLayout(lib_qt.QXHBoxLayout([self._label, info_btn]))
+        self.setLayout(qtx.QXHBoxLayout([self._label, info_btn]))
 
         self.set_label( label )
         self.set_popup_info( popup_info_text )
@@ -90,12 +77,12 @@ class QLabelPopupInfo(lib_qt.QXWidget):
             if label_widget.isHidden():
                 label_widget = self._info_btn
 
-            screen_size = lib_qt.QXMainApplication.get_singleton().primaryScreen().size()
+            screen_size = qtx.QXMainApplication.get_singleton().primaryScreen().size()
             label_size = label_widget.size()
-            global_pt = label_widget.mapToGlobal( QPoint(0, label_size.height()))
+            global_pt = label_widget.mapToGlobal( qtx.QPoint(0, label_size.height()))
             popup_wnd_size = popup_wnd.size()
-            global_pt = QPoint( min(global_pt.x(), screen_size.width() - popup_wnd_size.width()),
-                                min(global_pt.y(), screen_size.height() - popup_wnd_size.height()) )
+            global_pt = qtx.QPoint( min(global_pt.x(), screen_size.width() - popup_wnd_size.width()),
+                                    min(global_pt.y(), screen_size.height() - popup_wnd_size.height()) )
 
             popup_wnd.move(global_pt)
 

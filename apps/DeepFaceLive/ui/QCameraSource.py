@@ -1,8 +1,5 @@
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from ..backend import CameraSource
 from .widgets.QBackendPanel import QBackendPanel
@@ -42,38 +39,33 @@ class QCameraSource(QBackendPanel):
         q_load_settings   = QXPushButtonCSWSignal(cs.load_settings, text=L('@QCameraSource.load_settings'), reflect_state_widgets=[q_camera_settings_group_label])
         q_save_settings   = QXPushButtonCSWSignal(cs.save_settings, text=L('@QCameraSource.save_settings'))
 
-        grid_l = lib_qt.QXGridLayout(spacing=5)
+        grid_l = qtx.QXGridLayout(spacing=5)
         row = 0
-        grid_l.addWidget(q_device_idx_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_device_idx, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_device_idx_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_device_idx, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_driver_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_driver, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_driver_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_driver, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_resolution_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_resolution, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_resolution_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_resolution, row, 1, alignment=qtx.AlignLeft )
         row += 1
         btn_height = 24
-        grid_l.addWidget(q_camera_settings_group_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget( lib_qt.QXWidget(layout=lib_qt.QXHBoxLayout([
-                                lib_qt.QXWidget(layout=lib_qt.QXHBoxLayout([q_open_settings]), ),
-                                lib_qt.QXWidget(layout=lib_qt.QXHBoxLayout([q_load_settings]), ),
-                                lib_qt.QXWidget(layout=lib_qt.QXHBoxLayout([q_save_settings]), ),
-                            ], contents_margins=(1,0,1,0), spacing=1), fixed_height=btn_height), row, 1,  alignment=Qt.AlignmentFlag.AlignLeft  )
+        grid_l.addWidget(q_camera_settings_group_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget( qtx.QXWidgetHBox([q_open_settings, q_load_settings, q_save_settings],
+                                            contents_margins=(1,0,1,0), spacing=1, fixed_height=btn_height), row, 1, alignment=qtx.AlignLeft  )
         row += 1
-
-
-        grid_l.addWidget(q_fps_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_fps, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_fps_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_fps, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_rotation_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_rotation, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_rotation_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_rotation, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_flip_horizontal_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_flip_horizontal, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_flip_horizontal_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_flip_horizontal, row, 1, alignment=qtx.AlignLeft )
         row += 1
 
         super().__init__(backend, L('@QCameraSource.module_title'),
-                         layout=lib_qt.QXVBoxLayout([grid_l], spacing=5),
+                         layout=qtx.QXVBoxLayout([grid_l], spacing=5),
                          content_align_top=True)
 

@@ -15,11 +15,16 @@ class QXSlider(QSlider, _part_QXWidget):
                        sliderMoved=None,
                        sliderPressed=None,
                        sliderReleased=None,
-                       size_policy=None, hided=False, enabled=True):
+                       **kwargs):
         if orientation is not None:
             super().__init__(orientation)
         else:
             super().__init__()
+        _part_QXWidget.__init__(self, **kwargs)
+        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
+        _part_QXWidget.connect_signal(sliderMoved, self.sliderMoved)
+        _part_QXWidget.connect_signal(sliderPressed, self.sliderPressed)
+        _part_QXWidget.connect_signal(sliderReleased, self.sliderReleased)
 
         if min is not None:
             self.setMinimum(min)
@@ -29,13 +34,6 @@ class QXSlider(QSlider, _part_QXWidget):
             self.setTickPosition(tick_position)
         if tick_interval is not None:
             self.setTickInterval(tick_interval)
-
-        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
-        _part_QXWidget.connect_signal(sliderMoved, self.sliderMoved)
-        _part_QXWidget.connect_signal(sliderPressed, self.sliderPressed)
-        _part_QXWidget.connect_signal(sliderReleased, self.sliderReleased)
-        _part_QXWidget.__init__(self, size_policy=size_policy, hided=hided, enabled=enabled )
-
 
     def focusInEvent(self, ev : QFocusEvent):
         super().focusInEvent(ev)

@@ -1,8 +1,5 @@
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from .widgets.QBackendPanel import QBackendPanel
 from .widgets.QComboBoxCSWDynamicSingleSwitch import \
@@ -27,30 +24,29 @@ class QFaceMarker(QBackendPanel):
         q_temporal_smoothing_label = QLabelPopupInfo(label=L('@QFaceMarker.temporal_smoothing'), popup_info_text=L('@QFaceMarker.help.temporal_smoothing') )
         q_temporal_smoothing = QSpinBoxCSWNumber(cs.temporal_smoothing, reflect_state_widgets=[q_temporal_smoothing_label])
 
-        grid_l = lib_qt.QXGridLayout(spacing=5)
+        grid_l = qtx.QXGridLayout(spacing=5)
         row = 0
-        grid_l.addWidget(q_marker_type_label, row, 0, 1, 1, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_marker_type, row, 1, 1, 3, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_marker_type_label, row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_marker_type, row, 1, 1, 3 )
         row += 1
-        grid_l.addWidget(q_device_label, row, 0, 1, 1, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_device, row, 1, 1, 3, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_device_label, row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_device, row, 1, 1, 3 )
         row += 1
 
         sub_row = 0
-        sub_grid_l = lib_qt.QXGridLayout(spacing=5)
-        sub_grid_l.addWidget(q_marker_coverage_label, sub_row, 0, 1, 1, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        sub_grid_l.addWidget(q_marker_coverage, sub_row, 1, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        sub_grid_l = qtx.QXGridLayout(spacing=5)
+        sub_grid_l.addWidget(q_marker_coverage_label, sub_row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        sub_grid_l.addWidget(q_marker_coverage, sub_row, 1, 1, 1, alignment=qtx.AlignLeft )
         sub_row += 1
-        sub_grid_l.addWidget(q_temporal_smoothing_label, sub_row, 0, 1, 1, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        sub_grid_l.addWidget(q_temporal_smoothing, sub_row, 1, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        sub_grid_l.addWidget(q_temporal_smoothing_label, sub_row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        sub_grid_l.addWidget(q_temporal_smoothing, sub_row, 1, 1, 1, alignment=qtx.AlignLeft )
         sub_row += 1
 
-
-        grid_l.addLayout(sub_grid_l, row, 0, 1, 4, alignment=Qt.AlignmentFlag.AlignCenter )
+        grid_l.addLayout(sub_grid_l, row, 0, 1, 4, alignment=qtx.AlignCenter )
         row += 1
 
         super().__init__(backend, L('@QFaceMarker.module_title'),
-                         layout=lib_qt.QXVBoxLayout([grid_l]) )
+                         layout=qtx.QXVBoxLayout([grid_l]) )
 
 
 

@@ -1,11 +1,8 @@
 from pathlib import Path
 
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.gfx import QXImageDB
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from ..backend import FaceSwapper
 from .widgets.QBackendPanel import QBackendPanel
@@ -26,7 +23,7 @@ class QFaceSwapper(QBackendPanel):
 
         cs = backend.get_control_sheet()
 
-        btn_open_folder = self.btn_open_folder = lib_qt.QXPushButton(image = QXImageDB.eye_outline('light gray'), tooltip_text='Reveal in Explorer', released=self._btn_open_folder_released, fixed_size=(24,22) )
+        btn_open_folder = self.btn_open_folder = qtx.QXPushButton(image = QXImageDB.eye_outline('light gray'), tooltip_text='Reveal in Explorer', released=self._btn_open_folder_released, fixed_size=(24,22) )
 
         q_model_label = QLabelPopupInfo(label=L('@QFaceSwapper.model'), popup_info_text=L('@QFaceSwapper.help.model') )
         q_model       = QComboBoxCSWDynamicSingleSwitch(cs.model, reflect_state_widgets=[q_model_label, btn_open_folder])
@@ -60,39 +57,37 @@ class QFaceSwapper(QBackendPanel):
         q_two_pass_label = QLabelPopupInfo(label=L('@QFaceSwapper.two_pass'), popup_info_text=L('@QFaceSwapper.help.two_pass') )
         q_two_pass       = QCheckBoxCSWFlag(cs.two_pass, reflect_state_widgets=[q_two_pass_label])
 
-        grid_l = lib_qt.QXGridLayout( spacing=5)
+        grid_l = qtx.QXGridLayout( spacing=5)
         row = 0
-        grid_l.addWidget(q_model_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout(lib_qt.QXHBoxLayout([q_model, 2, btn_open_folder, 2, q_model_info_label]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_model_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addLayout(qtx.QXHBoxLayout([q_model, 2, btn_open_folder, 2, q_model_info_label]), row, 1 )
         row += 1
         grid_l.addWidget(q_model_dl_progress, row, 0, 1, 2 )
         row += 1
         grid_l.addWidget(q_model_dl_error, row, 0, 1, 2 )
         row += 1
-        grid_l.addWidget(q_device_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_device, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_device_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_device, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget( q_swap_all_faces_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_swap_all_faces, 4, q_face_id_label, 4, q_face_id ]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget( q_swap_all_faces_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_swap_all_faces, 4, q_face_id_label, 4, q_face_id ]), row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_morph_factor_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addWidget(q_morph_factor_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_morph_factor, row, 1)
         row += 1
-        grid_l.addWidget(q_sharpen_amount_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addWidget(q_sharpen_amount_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_sharpen_amount, row, 1)
         row += 1
-
-        grid_l.addWidget( q_pre_gamma_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_pre_gamma_red, q_pre_gamma_green, q_pre_gamma_blue ]), row, 1)
+        grid_l.addWidget( q_pre_gamma_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_pre_gamma_red, q_pre_gamma_green, q_pre_gamma_blue ]), row, 1)
         row += 1
-
-        grid_l.addWidget(q_two_pass_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addWidget(q_two_pass_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_two_pass, row, 1)
         row += 1
 
         super().__init__(backend, L('@QFaceSwapper.module_title'),
-                         layout=lib_qt.QXVBoxLayout([grid_l]) )
+                         layout=qtx.QXVBoxLayout([grid_l]) )
 
 
     def _btn_open_folder_released(self):
-        QDesktopServices.openUrl(QUrl.fromLocalFile( str(self._dfm_models_path) ))
+        qtx.QDesktopServices.openUrl(qtx.QUrl.fromLocalFile( str(self._dfm_models_path) ))

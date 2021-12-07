@@ -1,38 +1,32 @@
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 from xlib.mp import csw as lib_csw
 
 from .QCSWControl import QCSWControl
 
 
 class QSliderCSWNumber(QCSWControl):
-    """
-    Implements lib_csw.Number control by Slider
-    """
     def __init__(self, csw_number: lib_csw.Number.Client, reflect_state_widgets=None):
-
+        """
+        Implements lib_csw.Number control by Slider
+        """
         if not isinstance(csw_number, lib_csw.Number.Client):
             raise ValueError('csw_number must be an instance of Number.Client')
-
-        super().__init__(csw_control=csw_number, reflect_state_widgets=reflect_state_widgets)
 
         self._csw_number = csw_number
 
         csw_number.call_on_number(self._on_csw_number)
         csw_number.call_on_config(self._on_csw_config)
 
-        slider = self._slider = lib_qt.QXSlider(orientation=Qt.Orientation.Horizontal,
-                                                min=0,
-                                                max=0,
-                                                tick_position=QSlider.TickPosition.NoTicks,
-                                                tick_interval=1,
-                                                sliderReleased=self._on_slider_sliderReleased,
-                                                valueChanged=self._on_slider_valueChanged)
+        slider = self._slider = qtx.QXSlider(orientation=qtx.Qt.Orientation.Horizontal,
+                                             min=0,
+                                             max=0,
+                                             tick_position=qtx.QSlider.TickPosition.NoTicks,
+                                             tick_interval=1,
+                                             sliderReleased=self._on_slider_sliderReleased,
+                                             valueChanged=self._on_slider_valueChanged)
 
-        self.setLayout(lib_qt.QXVBoxLayout([slider]))
-        self.hide()
+        super().__init__(csw_control=csw_number, reflect_state_widgets=reflect_state_widgets,
+                         layout=qtx.QXVBoxLayout([slider]))
 
     def _on_csw_config(self, config : lib_csw.Number.Config):
         self._config = config
@@ -56,7 +50,7 @@ class QSliderCSWNumber(QCSWControl):
         if value is not None:
             config = self._config
             value = (value-config.min) / config.step
-            with lib_qt.BlockSignals([self._slider]):
+            with qtx.BlockSignals([self._slider]):
                 self._slider.setValue(value)
 
     def _set_csw_value(self):

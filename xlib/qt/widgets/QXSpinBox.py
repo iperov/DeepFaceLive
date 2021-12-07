@@ -14,8 +14,13 @@ class QXSpinBox(QSpinBox, _part_QXWidget):
                        alignment=None,
                        button_symbols=None, readonly=False,
                        editingFinished=None, textChanged=None, valueChanged=None,
-                       font=None, size_policy=None, hided=False, enabled=True):
+                       **kwargs):
         super().__init__()
+        _part_QXWidget.__init__(self, **kwargs)
+        _part_QXWidget.connect_signal(editingFinished, self.editingFinished)
+        _part_QXWidget.connect_signal(textChanged, self.textChanged)
+        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
+        
         if min is not None:
             self.setMinimum(min)
         if max is not None:
@@ -32,12 +37,6 @@ class QXSpinBox(QSpinBox, _part_QXWidget):
 
         if color is not None:
             self.setStyleSheet(f'QSpinBox {{ color: {color};}}')
-
-        _part_QXWidget.connect_signal(editingFinished, self.editingFinished)
-        _part_QXWidget.connect_signal(textChanged, self.textChanged)
-        _part_QXWidget.connect_signal(valueChanged, self.valueChanged)
-        _part_QXWidget.__init__(self, font=font, size_policy=size_policy, hided=hided, enabled=enabled )
-
 
     def focusInEvent(self, ev : QFocusEvent):
         super().focusInEvent(ev)

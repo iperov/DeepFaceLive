@@ -1,21 +1,16 @@
 from collections import Iterable
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 from xlib.mp import csw as lib_csw
 
 
-class QCSWControl(lib_qt.QXWidget):
-    """
-    base qt widget class for CSWControl
-    """
-
-    def __init__(self, csw_control : lib_csw.Control, reflect_state_widgets=None):
-        super().__init__()
+class QCSWControl(qtx.QXWidget):
+    def __init__(self, csw_control : lib_csw.Control, reflect_state_widgets=None, **kwargs):
+        """
+        base qt widget class for CSWControl
+        """
+        super().__init__(hided=True, **kwargs)
         self._csw_control = csw_control
-
         self._csw_state_widgets = []
 
         csw_control.call_on_change_state(self._on_csw_state_change)

@@ -1,8 +1,5 @@
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from ..backend import FaceAligner
 from .widgets.QBackendPanel import QBackendPanel
@@ -33,24 +30,24 @@ class QFaceAligner(QBackendPanel):
         q_y_offset_label = QLabelPopupInfo(label=L('@QFaceAligner.y_offset'))
         q_y_offset       = QSpinBoxCSWNumber(cs.y_offset, reflect_state_widgets=[q_y_offset_label])
 
-        grid_l = lib_qt.QXGridLayout(spacing=5)
+        grid_l = qtx.QXGridLayout(spacing=5)
         row = 0
-        grid_l.addWidget(q_face_coverage_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_face_coverage, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_face_coverage_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_face_coverage, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_resolution_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_resolution, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_resolution_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_resolution, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_exclude_moving_parts_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_exclude_moving_parts, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_exclude_moving_parts_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_exclude_moving_parts, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_head_mode_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_head_mode, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_head_mode_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_head_mode, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addLayout( lib_qt.QXVBoxLayout([q_x_offset_label, q_y_offset_label]), row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_x_offset, q_y_offset]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addLayout( qtx.QXVBoxLayout([q_x_offset_label, q_y_offset_label]), row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_x_offset, q_y_offset]), row, 1, alignment=qtx.AlignLeft )
         row += 1
 
         super().__init__(backend, L('@QFaceAligner.module_title'),
-                         layout=lib_qt.QXVBoxLayout([grid_l]))
+                         layout=qtx.QXVBoxLayout([grid_l]))
 

@@ -7,7 +7,8 @@ from .QXHBoxLayout import QXHBoxLayout
 from .QXLabel import QXLabel
 from .QXToolButton import QXToolButton
 from .QXVBoxLayout import QXVBoxLayout
-
+from .QXFrameVBox import QXFrameVBox
+from .QXFrameHBox import QXFrameHBox
 
 class QXCollapsibleSection(QXFrame):
     """
@@ -15,10 +16,8 @@ class QXCollapsibleSection(QXFrame):
 
     Open/close state is saved to app db.
     """
-
-
     def __init__(self, title, content_layout, vertical=False, is_opened=True, allow_open_close=True):
-        super().__init__()
+
         self._is_opened = is_opened
         self._vertical = vertical
 
@@ -27,10 +26,9 @@ class QXCollapsibleSection(QXFrame):
 
         label_title = self.label_title = QXLabel(text=title)
 
-        btn = self.btn = QXToolButton(checkable=True)
+        btn = self.btn = QXToolButton(checkable=True, checked=False)
         btn.setStyleSheet('border: none;')
         btn.setArrowType(Qt.ArrowType.RightArrow)
-        btn.setChecked(False)
 
         if allow_open_close:
             btn.toggled.connect(self.on_btn_toggled)
@@ -38,23 +36,16 @@ class QXCollapsibleSection(QXFrame):
         frame = self.frame = QXFrame(layout=content_layout, size_policy=(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding), hided=True)
 
         if vertical:
-            main_l = QXHBoxLayout([ ( QXFrame(layout=
-                                        QXVBoxLayout([ (btn, Qt.AlignmentFlag.AlignTop),
-                                                       (label_title, Qt.AlignmentFlag.AlignCenter)
-                                                     ]),
-                                        size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed) ), Qt.AlignmentFlag.AlignTop),
-
-                                    frame ])
+            main_l = QXHBoxLayout([ ( QXFrameVBox([ (btn, Qt.AlignmentFlag.AlignTop),
+                                                    (label_title, Qt.AlignmentFlag.AlignCenter)
+                                                  ], size_policy=('fixed', 'fixed') ), Qt.AlignmentFlag.AlignTop),
+                                    frame])
         else:
-            main_l = QXVBoxLayout( [ ( QXFrame(layout=
-                                        QXHBoxLayout([ (btn, Qt.AlignmentFlag.AlignTop),
-                                                       (label_title, Qt.AlignmentFlag.AlignCenter)
-                                                     ]),
-                                        size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)  ) , Qt.AlignmentFlag.AlignTop),
-
-                                     frame])
-
-        self.setLayout(main_l)
+            main_l = QXVBoxLayout( [ ( QXFrameHBox([ (btn, Qt.AlignmentFlag.AlignTop),
+                                                     (label_title, Qt.AlignmentFlag.AlignCenter)
+                                                   ], size_policy=('fixed', 'fixed')) , Qt.AlignmentFlag.AlignTop),
+                                    frame])
+        super().__init__(layout=main_l)
 
         if self._is_opened:
             self.open()

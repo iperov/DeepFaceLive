@@ -11,17 +11,15 @@ class QXPushButton(QPushButton, _part_QXWidget):
     def __init__(self, image : QXImage = None, flat=False,
                        text=None, padding=4, checkable=False,
                        toggled=None, released=None,
-                       font=None, tooltip_text=None, size_policy=None,
-                       minimum_size=None, minimum_width=None, minimum_height=None,
-                       fixed_size=None, fixed_width=None, fixed_height=None, hided=False, enabled=True
-                       ):
+                       **kwargs):
         super().__init__()
+        _part_QXWidget.__init__(self, **kwargs)
+        _part_QXWidget.connect_signal(released, self.released)
+        _part_QXWidget.connect_signal(toggled, self.toggled)
+
         self._image = None
         self._image_sequence = None
         self._tl = None
-
-        if size_policy is None:
-            size_policy = (QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         if text is not None:
             self.setText(text)
@@ -39,7 +37,6 @@ QPushButton {{
     padding: {padding}px;
 }}
 
-
 QPushButton:hover {{
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #434343, stop: 0.3 #515151, stop: 0.6 #515151, stop: 1.0 #434343);
 
@@ -49,16 +46,8 @@ QPushButton:pressed {{
 }}
 """)
 
-
-        _part_QXWidget.connect_signal(released, self.released)
-        _part_QXWidget.connect_signal(toggled, self.toggled)
-        _part_QXWidget.__init__(self, font=font, tooltip_text=tooltip_text,
-                                size_policy=size_policy, minimum_size=minimum_size, minimum_width=minimum_width, minimum_height=minimum_height,
-                                fixed_size=fixed_size, fixed_width=fixed_width, fixed_height=fixed_height,
-                                hided=hided, enabled=enabled )
-
-    def sizeHint(self) -> QSize:
-        return QSize(0,0)
+    #def sizeHint(self) -> QSize:
+    #    return QSize(0,0)
 
     def setText(self, text):
         QPushButton.setText(self, text)
@@ -73,27 +62,30 @@ QPushButton:pressed {{
         if self._image is not None:
             rect = self.rect()
             image = self._image
-
             w, h = rect.width(), rect.height()
-            rect_aspect = w / h
 
-            size = image.size()
-            pixmap_aspect = size.width() / size.height()
+            if h != 0:
+                rect_aspect = w / h
 
-            if pixmap_aspect != rect_aspect:
-                if pixmap_aspect > rect_aspect:
-                    pw, ph = w, int(h * (rect_aspect / pixmap_aspect))
-                    px, py = 0, h/2-ph/2
-                elif pixmap_aspect < rect_aspect:
-                    pw, ph = int( w * (pixmap_aspect / rect_aspect) ), h
-                    px, py = w/2-pw/2, 0
-            else:
-                px, py, pw, ph = 0, 0, w, h
-            self.setIconSize( QSize(pw-4,ph-4) )
+                size = image.size()
+                pixmap_aspect = size.width() / size.height()
+
+                if pixmap_aspect != rect_aspect:
+                    if pixmap_aspect > rect_aspect:
+                        pw, ph = w, int(h * (rect_aspect / pixmap_aspect))
+                        px, py = 0, h/2-ph/2
+                    elif pixmap_aspect < rect_aspect:
+                        pw, ph = int( w * (pixmap_aspect / rect_aspect) ), h
+                        px, py = w/2-pw/2, 0
+                else:
+                    px, py, pw, ph = 0, 0, w, h
+
+                self.setIconSize( QSize(pw-4,ph-4) )
 
     def _set_image(self, image : QXImage ):
         self._image = image
         self.setIcon( image.as_QIcon() )
+        self._update_icon_size()
 
     def set_image(self, image : QXImage ):
         self.stop_image_sequence()
@@ -128,5 +120,4 @@ QPushButton:pressed {{
     def resizeEvent(self, ev : QResizeEvent):
         super().resizeEvent(ev)
         _part_QXWidget.resizeEvent(self, ev)
-
         self._update_icon_size()

@@ -1,8 +1,5 @@
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from .widgets.QBackendPanel import QBackendPanel
 from .widgets.QCheckBoxCSWFlag import QCheckBoxCSWFlag
@@ -48,45 +45,45 @@ class QFaceMerger(QBackendPanel):
 
         q_interpolation_label = QLabelPopupInfo(label=L('@QFaceMerger.interpolation') )
         q_interpolation       = QComboBoxCSWDynamicSingleSwitch(cs.interpolation, reflect_state_widgets=[q_interpolation_label])
-        
+
         q_color_compression_label = QLabelPopupInfo(label=L('@QFaceMerger.color_compression') )
         q_color_compression       = QSliderCSWNumber(cs.color_compression, reflect_state_widgets=[q_color_compression_label])
 
         q_face_opacity_label = QLabelPopupInfo(label=L('@QFaceMerger.face_opacity') )
         q_face_opacity       = QSliderCSWNumber(cs.face_opacity, reflect_state_widgets=[q_face_opacity_label])
 
-        grid_l = lib_qt.QXGridLayout(spacing=5)
+        grid_l = qtx.QXGridLayout(spacing=5)
         row = 0
-        grid_l.addWidget(q_device_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_device, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_device_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_device, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addLayout( lib_qt.QXVBoxLayout([q_face_x_offset_label, q_face_y_offset_label]), row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_face_x_offset, q_face_y_offset]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addLayout( qtx.QXVBoxLayout([q_face_x_offset_label, q_face_y_offset_label]), row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addLayout( qtx.QXHBoxLayout([q_face_x_offset, q_face_y_offset]), row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_face_scale_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_face_scale, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_face_scale_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_face_scale, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget( q_face_mask_type_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout( lib_qt.QXHBoxLayout([q_face_mask_source, q_face_mask_source_label, 5,
-                                               q_face_mask_celeb, q_face_mask_celeb_label, 5,
-                                               q_face_mask_lmrks, q_face_mask_lmrks_label]), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget( q_face_mask_type_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addLayout( qtx.QXHBoxLayout([q_face_mask_source, q_face_mask_source_label, 5,
+                                            q_face_mask_celeb, q_face_mask_celeb_label, 5,
+                                            q_face_mask_lmrks, q_face_mask_lmrks_label]), row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addLayout(lib_qt.QXVBoxLayout([q_face_mask_erode_label,q_face_mask_blur_label]), row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addLayout(lib_qt.QXHBoxLayout([q_face_mask_erode,q_face_mask_blur], spacing=3), row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addLayout(qtx.QXVBoxLayout([q_face_mask_erode_label,q_face_mask_blur_label]), row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addLayout(qtx.QXHBoxLayout([q_face_mask_erode,q_face_mask_blur], spacing=3), row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_color_transfer_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_color_transfer, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_color_transfer_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_color_transfer, row, 1 )
         row += 1
-        grid_l.addWidget(q_interpolation_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
-        grid_l.addWidget(q_interpolation, row, 1, alignment=Qt.AlignmentFlag.AlignLeft )
+        grid_l.addWidget(q_interpolation_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
+        grid_l.addWidget(q_interpolation, row, 1)
         row += 1
-        grid_l.addWidget(q_color_compression_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addWidget(q_color_compression_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
         grid_l.addWidget(q_color_compression, row, 1)
         row += 1
-        grid_l.addWidget(q_face_opacity_label, row, 0, alignment=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter  )
+        grid_l.addWidget(q_face_opacity_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter)
         grid_l.addWidget(q_face_opacity, row, 1)
         row += 1
 
         super().__init__(backend, L('@QFaceMerger.module_title'),
-                         layout=lib_qt.QXVBoxLayout([grid_l]) )
+                         layout=qtx.QXVBoxLayout([grid_l]) )
 

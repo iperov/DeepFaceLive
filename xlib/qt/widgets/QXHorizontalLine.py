@@ -8,6 +8,6 @@ class QXHorizontalLine(QXLabel):
                        color=None):
 
         super().__init__(size_policy=(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed),
-                         fixed_height=thickness )
+                         fixed_size=(None,thickness) )
         if color is not None:
             self.setStyleSheet(f'background: {color};')

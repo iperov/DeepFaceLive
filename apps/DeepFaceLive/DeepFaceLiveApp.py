@@ -2,13 +2,10 @@ from pathlib import Path
 from typing import List
 
 from localization import L, Localization
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
 from resources.gfx import QXImageDB
 from xlib import os as lib_os
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 from xlib.qt.widgets.QXLabel import QXLabel
 
 from . import backend
@@ -27,7 +24,7 @@ from .ui.widgets.QBCMergedFrameViewer import QBCMergedFrameViewer
 from .ui.widgets.QBCFrameViewer import QBCFrameViewer
 
 
-class QLiveSwap(lib_qt.QXWidget):
+class QLiveSwap(qtx.QXWidget):
     def __init__(self, userdata_path : Path,
                        settings_dirpath : Path):
         super().__init__()
@@ -39,7 +36,6 @@ class QLiveSwap(lib_qt.QXWidget):
         output_sequence_path.mkdir(parents=True, exist_ok=True)
 
         # Construct backend config
-
         backend_db          = self.backend_db          = backend.BackendDB( settings_dirpath / 'states.dat' )
         backed_weak_heap    = self.backed_weak_heap    = backend.BackendWeakHeap(size_mb=1024)
         reemit_frame_signal = self.reemit_frame_signal = backend.BackendSignal()
@@ -79,32 +75,24 @@ class QLiveSwap(lib_qt.QXWidget):
         self.q_ds_fc_viewer    = QBCFaceSwapViewer(backed_weak_heap, face_swapper_bc_out, preview_width=256)
         self.q_ds_merged_frame_viewer = QBCMergedFrameViewer(backed_weak_heap, face_merger_bc_out)
 
-        q_nodes = lib_qt.QXWidget(size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed),
-                     layout=lib_qt.QXHBoxLayout([
-                        lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_file_source, self.q_camera_source], spacing=5),  fixed_width=256 ),
-                        lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_face_detector,  self.q_face_aligner,], spacing=5),  fixed_width=256),
-                        lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_face_marker, self.q_face_swapper], spacing=5),  fixed_width=256),
-                        lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_frame_adjuster, self.q_face_merger, self.q_stream_output, ], spacing=5),  fixed_width=256),
-                        ], spacing=5))
+        q_nodes = qtx.QXWidgetHBox([    qtx.QXWidgetVBox([self.q_file_source, self.q_camera_source], spacing=5, fixed_width=256),
+                                        qtx.QXWidgetVBox([self.q_face_detector,  self.q_face_aligner,], spacing=5, fixed_width=256),
+                                        qtx.QXWidgetVBox([self.q_face_marker, self.q_face_swapper], spacing=5, fixed_width=256),
+                                        qtx.QXWidgetVBox([self.q_frame_adjuster, self.q_face_merger, self.q_stream_output], spacing=5, fixed_width=256),
+                                    ], spacing=5, size_policy=('fixed', 'fixed') )
 
-        q_view_nodes = lib_qt.QXWidget(size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed),
-                          layout=lib_qt.QXHBoxLayout([
-                            (lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_ds_frame_viewer]), fixed_width=256 ), Qt.AlignmentFlag.AlignTop),
-                            (lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_ds_fa_viewer]), fixed_width=256 ), Qt.AlignmentFlag.AlignTop),
-                            (lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_ds_fc_viewer]), fixed_width=256 ), Qt.AlignmentFlag.AlignTop),
-                            (lib_qt.QXWidget(layout=lib_qt.QXVBoxLayout([self.q_ds_merged_frame_viewer]), fixed_width=256 ), Qt.AlignmentFlag.AlignTop),
-                            ], spacing=5))
+        q_view_nodes = qtx.QXWidgetHBox([   (qtx.QXWidgetVBox([self.q_ds_frame_viewer], fixed_width=256), qtx.AlignTop),
+                                            (qtx.QXWidgetVBox([self.q_ds_fa_viewer], fixed_width=256), qtx.AlignTop),
+                                            (qtx.QXWidgetVBox([self.q_ds_fc_viewer], fixed_width=256), qtx.AlignTop),
+                                            (qtx.QXWidgetVBox([self.q_ds_merged_frame_viewer], fixed_width=256), qtx.AlignTop),
+                                        ], spacing=5, size_policy=('fixed', 'fixed') )
 
-        self.setLayout(lib_qt.QXVBoxLayout(
-                       [  (lib_qt.QXWidget( layout=lib_qt.QXVBoxLayout([
-                                            (q_nodes, Qt.AlignmentFlag.AlignTop),
-                                            (q_view_nodes, Qt.AlignmentFlag.AlignHCenter),
-                                            ], spacing=5)),
-                           Qt.AlignmentFlag.AlignCenter),
+        self.setLayout(qtx.QXVBoxLayout(
+                       [  (qtx.QXWidgetVBox([(q_nodes, qtx.AlignTop),
+                                             (q_view_nodes, qtx.AlignHCenter), ], spacing=5), qtx.AlignCenter),
                        ]))
 
-        self._timer = lib_qt.QXTimer(interval=5, timeout=self._on_timer_5ms, start=True)
-
+        self._timer = qtx.QXTimer(interval=5, timeout=self._on_timer_5ms, start=True)
 
     def _process_messages(self):
         self.backend_db.process_messages()
@@ -138,64 +126,58 @@ class QLiveSwap(lib_qt.QXWidget):
         self.q_ds_frame_viewer.clear()
         self.q_ds_fa_viewer.clear()
 
-class QDFLAppWindow(lib_qt.QXWindow):
+class QDFLAppWindow(qtx.QXWindow):
 
     def __init__(self, userdata_path, settings_dirpath):
-        super().__init__(save_load_state=True, size_policy=(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum) )
+        super().__init__(save_load_state=True, size_policy=('minimum', 'minimum') )
 
         self._userdata_path = userdata_path
         self._settings_dirpath = settings_dirpath
 
-        menu_bar = lib_qt.QXMenuBar( font=QXFontDB.get_default_font(size=10), size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.MinimumExpanding) )
+        menu_bar = qtx.QXMenuBar( font=QXFontDB.get_default_font(size=10), size_policy=('fixed', 'minimumexpanding') )
         menu_file = menu_bar.addMenu( L('@QDFLAppWindow.file') )
         menu_language = menu_bar.addMenu( L('@QDFLAppWindow.language') )
 
         menu_file_action_reinitialize = menu_file.addAction( L('@QDFLAppWindow.reinitialize') )
-        menu_file_action_reinitialize.triggered.connect(lambda: lib_qt.QXMainApplication.get_singleton().reinitialize() )
+        menu_file_action_reinitialize.triggered.connect(lambda: qtx.QXMainApplication.get_singleton().reinitialize() )
 
         menu_file_action_reset_settings = menu_file.addAction( L('@QDFLAppWindow.reset_modules_settings') )
         menu_file_action_reset_settings.triggered.connect(self._on_reset_modules_settings)
 
         menu_file_action_quit = menu_file.addAction( L('@QDFLAppWindow.quit') )
-        menu_file_action_quit.triggered.connect(lambda: lib_qt.QXMainApplication.quit() )
+        menu_file_action_quit.triggered.connect(lambda: qtx.QXMainApplication.quit() )
 
         menu_language_action_english = menu_language.addAction('English' )
-        menu_language_action_english.triggered.connect(lambda: (lib_qt.QXMainApplication.get_singleton().set_language('en-US'), lib_qt.QXMainApplication.get_singleton().reinitialize()) )
+        menu_language_action_english.triggered.connect(lambda: (qtx.QXMainApplication.get_singleton().set_language('en-US'), qtx.QXMainApplication.get_singleton().reinitialize()) )
 
         menu_language_action_russian = menu_language.addAction('Русский')
-        menu_language_action_russian.triggered.connect(lambda: (lib_qt.QXMainApplication.get_singleton().set_language('ru-RU'), lib_qt.QXMainApplication.get_singleton().reinitialize()) )
+        menu_language_action_russian.triggered.connect(lambda: (qtx.QXMainApplication.get_singleton().set_language('ru-RU'), qtx.QXMainApplication.get_singleton().reinitialize()) )
 
         menu_language_action_chinesse = menu_language.addAction('汉语')
-        menu_language_action_chinesse.triggered.connect(lambda: (lib_qt.QXMainApplication.get_singleton().set_language('zh-CN'), lib_qt.QXMainApplication.get_singleton().reinitialize()) )
+        menu_language_action_chinesse.triggered.connect(lambda: (qtx.QXMainApplication.get_singleton().set_language('zh-CN'), qtx.QXMainApplication.get_singleton().reinitialize()) )
 
         menu_help = menu_bar.addMenu( L('@QDFLAppWindow.help') )
         menu_help_action_github = menu_help.addAction( L('@QDFLAppWindow.visit_github_page') )
-        menu_help_action_github.triggered.connect(lambda: QDesktopServices.openUrl(QUrl('https://github.com/iperov/DeepFaceLive' )))
+        menu_help_action_github.triggered.connect(lambda: qtx.QDesktopServices.openUrl(QUrl('https://github.com/iperov/DeepFaceLive' )))
 
         self.q_live_swap = None
-        self.q_live_swap_container = lib_qt.QXWidget()
+        self.q_live_swap_container = qtx.QXWidget()
 
-        self.content_l = lib_qt.QXVBoxLayout()
+        self.content_l = qtx.QXVBoxLayout()
 
-        cb_process_priority = self._cb_process_priority = lib_qt.QXSaveableComboBox(
+        cb_process_priority = self._cb_process_priority = qtx.QXSaveableComboBox(
                                                 db_key = '_QDFLAppWindow_process_priority',
                                                 choices=[lib_os.ProcessPriority.NORMAL, lib_os.ProcessPriority.IDLE],
                                                 default_choice=lib_os.ProcessPriority.NORMAL,
                                                 choices_names=[ L('@QDFLAppWindow.process_priority.normal'), L('@QDFLAppWindow.process_priority.lowest') ],
                                                 on_choice_selected=self._on_cb_process_priority_choice)
 
-        menu_bar_tail = lib_qt.QXFrame(layout=lib_qt.QXHBoxLayout([
-                                       10,
-                                       QXLabel(text=L('@QDFLAppWindow.process_priority')),
-                                       4,
-                                       cb_process_priority,
-                                       ]),
-                                       size_policy=(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed))
+        menu_bar_tail = qtx.QXFrameHBox([10, QXLabel(text=L('@QDFLAppWindow.process_priority')), 4, cb_process_priority], size_policy=('fixed', 'fixed'))
 
-        self.setLayout( lib_qt.QXVBoxLayout([ lib_qt.QXWidget(layout=lib_qt.QXHBoxLayout([menu_bar, menu_bar_tail, lib_qt.QXFrame() ]), size_policy=(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)),
-                                                5,
-                                                lib_qt.QXWidget(layout=self.content_l)
-                                            ] ))
+        self.setLayout( qtx.QXVBoxLayout([  qtx.QXWidgetHBox([menu_bar, menu_bar_tail, qtx.QXFrame() ], size_policy=('minimumexpanding', 'fixed')),
+                                            5,
+                                            qtx.QXWidget(layout=self.content_l)
+                                         ]))
 
         self.call_on_closeEvent(self._on_closeEvent)
 
@@ -206,13 +188,13 @@ class QDFLAppWindow(lib_qt.QXWindow):
     def _on_reset_modules_settings(self):
         if self.q_live_swap is not None:
             self.q_live_swap.clear_backend_db()
-            lib_qt.QXMainApplication.get_singleton().reinitialize()
+            qtx.QXMainApplication.get_singleton().reinitialize()
 
     def _on_cb_process_priority_choice(self, prio : lib_os.ProcessPriority, _):
         lib_os.set_process_priority(prio)
 
         if self.q_live_swap is not None:
-            lib_qt.QXMainApplication.get_singleton().reinitialize()
+            qtx.QXMainApplication.get_singleton().reinitialize()
 
     def finalize(self):
         self.q_live_swap.finalize()
@@ -220,17 +202,12 @@ class QDFLAppWindow(lib_qt.QXWindow):
     def _on_closeEvent(self):
         self.finalize()
 
-class QSplashWindow(lib_qt.QXWindow):
-    def __init__(self, next_window=None):
-        super().__init__()
-        self.setWindowFlags(Qt.WindowType.SplashScreen)
+class QDeepFaceLiveSplashWindow(qtx.QXSplashWindow):
+    def __init__(self):
+        super().__init__(layout=qtx.QXVBoxLayout([ (qtx.QXLabel(image=QXImageDB.splash_deepfacelive()), qtx.AlignCenter)
+                                                 ], contents_margins=20))
 
-        logo_deepfacelive = lib_qt.QXLabel(image=QXImageDB.splash_deepfacelive())
-        self.setLayout( lib_qt.QXVBoxLayout([
-                          ( lib_qt.QXHBoxLayout([logo_deepfacelive]), Qt.AlignmentFlag.AlignCenter),
-                        ], spacing=0, contents_margins=20))
-
-class DeepFaceLiveApp(lib_qt.QXMainApplication):
+class DeepFaceLiveApp(qtx.QXMainApplication):
     def __init__(self, userdata_path):
         self.userdata_path = userdata_path
         settings_dirpath = self.settings_dirpath =  userdata_path / 'settings'
@@ -241,13 +218,13 @@ class DeepFaceLiveApp(lib_qt.QXMainApplication):
         self.setFont( QXFontDB.get_default_font() )
         self.setWindowIcon( QXImageDB.app_icon().as_QIcon() )
 
-        splash_wnd = self.splash_wnd = QSplashWindow()
+        splash_wnd = self.splash_wnd = QDeepFaceLiveSplashWindow()
         splash_wnd.show()
         splash_wnd.center_on_screen()
 
         self._dfl_wnd = None
         self.initialize()
-        self._t = lib_qt.QXTimer(interval=1666, timeout=self._on_splash_wnd_expired, single_shot=True, start=True)
+        self._t = qtx.QXTimer(interval=1666, timeout=self._on_splash_wnd_expired, single_shot=True, start=True)
 
     def on_reinitialize(self):
         self.finalize()
@@ -278,32 +255,3 @@ class DeepFaceLiveApp(lib_qt.QXMainApplication):
             self.splash_wnd.hide()
             self.splash_wnd.deleteLater()
             self.splash_wnd = None
-
-
-
-
-
-
-#import gc
-#gc.collect()
-#gc.collect()
-
-# def _reinitialize(self, init_new=True):
-#     if self.q_live_swap is not None:
-#         self.content_l.removeWidget(self.q_live_swap)
-#         self.q_live_swap.finalize()
-
-#         self.q_live_swap.deleteLater()
-#         self.q_live_swap = None
-
-#         import gc
-#         gc.collect()
-#         gc.collect()
-
-#     LStrings.initialize()
-
-#     if init_new:
-#         self.q_live_swap = QLiveSwap(userdata_path=self._userdata_path, settings_dirpath=self._settings_dirpath)
-#         self.q_live_swap.initialize()
-#         self.content_l.addWidget(self.q_live_swap)
-#self._reinitialize(init_new=False)

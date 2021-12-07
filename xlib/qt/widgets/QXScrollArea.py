@@ -6,14 +6,9 @@ from ._part_QXWidget import _part_QXWidget
 
 
 class QXScrollArea(QScrollArea, _part_QXWidget):
-
-    def __init__(self,
-                        size_policy=None, hided=False, enabled=True):
+    def __init__(self, **kwargs):
         super().__init__()
-
-
-        _part_QXWidget.__init__(self, size_policy=size_policy, hided=hided, enabled=enabled )
-
+        _part_QXWidget.__init__(self, **kwargs)
 
     def focusInEvent(self, ev : QFocusEvent):
         super().focusInEvent(ev)

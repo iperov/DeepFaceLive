@@ -10,19 +10,17 @@ class QXLineEdit(QLineEdit, _part_QXWidget):
                        style_sheet=None,
                        read_only=False,
                        editingFinished=None,
-                       font=None, size_policy=None, hided=False, enabled=True):
-
+                       **kwargs):
         super().__init__()
+        _part_QXWidget.__init__(self, **kwargs)
+        _part_QXWidget.connect_signal(editingFinished, self.editingFinished)
+
         if placeholder_text is not None:
             self.setPlaceholderText(placeholder_text)
-
         if style_sheet is not None:
             self.setStyleSheet(style_sheet)
         if read_only:
             self.setReadOnly(True)
-
-        _part_QXWidget.connect_signal(editingFinished, self.editingFinished)
-        _part_QXWidget.__init__(self, font=font, size_policy=size_policy, hided=hided, enabled=enabled )
 
     def focusInEvent(self, ev : QFocusEvent):
         super().focusInEvent(ev)

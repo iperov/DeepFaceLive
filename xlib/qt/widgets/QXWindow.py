@@ -9,15 +9,11 @@ from .QXWidget import QXWidget
 
 
 class QXWindow(QXWidget):
-    """
-    represents top widget which has no parent
-    """
-
-
-    def __init__(self, save_load_state=False,
-                       size_policy=None):
-
-        super().__init__(size_policy=size_policy)
+    def __init__(self, save_load_state=False, **kwargs):
+        """
+        represents top widget which has no parent
+        """
+        super().__init__(**kwargs)
         self._save_load_state = save_load_state
 
         #QXMainApplication.get_singleton().register_QXWindow(self)

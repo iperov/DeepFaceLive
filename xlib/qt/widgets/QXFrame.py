@@ -3,18 +3,11 @@ from PyQt6.QtWidgets import *
 
 from ._part_QXWidget import _part_QXWidget
 from .QXMainApplication import QXMainApplication
+from .QXWidget import QXWidget
 
-
-class QXFrame(QFrame, _part_QXWidget):
-    def __init__(self, bg_color=None, layout=None, minimum_width=None, maximum_width=None, fixed_width=None, minimum_height=None, maximum_height=None, fixed_height=None, size_policy=None, hided=False, enabled=True):
-        QFrame.__init__(self)
-
-        _part_QXWidget.__init__(self, layout=layout,
-                                      size_policy=size_policy,
-                                      minimum_width=minimum_width, maximum_width=maximum_width,
-                                      minimum_height=minimum_height, maximum_height=maximum_height,
-                                      fixed_width=fixed_width, fixed_height=fixed_height,
-                                      hided=hided, enabled=enabled )
+class QXFrame(QXWidget):
+    def __init__(self, bg_color=None, **kwargs):
+        super().__init__(**kwargs)
 
         pal = QXMainApplication.get_singleton().palette()
 
@@ -37,10 +30,7 @@ class QXFrame(QFrame, _part_QXWidget):
         _part_QXWidget.resizeEvent(self, ev)
 
     def paintEvent(self, ev : QPaintEvent):
-        rect = self.rect()
         qp = self._qp
         qp.begin(self)
-
-        qp.fillRect(rect, self._bg_color )
-
+        qp.fillRect(self.rect(), self._bg_color )
         qp.end()

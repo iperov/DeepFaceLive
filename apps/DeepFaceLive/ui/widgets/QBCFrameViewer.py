@@ -1,30 +1,25 @@
-import numpy as np
 from localization import L
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
 from resources.fonts import QXFontDB
-from xlib import qt as lib_qt
+from xlib import qt as qtx
 
 from ... import backend
 
 
-class QBCFrameViewer(lib_qt.QXCollapsibleSection):
+class QBCFrameViewer(qtx.QXCollapsibleSection):
     def __init__(self,  backed_weak_heap : backend.BackendWeakHeap,
                         bc : backend.BackendConnection,
                         preview_width=256):
-        self._timer = lib_qt.QXTimer(interval=16, timeout=self._on_timer_16ms, start=True)
+        self._timer = qtx.QXTimer(interval=16, timeout=self._on_timer_16ms, start=True)
 
         self._backed_weak_heap = backed_weak_heap
         self._bc = bc
         self._bcd_id = None
 
-        layered_images = self._layered_images = lib_qt.QXFixedLayeredImages(preview_width, preview_width)
-        info_label = self._info_label = lib_qt.QXLabel( font=QXFontDB.get_fixedwidth_font(size=7))
+        layered_images = self._layered_images = qtx.QXFixedLayeredImages(preview_width, preview_width)
+        info_label = self._info_label = qtx.QXLabel( font=QXFontDB.get_fixedwidth_font(size=7))
 
-        main_l = lib_qt.QXVBoxLayout([ (layered_images, Qt.AlignmentFlag.AlignCenter),
-                                       (info_label, Qt.AlignmentFlag.AlignCenter),
-                                     ])
+        main_l = qtx.QXVBoxLayout([ (layered_images, qtx.AlignCenter),
+                                    (info_label, qtx.AlignCenter), ])
         super().__init__(title=L('@QBCFrameViewer.title'), content_layout=main_l)
 
     def _on_timer_16ms(self):
