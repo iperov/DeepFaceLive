@@ -101,7 +101,7 @@ class _part_QXWidget:
         if not self._registered:
             return default_value
 
-        return QXMainApplication.get_singleton().get_app_data ( (self._name_id, key), default_value=default_value )
+        return QXMainApplication.inst.get_app_data ( (self._name_id, key), default_value=default_value )
 
     def set_widget_data(self, key, data):
         """
@@ -109,7 +109,7 @@ class _part_QXWidget:
 
         if widget is not registered, nothing will be happened
         """
-        QXMainApplication.get_singleton().set_app_data ( (self._name_id, key), data )
+        QXMainApplication.inst.set_app_data ( (self._name_id, key), data )
 
     def focusInEvent(self, ev : QFocusEvent):
         if ev.reason() == Qt.FocusReason.TabFocusReason:
@@ -119,7 +119,7 @@ class _part_QXWidget:
     def resizeEvent(self, ev : QResizeEvent):
         if not self._registered:
             self._registered = True
-            self._name_id = QXMainApplication.get_singleton().register_QXWidget(self)
+            self._name_id = QXMainApplication.inst.register_QXWidget(self)
             self._on_registered()
 
     def _on_registered(self):

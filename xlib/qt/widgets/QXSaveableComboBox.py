@@ -8,10 +8,11 @@ from .QXMainApplication import QXMainApplication
 from ..core.widget import BlockSignals
 
 class QXSaveableComboBox(QXComboBox):
-    """
-    a saveable QXComboBox
-    """
+    
     def __init__(self, db_key, choices : Iterable, default_choice, choices_names=None, on_choice_selected = None):
+        """
+        a saveable QXComboBox
+        """
         self._choices = [x for x in choices]
         self._default_choice = default_choice
 
@@ -27,13 +28,13 @@ class QXSaveableComboBox(QXComboBox):
 
         super().__init__(choices=choices_names, on_index_changed=self._index_changed)
 
-        self.set_choice( QXMainApplication.get_singleton().get_app_data (db_key) )
+        self.set_choice( QXMainApplication.inst.get_app_data (db_key) )
 
     def set_choice(self, choice):
         if choice not in self._choices:
             choice = self._default_choice
 
-        QXMainApplication.get_singleton().set_app_data(self._db_key, choice)
+        QXMainApplication.inst.set_app_data(self._db_key, choice)
 
         idx = self._choices.index(choice)
 

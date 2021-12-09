@@ -9,7 +9,7 @@ class QXFrame(QXWidget):
     def __init__(self, bg_color=None, **kwargs):
         super().__init__(**kwargs)
 
-        pal = QXMainApplication.get_singleton().palette()
+        pal = QXMainApplication.inst.palette()
 
         if bg_color is not None:
             bg_color = QColor(bg_color)

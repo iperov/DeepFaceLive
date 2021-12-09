@@ -10,14 +10,6 @@ from .forward_declarations import forward_declarations
 
 
 class QXMainApplication(QApplication):
-    """
-    base class for MainApplication
-
-    QXMainApplication.inst - singleton instance
-
-     settings_dirpath(None)     where the data will be saved
-    """
-
     inst : 'QXMainApplication' = None
 
     @staticmethod
@@ -27,6 +19,13 @@ class QXMainApplication(QApplication):
         return QXMainApplication.inst
 
     def __init__(self, app_name=None, settings_dirpath : Path = None):
+        """
+        base class for MainApplication
+
+        QXMainApplication.inst - singleton instance
+
+        settings_dirpath(None)     where the data will be saved
+        """
         super().__init__([])
 
         if QXMainApplication.inst is not None:
@@ -152,6 +151,9 @@ QRadioButton::disabled {{
         self._app_db.finish_pending_jobs()
 
     def reinitialize(self):
+        """
+        start reinitialization of app.
+        """
         self._reinitialize = True
 
     def on_reinitialize(self):
@@ -161,4 +163,8 @@ QRadioButton::disabled {{
         return self.get_app_data('__app_language', 'en-US')
 
     def set_language(self, lang : str) -> str:
+        """
+         lang   xx-YY
+                example: en-US ru-RU
+        """
         return self.set_app_data('__app_language', lang)

@@ -87,11 +87,8 @@ class QLiveSwap(qtx.QXWidget):
                                             (qtx.QXWidgetVBox([self.q_ds_merged_frame_viewer], fixed_width=256), qtx.AlignTop),
                                         ], spacing=5, size_policy=('fixed', 'fixed') )
 
-        self.setLayout(qtx.QXVBoxLayout(
-                       [  (qtx.QXWidgetVBox([(q_nodes, qtx.AlignTop),
-                                             (q_view_nodes, qtx.AlignHCenter), ], spacing=5), qtx.AlignCenter),
-                       ]))
-
+        self.setLayout(qtx.QXVBoxLayout( [ (qtx.QXWidgetVBox([q_nodes, q_view_nodes], spacing=5), qtx.AlignCenter) ]))
+                       
         self._timer = qtx.QXTimer(interval=5, timeout=self._on_timer_5ms, start=True)
 
     def _process_messages(self):
@@ -139,7 +136,7 @@ class QDFLAppWindow(qtx.QXWindow):
         menu_language = menu_bar.addMenu( L('@QDFLAppWindow.language') )
 
         menu_file_action_reinitialize = menu_file.addAction( L('@QDFLAppWindow.reinitialize') )
-        menu_file_action_reinitialize.triggered.connect(lambda: qtx.QXMainApplication.get_singleton().reinitialize() )
+        menu_file_action_reinitialize.triggered.connect(lambda: qtx.QXMainApplication.inst.reinitialize() )
 
         menu_file_action_reset_settings = menu_file.addAction( L('@QDFLAppWindow.reset_modules_settings') )
         menu_file_action_reset_settings.triggered.connect(self._on_reset_modules_settings)
@@ -148,13 +145,13 @@ class QDFLAppWindow(qtx.QXWindow):
         menu_file_action_quit.triggered.connect(lambda: qtx.QXMainApplication.quit() )
 
         menu_language_action_english = menu_language.addAction('English' )
-        menu_language_action_english.triggered.connect(lambda: (qtx.QXMainApplication.get_singleton().set_language('en-US'), qtx.QXMainApplication.get_singleton().reinitialize()) )
+        menu_language_action_english.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('en-US'), qtx.QXMainApplication.inst.reinitialize()) )
 
         menu_language_action_russian = menu_language.addAction('Русский')
-        menu_language_action_russian.triggered.connect(lambda: (qtx.QXMainApplication.get_singleton().set_language('ru-RU'), qtx.QXMainApplication.get_singleton().reinitialize()) )
+        menu_language_action_russian.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('ru-RU'), qtx.QXMainApplication.inst.reinitialize()) )
 
         menu_language_action_chinesse = menu_language.addAction('汉语')
-        menu_language_action_chinesse.triggered.connect(lambda: (qtx.QXMainApplication.get_singleton().set_language('zh-CN'), qtx.QXMainApplication.get_singleton().reinitialize()) )
+        menu_language_action_chinesse.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('zh-CN'), qtx.QXMainApplication.inst.reinitialize()) )
 
         menu_help = menu_bar.addMenu( L('@QDFLAppWindow.help') )
         menu_help_action_github = menu_help.addAction( L('@QDFLAppWindow.visit_github_page') )
@@ -188,13 +185,13 @@ class QDFLAppWindow(qtx.QXWindow):
     def _on_reset_modules_settings(self):
         if self.q_live_swap is not None:
             self.q_live_swap.clear_backend_db()
-            qtx.QXMainApplication.get_singleton().reinitialize()
+            qtx.QXMainApplication.inst.reinitialize()
 
     def _on_cb_process_priority_choice(self, prio : lib_os.ProcessPriority, _):
         lib_os.set_process_priority(prio)
 
         if self.q_live_swap is not None:
-            qtx.QXMainApplication.get_singleton().reinitialize()
+            qtx.QXMainApplication.inst.reinitialize()
 
     def finalize(self):
         self.q_live_swap.finalize()
@@ -202,10 +199,6 @@ class QDFLAppWindow(qtx.QXWindow):
     def _on_closeEvent(self):
         self.finalize()
 
-class QDeepFaceLiveSplashWindow(qtx.QXSplashWindow):
-    def __init__(self):
-        super().__init__(layout=qtx.QXVBoxLayout([ (qtx.QXLabel(image=QXImageDB.splash_deepfacelive()), qtx.AlignCenter)
-                                                 ], contents_margins=20))
 
 class DeepFaceLiveApp(qtx.QXMainApplication):
     def __init__(self, userdata_path):
@@ -218,13 +211,15 @@ class DeepFaceLiveApp(qtx.QXMainApplication):
         self.setFont( QXFontDB.get_default_font() )
         self.setWindowIcon( QXImageDB.app_icon().as_QIcon() )
 
-        splash_wnd = self.splash_wnd = QDeepFaceLiveSplashWindow()
+        splash_wnd = self.splash_wnd =\
+            qtx.QXSplashWindow(layout=qtx.QXVBoxLayout([ (qtx.QXLabel(image=QXImageDB.splash_deepfacelive()), qtx.AlignCenter)
+                                                       ], contents_margins=20))
         splash_wnd.show()
         splash_wnd.center_on_screen()
 
         self._dfl_wnd = None
-        self.initialize()
         self._t = qtx.QXTimer(interval=1666, timeout=self._on_splash_wnd_expired, single_shot=True, start=True)
+        self.initialize()
 
     def on_reinitialize(self):
         self.finalize()

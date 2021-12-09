@@ -16,7 +16,7 @@ class QXWindow(QXWidget):
         super().__init__(**kwargs)
         self._save_load_state = save_load_state
 
-        #QXMainApplication.get_singleton().register_QXWindow(self)
+        #QXMainApplication.inst.register_QXWindow(self)
 
         #self.keyPressEvent_listeners = []
         #self.keyReleaseEvent_listeners = []
@@ -27,7 +27,7 @@ class QXWindow(QXWidget):
         self.setFocusPolicy(Qt.FocusPolicy.WheelFocus)
         self._qp = QPainter()
 
-        pal = QXMainApplication.get_singleton().palette()
+        pal = QXMainApplication.inst.palette()
         self._bg_color = pal.color(QPalette.ColorRole.Window)
 
     def call_on_closeEvent(self, func_or_list):
@@ -44,7 +44,7 @@ class QXWindow(QXWidget):
 
     def center_on_screen(self):
         widget_width, widget_height = self.size().width(), self.size().height()
-        screen_size = QXMainApplication.get_singleton().primaryScreen().size()
+        screen_size = QXMainApplication.inst.primaryScreen().size()
 
         self.move( (screen_size.width() - widget_width) // 2,  (screen_size.height() - widget_height) // 2 )
 

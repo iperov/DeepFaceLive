@@ -6,18 +6,17 @@ from ..io import FormattedFileIO
 
 
 class KeyValueDB:
-    """
-    Simple key/value database.
-
-    each key/value pickled/unpickled separately,
-    thus unpickling error will not corrupt whole db
-
-     filepath(None) if None, DB will not be saved on disk
-    """
-
     _KeyValueDB_VERSION = 1
 
     def __init__(self, filepath = None):
+        """
+        Simple key/value database.
+
+        each key/value pickled/unpickled separately,
+        thus unpickling error will not corrupt whole db
+
+          filepath(None) if None, DB will not be saved on disk
+        """
         self._filepath = Path(filepath) if filepath is not None else None
         self._save_timestamp = None
 

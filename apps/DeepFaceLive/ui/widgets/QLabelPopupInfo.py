@@ -77,7 +77,7 @@ class QLabelPopupInfo(qtx.QXWidget):
             if label_widget.isHidden():
                 label_widget = self._info_btn
 
-            screen_size = qtx.QXMainApplication.get_singleton().primaryScreen().size()
+            screen_size = qtx.QXMainApplication.inst.primaryScreen().size()
             label_size = label_widget.size()
             global_pt = label_widget.mapToGlobal( qtx.QPoint(0, label_size.height()))
             popup_wnd_size = popup_wnd.size()
