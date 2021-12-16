@@ -318,7 +318,7 @@ class _Diacon:
                 with self._lock:
                     self._input_result = input_result
                     self._input_request = False
-                time.sleep(0.050)
+            time.sleep(0.010)
 
 
     def _dialog_thread(self, ):
@@ -340,8 +340,7 @@ class _Diacon:
                     if self._current_dlg is not None:
                         self._current_dlg.handle_user_input(input_result)
                         continue
-
-            time.sleep(0.005)
+            time.sleep(0.010)
 
     def _fetch_input(self):
         with self._lock:
