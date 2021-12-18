@@ -9,7 +9,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN git clone https://github.com/iperov/DeepFaceLive.git
 
 RUN python -m pip install --upgrade pip
-RUN python -m pip install onnxruntime-gpu==1.9.0 numpy==1.21.2 h5py numexpr opencv-python==4.5.3.56 opencv-contrib-python==4.5.3.56 pyqt6==6.2.1 onnx==1.10.1 torch==1.8.1 torchvision==0.9.1
+RUN python -m pip install onnxruntime-gpu==1.10.0 numpy==1.21.2 h5py numexpr opencv-python==4.5.3.56 opencv-contrib-python==4.5.3.56 pyqt6==6.2.1 onnx==1.10.1 torch==1.8.1 torchvision==0.9.1
 
 WORKDIR /app/DeepFaceLive
 COPY example.sh example.sh

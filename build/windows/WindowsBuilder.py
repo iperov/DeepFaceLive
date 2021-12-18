@@ -481,9 +481,9 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
 
     if backend == 'cuda':
         builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
-        builder.install_pip_package('onnxruntime-gpu==1.9.0')
+        builder.install_pip_package('onnxruntime-gpu==1.10.0')
     elif backend == 'directml':
-        builder.install_pip_package('onnxruntime-directml==1.9.0')
+        builder.install_pip_package('onnxruntime-directml==1.10.0')
 
     builder.install_ffmpeg_binaries()
 
