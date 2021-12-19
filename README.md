@@ -4,9 +4,7 @@
 
 ![](doc/deepfacelive_intro.png)
 
-![](doc/logo_onnx.png)
-![](doc/logo_directx.png)
-![](doc/logo_python.png)
+![](doc/logo_onnx.png)![](doc/logo_directx.png)![](doc/logo_python.png)
 
 </td></tr>
 </table>
@@ -31,6 +29,12 @@ Ava de Addario
 
 <a href="doc/celebs/Ava_de_Addario/examples.md">examples</a>
 </td><td align="center">
+Dilraba Dilmurat
+
+<img src="doc/celebs/Dilraba_Dilmurat/Dilraba_Dilmurat.png" width=128></img>
+
+examples
+</td><td align="center">
 Ewon Spice
 
 <img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
@@ -44,20 +48,21 @@ Kim Jarrey
 
 <a href="doc/celebs/Kim_Jarrey/examples.md">examples</a>
 
-</td></tr>
-<tr><td align="center">
+</td></tr></table>
+<table align="center" border="0">
+<tr align="center"><td>
 Matilda Bobbie
 
 <img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
 
 <a href="doc/celebs/Matilda_Bobbie/examples.md">examples</a>
-</td><td align="center">
+</td><td>
 Silwan Stillwone
 
 <img src="doc/celebs/Silwan_Stillwone/Silwan_Stillwone.png" width=128></img>
 
 <a href="doc/celebs/Silwan_Stillwone/examples.md">examples</a>
-</td><td align="center">
+</td><td>
 Tim Chrys
 
 <img src="doc/celebs/Tim_Chrys/Tim_Chrys.png" width=128></img>
