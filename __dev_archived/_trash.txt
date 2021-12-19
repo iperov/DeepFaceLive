@@ -1,4 +1,69 @@
 
+
+# from modelhub.onnx import YoloV5Face
+# import numpy as np
+# import cv2
+# from xlib import path as lib_path
+# from xlib import cv as lib_cv
+# from xlib import face as lib_face
+# from xlib.face import FRect
+# from xlib import console as lib_con
+# from xlib import onnxruntime as lib_ort
+# from xlib.image import ImageProcessor
+# from xlib.math import Affine2DUniMat
+# face_det = YoloV5Face( YoloV5Face.get_available_devices()[0] )
+
+
+# face_aligner = lib_ort.InferenceSession_with_device(r'D:\DevelopPPP\projects\DeepFaceLive\workspace_facealigner\FaceAligner.onnx', lib_ort.get_available_devices_info()[0])
+
+# in_path = r'F:\DeepFaceLabCUDA9.2SSE\workspace линеус\data_dst'
+# #r'F:\DeepFaceLabCUDA9.2SSE\workspace шиа тест\data_dst'
+# out_path = Path(r'F:\DeepFaceLabCUDA9.2SSE\workspace шиа тест\data_dst_out')
+# out_path.mkdir(parents=True, exist_ok=True)
+
+# n = 0
+# for filepath in lib_con.progress_bar_iterator( lib_path.get_files_paths(in_path, extensions=['.jpg', '.png']), ):
+#     img = lib_cv.imread(filepath)
+#     H,W,C = img.shape
+    
+#     rects = face_det.extract (img, threshold=0.5)[0]
+#     if len(rects) == 0:
+#         continue
+        
+#     rect = [ FRect.from_ltrb( (l/W, t/H, r/W, b/H) ) for l,t,r,b in rects ][0]
+    
+#     cut_img, mat = rect.cut(img, coverage=1.4, output_size=224)
+    
+    
+#     align_mat = face_aligner.run(None, {'in': ImageProcessor(cut_img).to_ufloat32().get_image('NCHW')})[0]
+#     align_mat = Affine2DUniMat(align_mat.mean(0))
+    
+#     align_mat = align_mat.invert().to_exact_mat(224,224,224,224)
+    
+#     aligned_img = cv2.warpAffine(cut_img, align_mat, (224,224))
+    
+#     screen = np.concatenate( [cut_img, aligned_img], 1)
+    
+#     #lib_cv.imwrite( out_path / f'{n:04}.png', screen )
+    
+#     n += 1
+#     cv2.imshow('', screen)
+#     cv2.waitKey(1)
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
+
+
+
+
+
+
+
+
+
+
+
 # import cv2
 # import numpy as np
 # from xlib.math import Affine2DMat
