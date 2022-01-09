@@ -68,7 +68,7 @@ class KeyValueDB:
                         f.write_pickled( (key, d[key]) )
 
                     f.truncate()
-            except e:
+            except:
                 print(f'Unable to save the data. {traceback.format_exc()}')
 
     def finish_pending_jobs(self):
