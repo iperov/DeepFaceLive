@@ -16,8 +16,9 @@ from .BackendBase import (BackendConnection, BackendDB, BackendHost,
 class MarkerType(IntEnum):
     OPENCV_LBF = 0
     GOOGLE_FACEMESH = 1
+    INSIGHT_2D106 = 2
 
-MarkerTypeNames = ['OpenCV LBF','Google FaceMesh']
+MarkerTypeNames = ['OpenCV LBF','Google FaceMesh','InsightFace_2D106']
 
 class FaceMarker(BackendHost):
     def __init__(self, weak_heap : BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection, backend_db : BackendDB = None):
@@ -46,6 +47,7 @@ class FaceMarkerWorker(BackendWorker):
         self.pending_bcd = None
         self.opencv_lbf = None
         self.google_facemesh = None
+        self.insightface_2d106 = None
         self.temporal_lmrks = []
 
         lib_os.set_timer_resolution(1)
@@ -58,7 +60,7 @@ class FaceMarkerWorker(BackendWorker):
 
         cs.marker_type.enable()
         cs.marker_type.set_choices(MarkerType, MarkerTypeNames, none_choice_name=None)
-        cs.marker_type.select(state.marker_type if state.marker_type is not None else MarkerType.GOOGLE_FACEMESH)
+        cs.marker_type.select(state.marker_type if state.marker_type is not None else MarkerType.INSIGHT_2D106)
 
     def on_cs_marker_type(self, idx, marker_type):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -71,6 +73,10 @@ class FaceMarkerWorker(BackendWorker):
             elif marker_type == MarkerType.GOOGLE_FACEMESH:
                 cs.device.set_choices(onnx_models.FaceMesh.get_available_devices(), none_choice_name='@misc.menu_select')
                 cs.device.select(state.google_facemesh_state.device)
+            elif marker_type == MarkerType.INSIGHT_2D106:
+                cs.device.set_choices(onnx_models.InsightFace2D106.get_available_devices(), none_choice_name='@misc.menu_select')
+                cs.device.select(state.insightface_2d106_state.device)
+
         else:
             state.marker_type = marker_type
             self.save_state()
@@ -82,13 +88,16 @@ class FaceMarkerWorker(BackendWorker):
 
         if device is not None and \
             ( (marker_type == MarkerType.OPENCV_LBF and state.opencv_lbf_state.device == device) or \
-              (marker_type == MarkerType.GOOGLE_FACEMESH and state.google_facemesh_state.device == device) ):
+              (marker_type == MarkerType.GOOGLE_FACEMESH and state.google_facemesh_state.device == device) or \
+              (marker_type == MarkerType.INSIGHT_2D106 and state.insightface_2d106_state.device == device) ):
             marker_state = state.get_marker_state()
 
             if state.marker_type == MarkerType.OPENCV_LBF:
                 self.opencv_lbf = cv_models.FaceMarkerLBF()
             elif state.marker_type == MarkerType.GOOGLE_FACEMESH:
                 self.google_facemesh = onnx_models.FaceMesh(state.google_facemesh_state.device)
+            elif state.marker_type == MarkerType.INSIGHT_2D106:
+                self.insightface_2d106 = onnx_models.InsightFace2D106(state.insightface_2d106_state.device)
 
             cs.marker_coverage.enable()
             cs.marker_coverage.set_config(lib_csw.Number.Config(min=0.1, max=3.0, step=0.1, decimals=1, allow_instant_update=True))
@@ -99,6 +108,8 @@ class FaceMarkerWorker(BackendWorker):
                     marker_coverage = 1.1
                 elif marker_type == MarkerType.GOOGLE_FACEMESH:
                     marker_coverage = 1.4
+                elif marker_type == MarkerType.INSIGHT_2D106:
+                    marker_coverage = 1.6
             cs.marker_coverage.set_number(marker_coverage)
 
             cs.temporal_smoothing.enable()
@@ -110,6 +121,8 @@ class FaceMarkerWorker(BackendWorker):
                 state.opencv_lbf_state.device = device
             elif marker_type == MarkerType.GOOGLE_FACEMESH:
                 state.google_facemesh_state.device = device
+            elif marker_type == MarkerType.INSIGHT_2D106:
+                state.insightface_2d106_state.device = device
             self.save_state()
             self.restart()
 
@@ -150,11 +163,13 @@ class FaceMarkerWorker(BackendWorker):
 
                 is_opencv_lbf = marker_type == MarkerType.OPENCV_LBF and self.opencv_lbf is not None
                 is_google_facemesh = marker_type == MarkerType.GOOGLE_FACEMESH and self.google_facemesh is not None
+                is_insightface_2d106 = marker_type == MarkerType.INSIGHT_2D106 and self.insightface_2d106 is not None
+                is_marker_loaded = is_opencv_lbf or is_google_facemesh or is_insightface_2d106
 
                 if marker_type is not None:
                     frame_image = bcd.get_image(bcd.get_frame_image_name())
 
-                    if frame_image is not None and (is_opencv_lbf or is_google_facemesh):
+                    if frame_image is not None and is_marker_loaded:
                         fsi_list = bcd.get_face_swap_info_list()
                         if marker_state.temporal_smoothing != 1 and \
                             len(self.temporal_lmrks) != len(fsi_list):
@@ -164,19 +179,20 @@ class FaceMarkerWorker(BackendWorker):
                             if fsi.face_urect is not None:
                                 # Cut the face to feed to the face marker
                                 face_image, face_uni_mat = fsi.face_urect.cut(frame_image, marker_state.marker_coverage, 256 if is_opencv_lbf else \
-                                                                                                                         192 if is_google_facemesh else 0 )
+                                                                                                                         192 if is_google_facemesh else \
+                                                                                                                         192 if is_insightface_2d106 else 0 )
                                 _,H,W,_ = ImageProcessor(face_image).get_dims()
-
                                 if is_opencv_lbf:
                                     lmrks = self.opencv_lbf.extract(face_image)[0]
                                 elif is_google_facemesh:
                                     lmrks = self.google_facemesh.extract(face_image)[0]
+                                elif is_insightface_2d106:
+                                    lmrks = self.insightface_2d106.extract(face_image)[0]
 
                                 if marker_state.temporal_smoothing != 1:
                                     if not is_frame_reemitted or len(self.temporal_lmrks[face_id]) == 0:
                                         self.temporal_lmrks[face_id].append(lmrks)
                                     self.temporal_lmrks[face_id] = self.temporal_lmrks[face_id][-marker_state.temporal_smoothing:]
-
                                     lmrks = np.mean(self.temporal_lmrks[face_id],0 )
 
                                 if is_google_facemesh:
@@ -186,9 +202,12 @@ class FaceMarkerWorker(BackendWorker):
                                     lmrks /= (W,H)
                                 elif is_google_facemesh:
                                     lmrks = lmrks[...,0:2] / (W,H)
+                                elif is_insightface_2d106:
+                                    lmrks = lmrks[...,0:2] / (W,H)
 
                                 face_ulmrks = FLandmarks2D.create (ELandmarks2D.L68 if is_opencv_lbf else \
-                                                                   ELandmarks2D.L468 if is_google_facemesh else None, lmrks)
+                                                                   ELandmarks2D.L468 if is_google_facemesh else \
+                                                                   ELandmarks2D.L106 if is_insightface_2d106 else None, lmrks)
                                 face_ulmrks = face_ulmrks.transform(face_uni_mat, invert=True)
                                 fsi.face_ulmrks = face_ulmrks
 
@@ -212,12 +231,16 @@ class OpenCVLBFState(BackendWorkerState):
 class GoogleFaceMeshState(BackendWorkerState):
     device = None
 
+class Insight2D106State(BackendWorkerState):
+    device = None
+
 class WorkerState(BackendWorkerState):
     def __init__(self):
         self.marker_type : MarkerType = None
         self.marker_state = {}
         self.opencv_lbf_state = OpenCVLBFState()
         self.google_facemesh_state = GoogleFaceMeshState()
+        self.insightface_2d106_state = Insight2D106State()
 
     def get_marker_state(self) -> MarkerState:
         state = self.marker_state.get(self.marker_type, None)

@@ -48,6 +48,9 @@ class FLandmarks2D(IState):
         elif type == ELandmarks2D.L68:
             if ulmrks_count != 68:
                 raise ValueError('ulmrks_count must be == 68')
+        elif type == ELandmarks2D.L106:
+            if ulmrks_count != 106:
+                raise ValueError('ulmrks_count must be == 106')
         elif type == ELandmarks2D.L468:
             if ulmrks_count != 468:
                 raise ValueError('ulmrks_count must be == 468')
@@ -122,8 +125,14 @@ class FLandmarks2D(IState):
         lmrks = (self._ulmrks * (w,h)).astype(np.float32)
 
         # estimate landmarks transform from global space to local aligned space with bounds [0..1]
+        if type == ELandmarks2D.L106:
+            type = ELandmarks2D.L68
+            lmrks = lmrks[ lmrks_106_to_68_mean_pairs ]
+            lmrks = lmrks.reshape( (68,2,2)).mean(1)
+            
         if type == ELandmarks2D.L68:
-            mat = Affine2DMat.umeyama( np.concatenate ([ lmrks[17:49] , lmrks[54:55] ]), uni_landmarks_68)
+            mat = Affine2DMat.umeyama( np.concatenate ([ lmrks[17:36], lmrks[36:37], lmrks[39:40], lmrks[42:43], lmrks[45:46], lmrks[48:49], lmrks[54:55] ]), uni_landmarks_68)
+            
         elif type == ELandmarks2D.L468:
             src_lmrks = lmrks
             dst_lmrks = uni_landmarks_468
@@ -227,8 +236,14 @@ class FLandmarks2D(IState):
         cv2.fillConvexPoly( mask, cv2.convexHull(lmrks), color)
         return mask
 
-
-
+lmrks_106_to_68_mean_pairs = [1,9, 10,11, 12,13, 14,15, 16,2, 3,4, 5,6, 7,8, 0,0, 24,23, 22,21, 20,19, 18,32, 31,30, 29,28, 27,26,25,17,
+                   43,43, 48,44, 49,45, 51,47, 50,46,
+                   102,97, 103,98, 104,99, 105,100, 101,101,
+                   72,72, 73,73, 74,74, 86,86, 77,78, 78,79, 80,80, 85,84, 84,83,
+                   35,35, 41,40, 40,42, 39,39, 37,33, 33,36,
+                   89,89, 95,94, 94,96, 93,93, 91,87, 87,90,
+                52,52, 64,64, 63,63, 71,71, 67,67, 68,68, 61,61, 58,58, 59,59, 53,53, 56,56, 55,55, 65,65, 66,66, 62,62, 70,70, 69,69, 57,57, 60,60, 54,54]
+                    
 uni_landmarks_68 = np.float32([
 [ 0.000213256,  0.106454  ], #17
 [ 0.0752622,    0.038915  ], #18
@@ -251,18 +266,18 @@ uni_landmarks_68 = np.float32([
 [ 0.613373,     0.587326  ], #35
 
 [ 0.121737,     0.216423  ], #36
-[ 0.187122,     0.178758  ], #37
-[ 0.265825,     0.179852  ], #38
+#[ 0.187122,     0.178758  ], #37
+#[ 0.265825,     0.179852  ], #38
 [ 0.334606,     0.231733  ], #39
-[ 0.260918,     0.245099  ], #40
-[ 0.182743,     0.244077  ], #41
+#[ 0.260918,     0.245099  ], #40
+#[ 0.182743,     0.244077  ], #41
 
 [ 0.645647,     0.231733  ], #42
-[ 0.714428,     0.179852  ], #43
-[ 0.793132,     0.178758  ], #44
+#[ 0.714428,     0.179852  ], #43
+#[ 0.793132,     0.178758  ], #44
 [ 0.858516,     0.216423  ], #45
-[ 0.79751,      0.244077  ], #46
-[ 0.719335,     0.245099  ], #47
+#[ 0.79751,      0.244077  ], #46
+#[ 0.719335,     0.245099  ], #47
 
 [ 0.254149,     0.780233  ], #48
 [ 0.726104,     0.780233  ], #54
