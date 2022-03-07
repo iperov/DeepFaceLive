@@ -51,6 +51,12 @@ Kim Jarrey
 </td></tr></table>
 <table align="center" border="0">
 <tr align="center"><td>
+David Kovalniy
+
+<img src="doc/celebs/David_Kovalniy/David_Kovalniy.png" width=128></img>
+
+<a href="doc/celebs/David_Kovalniy/examples.md">examples</a>
+</td><td>
 Matilda Bobbie
 
 <img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
@@ -122,6 +128,7 @@ Windows 10
 <a href="https://disk.yandex.ru/d/7i5XTKIKVg5UUg">Windows 10 x64 (yandex.ru)</a>
 
 <a href="https://mega.nz/folder/m10iELBK#Y0H6BflF9C4k_clYofC7yA">Windows 10 x64 (mega.nz)</a>
+
 
 </td><td align="left">
 Contains stand-alone zero-dependency all-in-one ready-to-use portable self-extracting folder! You don't need to install anything other than video drivers.
