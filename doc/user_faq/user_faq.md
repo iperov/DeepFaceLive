@@ -57,30 +57,58 @@ If you are novice, learn all about DeepFaceLab https://mrdeepfakes.com/forums/th
 
 Gather 5000+ samples of your face with various conditions using webcam which will be used for Live. The conditions are as follows: different lighting, different facial expressions, head direction, eyes direction, being far or closer to the camera, etc. Sort faceset by best to 2000.
 
-> Using SAEHD model.
+Here public storage https://disk.yandex.ru/d/7i5XTKIKVg5UUg with facesets and models.
 
-res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, random_hsv_power:0.1, batch:8. Others by default.
+> Using pretrained "RTT model 224.zip" from public storage (see above)
 
 Make a backup before every stage !
 
-1) train +500.000 with RTM WF faceset from the torrent as dst, deleting inter_AB.npy every 100k (save, delete, continue run)
+1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
 
-2) train +500.000
+2. place your celeb to workspace/data_src/aligned
 
-3) place your faceset to dst
+3. do not change settings. Train +500.000
 
-4) do not delete anything, continue train +500.000
+4. replace dst faceset with your faceset in workspace/data_dst/aligned
 
-5) random_warp:OFF, train +500.000
+5. continue train +500.000
 
-6) enable gan 0.1 gan_dims:32, train +300.000
+6. random_warp:OFF, train +500.000
 
-7. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
+7. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
+
+8. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+
+> Using SAEHD model from scratch.
+
+res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
+
+Make a backup before every stage !
+
+1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
+
+2. place your celeb to workspace/data_src/aligned
+
+3. train +500.000 deleting inter_AB.npy every 100.000 (save, delete, continue run)
+
+4. train +500.000
+
+5. place your faceset to workspace/data_dst/aligned
+
+6. do not delete anything, continue train +500.000
+
+7. random_warp:OFF, train +500.000
+
+8. GAN 0.1 power, gan_dims:32, Train until the src loss value has not increased in the last 12 hours.
+
+9. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+
+10. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
 
 </td></tr>
 <tr><td colspan=2 align="center">
 
-## I want to train ready-to-use face model to swap any face to celebrity. What I need to do?
+## I want to train ready-to-use face model to swap any face to celebrity, same as public face model. What I need to do?
 
 </td></tr>
 <tr><td colspan=2 align="left">
@@ -88,29 +116,50 @@ Make a backup before every stage !
 If you are familiar with DeepFaceLab, then this tutorial will help you:
 
 Src faceset is celebrity. Must be diverse enough in yaw, light and shadow conditions.
+Do not mix different age. The best result is obtained when the face is filmed from a short period of time and does not change the makeup and structure.
 Src faceset should be xseg'ed and applied. You can apply Generic XSeg to src faceset.
 
-Dst faceset is RTM WF faceset from the torrent.
+> Using pretrained "RTT model 224.zip" from public storage (see above)
 
-> Using SAEHD model.
+Make a backup before every stage !
+
+1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
+
+2. place your celeb to workspace/data_src/aligned
+
+3. place model folder to workspace/model
+
+4. do not change settings, train +500.000 iters 
+
+5. random_warp OFF, train +500.000, periodically (every 100.000 iters) disable masked training for 5.000 iters and enable again
+
+6. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
+
+7. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+
+> Using SAEHD model from scratch
 
 res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
 
 Make a backup before every stage !
 
-1) train +2.000.000 iters with RTM WF faceset from the torrent as dst, deleting inter_AB.npy every 500k (save, delete, continue run)
+1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
 
-2) random_warp still ON, train +500.000
+2. place your celeb to workspace/data_src/aligned
 
-3) if swapped face looks more like dst, delete inter_AB, repeat from stage 2
+3. train +2.000.000 iters, deleting inter_AB.npy every 100.000-500.000 iters (save, delete, continue run)
 
-4) random_warp:OFF, train +500.000
+4. random_warp still ON, train +500.000
 
-5) enable gan 0.1 gan_dims:32, train +800.000
+5. random_warp:OFF, train +500.000
+
+6. GAN 0.1 power, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
+
+7. finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 > reusing trained SAEHD RTM model
 
-Models that are trained without random_warp:OFF (before stage 4), can be reused. In this case you have to delete INTER_AB.NPY from the model folder and continue training from stage 2. Increase stage 2 up to 2.000.000 and more iters. You can delete inter_AB.npy every 500.000 iters to increase src-likeness. Trained model before random_warp:OFF also can be reused for new celeb face.
+Models that are trained before random_warp:OFF, can be reused. In this case you have to delete INTER_AB.NPY from the model folder and continue training from stage where random_warp:ON. Increase stage up to 2.000.000 and more iters. You can delete inter_AB.npy every 500.000 iters to increase src-likeness. Trained model before random_warp:OFF also can be reused for new celeb face.
 
 </td></tr>
 <tr><td colspan=2 align="left">
