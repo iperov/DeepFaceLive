@@ -447,7 +447,7 @@ fr'''{{
 fr"""@echo off
 cd /D %~dp0
 call {self.DIRNAME_INTERNAL}\setenv.bat
-%PYTHONEXECUTABLE% {self.DIRNAME_INTERNAL}\{internal_relative_path} {args_str}
+"%PYTHONEXECUTABLE%" {self.DIRNAME_INTERNAL}\{internal_relative_path} {args_str}
 pause
 """)
 
@@ -457,7 +457,7 @@ pause
 fr"""@echo off
 cd /D %~dp0
 call setenv.bat
-%PYTHONEXECUTABLE% {internal_relative_path} {args_str}
+"%PYTHONEXECUTABLE%" {internal_relative_path} {args_str}
 pause
 """)
 
@@ -471,13 +471,13 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
 
     # PIP INSTALLATIONS
     
-    builder.install_pip_package('numpy==1.21.3')
+    builder.install_pip_package('numpy==1.21.5')
     builder.install_pip_package('h5py')
     builder.install_pip_package('numexpr')
-    builder.install_pip_package('opencv-python==4.5.3.56')
-    builder.install_pip_package('opencv-contrib-python==4.5.3.56')
-    builder.install_pip_package('pyqt6==6.2.1')
-    builder.install_pip_package('onnx==1.10.1')
+    builder.install_pip_package('opencv-python==4.5.5.62')
+    builder.install_pip_package('opencv-contrib-python==4.5.5.62')
+    builder.install_pip_package('pyqt6==6.2.3')
+    builder.install_pip_package('onnx==1.11.0')
 
     if backend == 'cuda':
         builder.install_pip_package('torch==1.8.1+cu111 torchvision==0.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html')
@@ -523,9 +523,9 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     shutil.copytree( str(Path(__file__).parent.parent / 'samples'), str(userdata_path / 'samples') )
 
     if backend == 'cuda':
-        builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata')
+        builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir="%~dp0userdata"')
     elif backend == 'directml':
-        builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir=%~dp0userdata --no-cuda')
+        builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir="%~dp0userdata" --no-cuda')
 
     builder.create_internal_run_python_script('build DeepFaceLive NVIDIA.bat',    'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive_NVIDIA --cache-dir _cache --backend cuda')
     builder.create_internal_run_python_script('build DeepFaceLive DirectX12.bat', 'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive_DirectX12 --cache-dir _cache --backend directml')
