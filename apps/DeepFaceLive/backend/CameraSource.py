@@ -220,20 +220,25 @@ class CameraSourceWorker(BackendWorker):
 
         if self.vcap is not None:
             state, cs = self.get_state(), self.get_control_sheet()
-            self.start_profile_timing()
 
+            self.start_profile_timing()
             ret, img = self.vcap.read()
             if ret:
                 timestamp = datetime.now().timestamp()
                 fps = state.fps
                 if fps == 0 or ((timestamp - self.last_timestamp) > 1.0 / fps):
-                    self.last_timestamp = timestamp
+
+                    if fps != 0:
+                        if timestamp - self.last_timestamp >= 1.0:
+                            self.last_timestamp = timestamp
+                        else:
+                            self.last_timestamp += 1.0 / fps
 
                     ip = ImageProcessor(img)
-                    #if state.target_width != 0:
-                    #    ip.fit_in(TW=state.target_width)
-
                     ip.ch(3).to_uint8()
+
+                    w, h = _ResolutionType_wh[state.resolution]
+                    ip.fit_in(TW=w)
 
                     rotation = state.rotation
                     if rotation == _RotationType.ROTATION_90:
