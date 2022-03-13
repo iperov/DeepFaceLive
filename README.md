@@ -111,6 +111,8 @@ Windows 10
 
 <a href="doc/setup_tutorial_windows/index.md">Windows 10 x64</a>
 
+<a href="build/linux">Linux build info</a>
+
 ## Documentation
 
 <a href="doc/user_faq/user_faq.md">User FAQ</a>
