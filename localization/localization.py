@@ -449,8 +449,8 @@ class Localization:
                 'en-US' : 'Exclude moving parts',
                 'ru-RU' : 'Исключить движ части',
                 'zh-CN' : '忽略移动区域的人脸特征点',
-                'es-ES' : 'Excluir las partes móviles'},
-                'it-IT' : 'Escludi parti mobili',
+                'es-ES' : 'Excluir las partes móviles',
+                'it-IT' : 'Escludi parti mobili'},
 
     'QFaceAligner.help.exclude_moving_parts':{
                 'en-US' : 'Increase stabilization by excluding landmarks of moving parts of the face, such as mouth and other.',
@@ -477,8 +477,8 @@ class Localization:
                 'en-US' : 'X offset',
                 'ru-RU' : 'Смещение по X',
                 'zh-CN' : 'X方向偏移',
-                'es-ES' : 'Desplazamiento en X'},
-                'it-IT' : 'Compensazione X',
+                'es-ES' : 'Desplazamiento en X',
+                'it-IT' : 'Compensazione X'},
 
     'QFaceAligner.y_offset':{
                 'en-US' : 'Y offset',
@@ -904,7 +904,8 @@ class Localization:
                 'en-US' : 'Swapped face',
                 'ru-RU' : 'Заменённое лицо',
                 'zh-CN' : '换后的脸',
-                'es-ES' : 'Cara intercambiada'},
+                'es-ES' : 'Cara intercambiada',
+                'it-IT' : 'Faccia scambiata'},
 
     'QBCMergedFrameViewer.title':{
                 'en-US' : 'Merged frame',
@@ -1015,7 +1016,8 @@ class Localization:
                 'en-US' : 'Swapped face',
                 'ru-RU' : 'Заменённое лицо',
                 'zh-CN' : '换后的脸',
-                'es-ES' : 'Cara intercambiada'},
+                'es-ES' : 'Cara intercambiada',
+                'it-IT' : 'Faccia scambiata'},
 
     'StreamOutput.SourceType.MERGED_FRAME':{
                 'en-US' : 'Merged frame',
