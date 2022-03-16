@@ -149,12 +149,15 @@ class QDFLAppWindow(qtx.QXWindow):
         
         menu_language_action_spanish = menu_language.addAction('Español' )
         menu_language_action_spanish.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('es-ES'), qtx.QXMainApplication.inst.reinitialize()) )
+        
+        menu_language_action_italian = menu_language.addAction('Italiano' )
+        menu_language_action_italian.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('it-IT'), qtx.QXMainApplication.inst.reinitialize()) )
 
         menu_language_action_russian = menu_language.addAction('Русский')
         menu_language_action_russian.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('ru-RU'), qtx.QXMainApplication.inst.reinitialize()) )
 
-        menu_language_action_chinesse = menu_language.addAction('汉语')
-        menu_language_action_chinesse.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('zh-CN'), qtx.QXMainApplication.inst.reinitialize()) )
+        menu_language_action_chinese = menu_language.addAction('汉语')
+        menu_language_action_chinese.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('zh-CN'), qtx.QXMainApplication.inst.reinitialize()) )
 
         menu_help = menu_bar.addMenu( L('@QDFLAppWindow.help') )
         menu_help_action_github = menu_help.addAction( L('@QDFLAppWindow.visit_github_page') )
