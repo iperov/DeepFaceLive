@@ -7,10 +7,11 @@ while getopts 'cd:h' opt; do
     case "$opt" in
         c)
             printf "Starting with camera devices\n"
-            test -f /dev/video0 && CAM0=--device=/dev/video0:/dev/video0
-            test -f /dev/video1 && CAM1=--device=/dev/video1:/dev/video1
-            test -f /dev/video2 && CAM2=--device=/dev/video2:/dev/video2
-            test -f /dev/video3 && CAM3=--device=/dev/video3:/dev/video3
+            test -e /dev/video0 && CAM0="--device=/dev/video0:/dev/video0"
+            test -e /dev/video1 && CAM1=--device=/dev/video1:/dev/video1
+            test -e /dev/video2 && CAM2=--device=/dev/video2:/dev/video2
+            test -e /dev/video3 && CAM3=--device=/dev/video3:/dev/video3
+            echo $CAM0 $CAM1 $CAM2 $CAM3
             ;;
         d)
             DATA_FOLDER="$OPTARG"
