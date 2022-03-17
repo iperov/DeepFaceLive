@@ -55,11 +55,14 @@ class _DriverType(IntEnum):
     DSHOW = 0
     MSMF = 1
     GSTREAMER = 2
+    OPENCV = 3
 
 _DriverType_names = { _DriverType.DSHOW : 'DirectShow',
                       _DriverType.MSMF : 'Microsoft Media Foundation',
                       _DriverType.GSTREAMER : 'GStreamer',
+                      _DriverType.OPENCV : 'OpenCV',
                     }
+
 
 class _RotationType(IntEnum):
     ROTATION_0 = 0
