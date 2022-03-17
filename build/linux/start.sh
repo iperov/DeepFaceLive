@@ -1,5 +1,32 @@
 #!/bin/bash
+
+DATA_FOLDER=$(pwd)/data/
+
+printf "\n"
+while getopts 'cd:h' opt; do
+    case "$opt" in
+        c)
+            printf "Starting with camera devices\n"
+            CAMERA0=--device=/dev/video0:/dev/video0
+            CAMERA1=--device=/dev/video1:/dev/video1
+            CAMERA2=--device=/dev/video2:/dev/video2
+            CAMERA3=--device=/dev/video3:/dev/video3
+            ;;
+        d)
+            DATA_FOLDER="$OPTARG"
+            printf "Starting with data folder: %s\n" "$DATA_FOLDER"
+            ;;
+   
+        ?|h)
+            printf "Usage:\n$(basename $0) [-d] /path/to/your/data/folder\n"
+            exit 1
+            ;;
+    esac
+done
+shift "$(($OPTIND -1))"
+printf "\n"
+
 # Warning xhost + is overly permissive and will reduce system security. Edit as desired
 docker build . -t deepfacelive
 xhost +
-docker run --ipc host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd)/data/:/data/  --rm -it deepfacelive
+docker run --ipc host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $DATA_FOLDER:/data/ $CAMERA0 $CAMERA1 $CAMERA2 $CAMERA3  --rm -it deepfacelive
