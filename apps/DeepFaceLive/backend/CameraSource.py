@@ -115,6 +115,7 @@ class CameraSourceWorker(BackendWorker):
             cv_api = {_DriverType.DSHOW: cv2.CAP_DSHOW,
                       _DriverType.MSMF: cv2.CAP_MSMF,
                       _DriverType.GSTREAMER: cv2.CAP_GSTREAMER,
+                      _DriverType.OPENCV: 0,
                       }[state.driver]
 
             vcap = cv2.VideoCapture(state.device_idx, cv_api)
