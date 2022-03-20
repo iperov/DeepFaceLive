@@ -52,17 +52,16 @@ _ResolutionType_wh = {_ResolutionType.RES_320x240: (320,240),
                       _ResolutionType.RES_1920x1080: (1920,1080),
                       }
 class _DriverType(IntEnum):
-    DSHOW = 0
-    MSMF = 1
-    GSTREAMER = 2
-    OPENCV = 3
+    COMPATIBLE = 0
+    DSHOW = 1
+    MSMF = 2
+    GSTREAMER = 3
 
-_DriverType_names = { _DriverType.DSHOW : 'DirectShow',
+_DriverType_names = { _DriverType.COMPATIBLE : 'Compatible',
+                      _DriverType.DSHOW : 'DirectShow',
                       _DriverType.MSMF : 'Microsoft Media Foundation',
                       _DriverType.GSTREAMER : 'GStreamer',
-                      _DriverType.OPENCV : 'OpenCV',
                     }
-
 
 class _RotationType(IntEnum):
     ROTATION_0 = 0
@@ -112,10 +111,10 @@ class CameraSourceWorker(BackendWorker):
         if state.device_idx is not None and \
            state.driver is not None:
 
-            cv_api = {_DriverType.DSHOW: cv2.CAP_DSHOW,
+            cv_api = {_DriverType.COMPATIBLE: cv2.CAP_ANY,
+                      _DriverType.DSHOW: cv2.CAP_DSHOW,
                       _DriverType.MSMF: cv2.CAP_MSMF,
                       _DriverType.GSTREAMER: cv2.CAP_GSTREAMER,
-                      _DriverType.OPENCV: 0,
                       }[state.driver]
 
             vcap = cv2.VideoCapture(state.device_idx, cv_api)
