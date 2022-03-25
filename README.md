@@ -169,9 +169,9 @@ If you have a free computer with 2080TI or better card with 12GB+ VRAM, you can 
 <tr><td colspan=2 align="center">
 Register github account and push "Star" button.
 </td></tr>
-<tr><td colspan=2 align="center">
+<!--<tr><td colspan=2 align="center">
 <a href="https://www.paypal.com/paypalme/DeepFaceLab">Donate via Paypal</a>
-</td></tr>
+</td></tr>-->
 <tr><td colspan=2 align="center">
 <a href="https://money.yandex.ru/to/41001142318065">Donate via Yandex.Money</a>
 </td></tr>
