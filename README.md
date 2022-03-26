@@ -41,16 +41,15 @@ Ewon Spice
 
 <a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
 
-</td><td align="center">
+</td></tr></table>
+<table align="center" border="0">
+<tr align="center"><td align="center">
 Kim Jarrey
 
 <img src="doc/celebs/Kim_Jarrey/Kim_Jarrey.png" width=128></img>
 
 <a href="doc/celebs/Kim_Jarrey/examples.md">examples</a>
-
-</td></tr></table>
-<table align="center" border="0">
-<tr align="center"><td>
+</td><td>
 David Kovalniy
 
 <img src="doc/celebs/David_Kovalniy/David_Kovalniy.png" width=128></img>
@@ -62,7 +61,9 @@ Matilda Bobbie
 <img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
 
 <a href="doc/celebs/Matilda_Bobbie/examples.md">examples</a>
-</td><td>
+</td></tr></table>
+<table align="center" border="0">
+<tr align="center"><td align="center">
 Silwan Stillwone
 
 <img src="doc/celebs/Silwan_Stillwone/Silwan_Stillwone.png" width=128></img>
@@ -75,8 +76,13 @@ Tim Chrys
 
 <a href="doc/celebs/Tim_Chrys/examples.md">examples</a>
 
-</td></tr>
-</table>
+</td><td>
+Zahar Lupin
+
+<img src="doc/celebs/Zahar_Lupin/Zahar_Lupin.png" width=128></img>
+
+<a href="doc/celebs/Zahar_Lupin/examples.md">examples</a>
+</td></tr></table>
 
 </td></tr>
 
