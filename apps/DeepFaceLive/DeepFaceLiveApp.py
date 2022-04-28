@@ -161,7 +161,7 @@ class QDFLAppWindow(qtx.QXWindow):
 
         menu_help = menu_bar.addMenu( L('@QDFLAppWindow.help') )
         menu_help_action_github = menu_help.addAction( L('@QDFLAppWindow.visit_github_page') )
-        menu_help_action_github.triggered.connect(lambda: qtx.QDesktopServices.openUrl(QUrl('https://github.com/iperov/DeepFaceLive' )))
+        menu_help_action_github.triggered.connect(lambda: qtx.QDesktopServices.openUrl(qtx.QUrl('https://github.com/iperov/DeepFaceLive' )))
 
         self.q_live_swap = None
         self.q_live_swap_container = qtx.QXWidget()
