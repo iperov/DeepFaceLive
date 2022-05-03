@@ -35,6 +35,7 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
     # predefined list of celebs with urls
     dfm_models = [
             DFMModelInfo(name='Ava de Addario', model_path=models_path / f'Ava_de_Addario.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/AVA_DE_ADDARIO/Ava_de_Addario.dfm'),
+            DFMModelInfo(name='Bryan Greynolds', model_path=models_path / f'Bryan_Greynolds.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/BRYAN_GREYNOLDS/Bryan_Greynolds.dfm'),
             DFMModelInfo(name='David Kovalniy', model_path=models_path / f'David_Kovalniy.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DAVID_KOVALNIY/David_Kovalniy.dfm'),
             DFMModelInfo(name='Dilraba Dilmurat', model_path=models_path / f'Dilraba_Dilmurat.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DILRABA_DILMURAT/Dilraba_Dilmurat.dfm'),
             DFMModelInfo(name='Ewon Spice', model_path=models_path / f'Ewon_Spice.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/EWON_SPICE/Ewon_Spice.dfm'),
@@ -42,6 +43,8 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
             DFMModelInfo(name='Matilda Bobbie', model_path=models_path / f'Matilda_Bobbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MATILDA_BOBBIE/Matilda_Bobbie.dfm'),
             DFMModelInfo(name='Silwan Stillwone', model_path=models_path / f'Silwan_Stillwone.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/SILWAN_STILLWONE/Silwan_Stillwone.dfm'),
             DFMModelInfo(name='Tim Chrys', model_path=models_path / f'Tim_Chrys.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_CHRYS/Tim_Chrys.dfm'),
+            DFMModelInfo(name='Tim Norland', model_path=models_path / f'Tim_Norland.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_NORLAND/Tim_Norland.dfm'),
+            DFMModelInfo(name='Yohanna Coralson', model_path=models_path / f'Yohanna_Coralson.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/YOHANNA_CORALSON/Yohanna_Coralson.dfm'),
             DFMModelInfo(name='Zahar Lupin', model_path=models_path / f'Zahar_Lupin.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ZAHAR_LUPIN/Zahar_Lupin.dfm'),
         ]
 

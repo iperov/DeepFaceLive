@@ -41,6 +41,13 @@ Ewon Spice
 
 <a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
 
+</td><td align="center">
+Yohanna Coralson
+
+<img src="doc/celebs/Yohanna_Coralson/Yohanna_Coralson.png" width=128></img>
+
+<a href="doc/celebs/Yohanna_Coralson/examples.md">examples</a>
+
 </td></tr></table>
 <table align="center" border="0">
 <tr align="center"><td align="center">
@@ -61,6 +68,12 @@ Matilda Bobbie
 <img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
 
 <a href="doc/celebs/Matilda_Bobbie/examples.md">examples</a>
+</td><td>
+Bryan Greynolds
+
+<img src="doc/celebs/Bryan_Greynolds/Bryan_Greynolds.png" width=128></img>
+
+<a href="doc/celebs/Bryan_Greynolds/examples.md">examples</a>
 </td></tr></table>
 <table align="center" border="0">
 <tr align="center"><td align="center">
@@ -82,6 +95,12 @@ Zahar Lupin
 <img src="doc/celebs/Zahar_Lupin/Zahar_Lupin.png" width=128></img>
 
 <a href="doc/celebs/Zahar_Lupin/examples.md">examples</a>
+</td><td>
+Tim Norland
+
+<img src="doc/celebs/Tim_Norland/Tim_Norland.png" width=128></img>
+
+<a href="doc/celebs/Tim_Norland/examples.md">examples</a>
 </td></tr></table>
 
 </td></tr>
