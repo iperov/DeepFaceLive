@@ -97,7 +97,7 @@ class CameraSourceWorker(BackendWorker):
         cs.save_settings.call_on_signal(self.on_cs_save_settings)
 
         cs.device_idx.enable()
-        cs.device_idx.set_choices([0,1,2,3], none_choice_name='@misc.menu_select')
+        cs.device_idx.set_choices([*range(16)], none_choice_name='@misc.menu_select')
         cs.device_idx.select(state.device_idx)
 
         cs.driver.enable()
