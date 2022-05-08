@@ -82,7 +82,7 @@ with configuration:
 
 enable mpegts in **_Stream Output_**
 
-<img src="Media_source_stream_output.png"></img>
+<img src="media_source_stream_output.png"></img>
 
 </td></tr>
 
