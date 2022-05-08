@@ -1,5 +1,7 @@
 from localization import L
+from resources.fonts import QXFontDB
 from xlib import qt as qtx
+from xlib.qt.widgets.QXLabel import QXLabel
 
 from ..backend import StreamOutput
 from .widgets.QBackendPanel import QBackendPanel
@@ -9,6 +11,7 @@ from .widgets.QComboBoxCSWDynamicSingleSwitch import \
 from .widgets.QErrorCSWError import QErrorCSWError
 from .widgets.QLabelCSWNumber import QLabelCSWNumber
 from .widgets.QLabelPopupInfo import QLabelPopupInfo
+from .widgets.QLineEditCSWText import QLineEditCSWText
 from .widgets.QPathEditCSWPaths import QPathEditCSWPaths
 from .widgets.QSpinBoxCSWNumber import QSpinBoxCSWNumber
 from .widgets.QXPushButtonCSWSignal import QXPushButtonCSWSignal
@@ -39,6 +42,12 @@ class QStreamOutput(QBackendPanel):
         q_save_fill_frame_gap_label = QLabelPopupInfo(label=L('@QStreamOutput.save_fill_frame_gap'), popup_info_text=L('@QStreamOutput.help.save_fill_frame_gap'))
         q_save_fill_frame_gap       = QCheckBoxCSWFlag(cs.save_fill_frame_gap, reflect_state_widgets=[q_save_fill_frame_gap_label])
 
+        q_is_streaming_label = QLabelPopupInfo(label='mpegts udp://')
+        q_is_streaming       = QCheckBoxCSWFlag(cs.is_streaming, reflect_state_widgets=[q_is_streaming_label])
+
+        q_stream_addr = QLineEditCSWText(cs.stream_addr, font=QXFontDB.get_fixedwidth_font())
+        q_stream_port = QSpinBoxCSWNumber(cs.stream_port)
+
         grid_l = qtx.QXGridLayout(spacing=5)
         row = 0
         grid_l.addWidget(q_average_fps_label, row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter )
@@ -61,8 +70,10 @@ class QStreamOutput(QBackendPanel):
         row += 1
         grid_l.addLayout( qtx.QXHBoxLayout([q_save_fill_frame_gap, 4, q_save_fill_frame_gap_label]), row, 1, 1, 2, alignment=qtx.AlignLeft | qtx.AlignVCenter )
         row += 1
-
         grid_l.addWidget(q_save_sequence_path_error, row, 0, 1, 3)
+        row += 1
+        grid_l.addLayout( qtx.QXHBoxLayout([q_is_streaming, 4, q_is_streaming_label]), row, 0, 1, 1, alignment=qtx.AlignRight | qtx.AlignVCenter )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_stream_addr, qtx.QXLabel(text=':'), q_stream_port]), row, 1, 1, 2, alignment=qtx.AlignLeft | qtx.AlignVCenter )
         row += 1
 
         super().__init__(backend, L('@QStreamOutput.module_title'),

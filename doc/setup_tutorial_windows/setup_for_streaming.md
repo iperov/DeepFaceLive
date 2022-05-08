@@ -9,7 +9,7 @@ DeepFaceLive only provides a video window of the replaced face. Since the face m
 
 So, what do we need for streaming?
 
-Capture window and sound with some delay, transmit to streaming service (e.g. twitch, youtube, ...)
+Capture window (or receive mpegts udp stream) and sound with some delay, transmit to streaming service (e.g. twitch, youtube, ...)
 
 Below, one of the solutions.
 
@@ -63,8 +63,27 @@ Below, one of the solutions.
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### DONE !
+### **DONE** !
 ### Now you can stream yourself to a stream service.
 
 </td></tr>
+
+<tr><td colspan=2 align="center">
+
+### instead of **Window capture** 
+
+you can use **Media Source**
+
+<img src="media_source.png"></img>
+
+with configuration:
+
+<img src="media_source_config.png"></img>
+
+enable mpegts in **_Stream Output_**
+
+<img src="Media_source_stream_output.png"></img>
+
+</td></tr>
+
 </table>

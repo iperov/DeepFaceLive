@@ -10,6 +10,7 @@ from xlib import os as lib_os
 from xlib import time as lib_time
 from xlib.image import ImageProcessor
 from xlib.mp import csw as lib_csw
+from xlib.streamer import FFMPEGStreamer
 
 from .BackendBase import (BackendConnection, BackendDB, BackendHost,
                           BackendSignal, BackendWeakHeap, BackendWorker,
@@ -43,14 +44,15 @@ class SourceType(IntEnum):
     SOURCE_N_MERGED_FRAME = 5
     SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME = 6
 
-ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME', 
-                 '@StreamOutput.SourceType.ALIGNED_FACE', 
+ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME',
+                 '@StreamOutput.SourceType.ALIGNED_FACE',
                  '@StreamOutput.SourceType.SWAPPED_FACE',
-                 '@StreamOutput.SourceType.MERGED_FRAME', 
-                 '@StreamOutput.SourceType.MERGED_FRAME_OR_SOURCE_FRAME', 
+                 '@StreamOutput.SourceType.MERGED_FRAME',
+                 '@StreamOutput.SourceType.MERGED_FRAME_OR_SOURCE_FRAME',
                  '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME',
                  '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME',
                  ]
+
 
 
 class StreamOutputWorker(BackendWorker):
@@ -73,7 +75,9 @@ class StreamOutputWorker(BackendWorker):
 
         self._wnd_name = 'DeepFaceLive output'
         self._wnd_showing = False
-
+        
+        self._streamer = FFMPEGStreamer()
+        
         lib_os.set_timer_resolution(1)
 
         state, cs = self.get_state(), self.get_control_sheet()
@@ -84,7 +88,10 @@ class StreamOutputWorker(BackendWorker):
         cs.target_delay.call_on_number(self.on_cs_target_delay)
         cs.save_sequence_path.call_on_paths(self.on_cs_save_sequence_path)
         cs.save_fill_frame_gap.call_on_flag(self.on_cs_save_fill_frame_gap)
-
+        cs.is_streaming.call_on_flag(self.on_cs_is_streaming)
+        cs.stream_addr.call_on_text(self.on_cs_stream_addr)
+        cs.stream_port.call_on_number(self.on_cs_stream_port)
+        
         cs.source_type.enable()
         cs.source_type.set_choices(SourceType, ViewModeNames, none_choice_name='@misc.menu_select')
         cs.source_type.select(state.source_type)
@@ -107,16 +114,26 @@ class StreamOutputWorker(BackendWorker):
             state.is_showing_window = not state.is_showing_window
             cs.show_hide_window.signal()
 
-
         cs.save_sequence_path.enable()
         cs.save_sequence_path.set_config( lib_csw.Paths.Config.Directory('Choose output sequence directory', directory_path=save_default_path) )
         cs.save_sequence_path.set_paths(state.sequence_path)
 
         cs.save_fill_frame_gap.enable()
         cs.save_fill_frame_gap.set_flag(state.save_fill_frame_gap if state.save_fill_frame_gap is not None else True )
+            
+        cs.is_streaming.enable()
+        cs.is_streaming.set_flag(state.is_streaming if state.is_streaming is not None else False )
+        
+        cs.stream_addr.enable()
+        cs.stream_addr.set_text(state.stream_addr if state.stream_addr is not None else '127.0.0.1')
+        
+        cs.stream_port.enable()
+        cs.stream_port.set_config(lib_csw.Number.Config(min=1, max=9999, decimals=0, allow_instant_update=True))
+        cs.stream_port.set_number(state.stream_port if state.stream_port is not None else 1234)
 
-
-
+    def on_stop(self):
+        self._streamer.stop()
+        
     def on_cs_source_type(self, idx, source_type):
         state, cs = self.get_state(), self.get_control_sheet()
         if source_type == SourceType.ALIGNED_FACE:
@@ -126,10 +143,10 @@ class StreamOutputWorker(BackendWorker):
         else:
             cs.aligned_face_id.disable()
         state.source_type = source_type
-        
+
         self.save_state()
         self.reemit_frame_signal.send()
-        
+
     def show_window(self):
         state, cs = self.get_state(), self.get_control_sheet()
         cv2.namedWindow(self._wnd_name)
@@ -189,6 +206,23 @@ class StreamOutputWorker(BackendWorker):
         state.save_fill_frame_gap = save_fill_frame_gap
         self.save_state()
 
+    def on_cs_is_streaming(self, is_streaming):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.is_streaming = is_streaming
+        self.save_state()
+    
+    def on_cs_stream_addr(self, stream_addr):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.stream_addr = stream_addr
+        self.save_state()
+        self._streamer.set_addr_port(state.stream_addr, state.stream_port)
+        
+    def on_cs_stream_port(self, stream_port):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.stream_port = stream_port
+        self.save_state()
+        self._streamer.set_addr_port(state.stream_addr, state.stream_port)
+    
     def on_tick(self):
         cs, state = self.get_control_sheet(), self.get_state()
 
@@ -204,7 +238,9 @@ class StreamOutputWorker(BackendWorker):
 
             source_type = state.source_type
             if source_type is not None and \
-                (state.is_showing_window or state.sequence_path is not None):
+                (state.is_showing_window or \
+                 state.sequence_path is not None or \
+                 state.is_streaming):
                 buffered_frames = self.buffered_frames
 
                 view_image = None
@@ -213,7 +249,7 @@ class StreamOutputWorker(BackendWorker):
                     view_image = bcd.get_image(bcd.get_frame_image_name())
                 elif source_type in [SourceType.MERGED_FRAME, SourceType.MERGED_FRAME_OR_SOURCE_FRAME]:
                     view_image = bcd.get_image(bcd.get_merged_image_name())
-                    if view_image is None and source_type == SourceType.MERGED_FRAME_OR_SOURCE_FRAME:                       
+                    if view_image is None and source_type == SourceType.MERGED_FRAME_OR_SOURCE_FRAME:
                         view_image = bcd.get_image(bcd.get_frame_image_name())
 
                 elif source_type == SourceType.ALIGNED_FACE:
@@ -228,17 +264,17 @@ class StreamOutputWorker(BackendWorker):
                         view_image = bcd.get_image(fsi.face_swap_image_name)
                         if view_image is not None:
                             break
-                    
+
                 elif source_type in [SourceType.SOURCE_N_MERGED_FRAME, SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME]:
                     source_frame = bcd.get_image(bcd.get_frame_image_name())
                     if source_frame is not None:
                         source_frame = ImageProcessor(source_frame).to_ufloat32().get_image('HWC')
-                    
+
                     merged_frame = bcd.get_image(bcd.get_merged_image_name())
-                    
-                    if merged_frame is None and source_type == SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME:                       
+
+                    if merged_frame is None and source_type == SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME:
                         merged_frame = source_frame
-                    
+
                     if source_frame is not None and merged_frame is not None:
                         view_image = np.concatenate( (source_frame, merged_frame), 1 )
 
@@ -259,8 +295,13 @@ class StreamOutputWorker(BackendWorker):
                 pr = buffered_frames.process()
 
                 img = pr.new_data
-                if state.is_showing_window and img is not None:
-                    cv2.imshow(self._wnd_name, img)
+                if img is not None:
+                    if state.is_streaming:
+                        img = ImageProcessor(view_image).to_uint8().get_image('HWC')
+                        self._streamer.push_frame(img)
+
+                    if state.is_showing_window:
+                        cv2.imshow(self._wnd_name, img)
 
         if state.is_showing_window:
             cv2.waitKey(1)
@@ -277,7 +318,10 @@ class Sheet:
             self.save_sequence_path = lib_csw.Paths.Client()
             self.save_sequence_path_error = lib_csw.Error.Client()
             self.save_fill_frame_gap = lib_csw.Flag.Client()
-
+            self.is_streaming = lib_csw.Flag.Client()
+            self.stream_addr = lib_csw.Text.Client()
+            self.stream_port = lib_csw.Number.Client()
+            
     class Worker(lib_csw.Sheet.Worker):
         def __init__(self):
             super().__init__()
@@ -289,7 +333,10 @@ class Sheet:
             self.save_sequence_path = lib_csw.Paths.Host()
             self.save_sequence_path_error = lib_csw.Error.Host()
             self.save_fill_frame_gap = lib_csw.Flag.Host()
-
+            self.is_streaming = lib_csw.Flag.Host()
+            self.stream_addr = lib_csw.Text.Host()
+            self.stream_port = lib_csw.Number.Host()
+            
 class WorkerState(BackendWorkerState):
     source_type : SourceType = None
     is_showing_window : bool = None
@@ -297,3 +344,6 @@ class WorkerState(BackendWorkerState):
     target_delay : int = None
     sequence_path : Path = None
     save_fill_frame_gap : bool = None
+    is_streaming : bool = None
+    stream_addr : str = None
+    stream_port : int = None
