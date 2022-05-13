@@ -127,7 +127,7 @@ There is also a Face Animator module in DeepFaceLive app. You can control a stat
 
 <img src="doc/face_animator_example.gif"></img>
 
-Here is a [mini video](doc/FaceAnimator_tutor.mp4) showing the process of setting up the Face Animator for Obama controlling Kim Chen's face.
+Here is a [mini video](doc/FaceAnimator_tutor.webm?raw=true) showing the process of setting up the Face Animator for Obama controlling Kim Chen's face.
 
 </td></tr>
 
