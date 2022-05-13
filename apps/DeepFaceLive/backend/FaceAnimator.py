@@ -103,21 +103,24 @@ class FaceAnimatorWorker(BackendWorker):
     def on_cs_animatable(self, idx, animatable):
         state, cs = self.get_state(), self.get_control_sheet()
 
-        try:
-            W,H = self.tpsmm_model.get_input_size()
+        state.animatable = animatable
+        self.animatable_img = None
+        self.animatable_kp = None
+        self.driving_ref_kp = None
 
-            ip = ImageProcessor(lib_cv2.imread(self.animatables_path / animatable))
-            ip.fit_in(TW=W, TH=H, pad_to_target=True, allow_upscale=True)
+        if animatable is not None:
+            try:
+                W,H = self.tpsmm_model.get_input_size()
+                ip = ImageProcessor(lib_cv2.imread(self.animatables_path / animatable))
+                ip.fit_in(TW=W, TH=H, pad_to_target=True, allow_upscale=True)
 
-            self.animatable_img = ip.get_image('HWC')
-            self.animatable_kp = self.tpsmm_model.extract_kp(self.animatable_img)
-            self.driving_ref_kp = None
-            
-            state.animatable = animatable
-        except Exception as e:
-            print(e)
-            self.animatable_img = None
-            cs.animatable.unselect()
+                animatable_img = ip.get_image('HWC')
+                animatable_kp = self.tpsmm_model.extract_kp(animatable_img)
+
+                self.animatable_img = animatable_img
+                self.animatable_kp = animatable_kp
+            except Exception as e:
+                cs.animatable.unselect()
 
         self.save_state()
         self.reemit_frame_signal.send()
