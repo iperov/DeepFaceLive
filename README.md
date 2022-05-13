@@ -78,6 +78,12 @@ Bryan Greynolds
 <img src="doc/celebs/Bryan_Greynolds/Bryan_Greynolds.png" width=128></img>
 
 <a href="doc/celebs/Bryan_Greynolds/examples.md">examples</a>
+</td><td>
+Nicola Badge
+
+<img src="doc/celebs/Nicola_Badge/Nicola_Badge.png" width=128></img>
+
+<a href="doc/celebs/Nicola_Badge/examples.md">examples</a>
 </td></tr></table>
 <table align="center" border="0">
 <tr align="center"><td align="center">
