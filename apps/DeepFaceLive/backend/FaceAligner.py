@@ -1,4 +1,5 @@
 import time
+from enum import IntEnum
 
 import numpy as np
 from xlib import os as lib_os
@@ -9,6 +10,14 @@ from .BackendBase import (BackendConnection, BackendDB, BackendHost,
                           BackendSignal, BackendWeakHeap, BackendWorker,
                           BackendWorkerState)
 
+
+class AlignMode(IntEnum):
+    FROM_RECT = 0
+    FROM_POINTS = 1
+
+AlignModeNames = ['@FaceAligner.AlignMode.FROM_RECT',
+                  '@FaceAligner.AlignMode.FROM_POINTS',
+                 ]
 
 class FaceAligner(BackendHost):
     def __init__(self, weak_heap :  BackendWeakHeap, reemit_frame_signal : BackendSignal, bc_in : BackendConnection, bc_out : BackendConnection, backend_db : BackendDB = None):
@@ -33,12 +42,19 @@ class FaceAlignerWorker(BackendWorker):
         lib_os.set_timer_resolution(1)
 
         state, cs = self.get_state(), self.get_control_sheet()
+        cs.align_mode.call_on_selected(self.on_cs_align_mode)
         cs.face_coverage.call_on_number(self.on_cs_face_coverage)
         cs.resolution.call_on_number(self.on_cs_resolution)
         cs.exclude_moving_parts.call_on_flag(self.on_cs_exclude_moving_parts)
         cs.head_mode.call_on_flag(self.on_cs_head_mode)
+        cs.freeze_z_rotation.call_on_flag(self.on_cs_freeze_z_rotation)
+
         cs.x_offset.call_on_number(self.on_cs_x_offset)
         cs.y_offset.call_on_number(self.on_cs_y_offset)
+
+        cs.align_mode.enable()
+        cs.align_mode.set_choices(AlignMode, AlignModeNames)
+        cs.align_mode.select(state.align_mode if state.align_mode is not None else AlignMode.FROM_POINTS)
 
         cs.face_coverage.enable()
         cs.face_coverage.set_config(lib_csw.Number.Config(min=0.1, max=4.0, step=0.1, decimals=1, allow_instant_update=True))
@@ -54,6 +70,9 @@ class FaceAlignerWorker(BackendWorker):
         cs.head_mode.enable()
         cs.head_mode.set_flag(state.head_mode if state.head_mode is not None else False)
 
+        cs.freeze_z_rotation.enable()
+        cs.freeze_z_rotation.set_flag(state.freeze_z_rotation if state.freeze_z_rotation is not None else False)
+
         cs.x_offset.enable()
         cs.x_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
         cs.x_offset.set_number(state.x_offset if state.x_offset is not None else 0)
@@ -62,6 +81,12 @@ class FaceAlignerWorker(BackendWorker):
         cs.y_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
         cs.y_offset.set_number(state.y_offset if state.y_offset is not None else 0)
 
+    def on_cs_align_mode(self, idx, align_mode):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.align_mode = align_mode
+
+        self.save_state()
+        self.reemit_frame_signal.send()
 
     def on_cs_face_coverage(self, face_coverage):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -88,6 +113,12 @@ class FaceAlignerWorker(BackendWorker):
     def on_cs_head_mode(self, head_mode):
         state, cs = self.get_state(), self.get_control_sheet()
         state.head_mode = head_mode
+        self.save_state()
+        self.reemit_frame_signal.send()
+
+    def on_cs_freeze_z_rotation(self, freeze_z_rotation):
+        state, cs = self.get_state(), self.get_control_sheet()
+        state.freeze_z_rotation = freeze_z_rotation
         self.save_state()
         self.reemit_frame_signal.send()
 
@@ -123,19 +154,28 @@ class FaceAlignerWorker(BackendWorker):
                 if all_is_not_None(state.face_coverage, state.resolution, frame_image):
                     for face_id, fsi in enumerate( bcd.get_face_swap_info_list() ):
                         head_yaw = None
-                        if state.head_mode:
+                        if state.head_mode or state.freeze_z_rotation:
                             if fsi.face_pose is not None:
                                 head_yaw = fsi.face_pose.as_radians()[1]
+
+
 
                         face_ulmrks = fsi.face_ulmrks
                         if face_ulmrks is not None:
                             fsi.face_resolution = state.resolution
 
-                            face_align_img, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
-                                                                  exclude_moving_parts=state.exclude_moving_parts,
-                                                                  head_yaw=head_yaw,
-                                                                  x_offset=state.x_offset,
-                                                                  y_offset=state.y_offset-0.08)
+                            if state.align_mode == AlignMode.FROM_RECT:
+                                face_align_img, uni_mat = fsi.face_urect.cut(frame_image, coverage= state.face_coverage, output_size=state.resolution,
+                                                                             x_offset=state.x_offset, y_offset=state.y_offset)
+
+                            elif state.align_mode == AlignMode.FROM_POINTS:
+                                face_align_img, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
+                                                                        exclude_moving_parts=state.exclude_moving_parts,
+                                                                        head_yaw=head_yaw,
+                                                                        x_offset=state.x_offset,
+                                                                        y_offset=state.y_offset-0.08,
+                                                                        freeze_z_rotation=state.freeze_z_rotation)
+
 
                             fsi.face_align_image_name = f'{frame_image_name}_{face_id}_aligned'
                             fsi.image_to_align_uni_mat = uni_mat
@@ -147,7 +187,6 @@ class FaceAlignerWorker(BackendWorker):
                             fsi.face_align_lmrks_mask_name = f'{frame_image_name}_{face_id}_aligned_lmrks_mask'
                             bcd.set_image(fsi.face_align_lmrks_mask_name, face_align_lmrks_mask_img)
 
-
                 self.stop_profile_timing()
                 self.pending_bcd = bcd
 
@@ -158,32 +197,37 @@ class FaceAlignerWorker(BackendWorker):
             else:
                 time.sleep(0.001)
 
-
 class Sheet:
     class Host(lib_csw.Sheet.Host):
         def __init__(self):
             super().__init__()
+            self.align_mode = lib_csw.DynamicSingleSwitch.Client()
             self.face_coverage = lib_csw.Number.Client()
             self.resolution = lib_csw.Number.Client()
             self.exclude_moving_parts = lib_csw.Flag.Client()
             self.head_mode = lib_csw.Flag.Client()
+            self.freeze_z_rotation = lib_csw.Flag.Client()
             self.x_offset = lib_csw.Number.Client()
             self.y_offset = lib_csw.Number.Client()
 
     class Worker(lib_csw.Sheet.Worker):
         def __init__(self):
             super().__init__()
+            self.align_mode = lib_csw.DynamicSingleSwitch.Host()
             self.face_coverage = lib_csw.Number.Host()
             self.resolution = lib_csw.Number.Host()
             self.exclude_moving_parts = lib_csw.Flag.Host()
             self.head_mode = lib_csw.Flag.Host()
+            self.freeze_z_rotation = lib_csw.Flag.Host()
             self.x_offset = lib_csw.Number.Host()
             self.y_offset = lib_csw.Number.Host()
 
 class WorkerState(BackendWorkerState):
+    align_mode = None
     face_coverage : float = None
     resolution    : int = None
     exclude_moving_parts : bool = None
     head_mode : bool = None
+    freeze_z_rotation : bool = None
     x_offset : float = None
     y_offset : float = None

@@ -43,6 +43,7 @@ class SourceType(IntEnum):
     MERGED_FRAME_OR_SOURCE_FRAME = 4
     SOURCE_N_MERGED_FRAME = 5
     SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME = 6
+    ALIGNED_N_SWAPPED_FACE = 7
 
 ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME',
                  '@StreamOutput.SourceType.ALIGNED_FACE',
@@ -51,6 +52,7 @@ ViewModeNames = ['@StreamOutput.SourceType.SOURCE_FRAME',
                  '@StreamOutput.SourceType.MERGED_FRAME_OR_SOURCE_FRAME',
                  '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME',
                  '@StreamOutput.SourceType.SOURCE_N_MERGED_FRAME_OR_SOURCE_FRAME',
+                 '@StreamOutput.SourceType.ALIGNED_N_SWAPPED_FACE',
                  ]
 
 
@@ -75,9 +77,9 @@ class StreamOutputWorker(BackendWorker):
 
         self._wnd_name = 'DeepFaceLive output'
         self._wnd_showing = False
-        
+
         self._streamer = FFMPEGStreamer()
-        
+
         lib_os.set_timer_resolution(1)
 
         state, cs = self.get_state(), self.get_control_sheet()
@@ -91,7 +93,7 @@ class StreamOutputWorker(BackendWorker):
         cs.is_streaming.call_on_flag(self.on_cs_is_streaming)
         cs.stream_addr.call_on_text(self.on_cs_stream_addr)
         cs.stream_port.call_on_number(self.on_cs_stream_port)
-        
+
         cs.source_type.enable()
         cs.source_type.set_choices(SourceType, ViewModeNames, none_choice_name='@misc.menu_select')
         cs.source_type.select(state.source_type)
@@ -120,23 +122,23 @@ class StreamOutputWorker(BackendWorker):
 
         cs.save_fill_frame_gap.enable()
         cs.save_fill_frame_gap.set_flag(state.save_fill_frame_gap if state.save_fill_frame_gap is not None else True )
-            
+
         cs.is_streaming.enable()
         cs.is_streaming.set_flag(state.is_streaming if state.is_streaming is not None else False )
-        
+
         cs.stream_addr.enable()
         cs.stream_addr.set_text(state.stream_addr if state.stream_addr is not None else '127.0.0.1')
-        
+
         cs.stream_port.enable()
         cs.stream_port.set_config(lib_csw.Number.Config(min=1, max=9999, decimals=0, allow_instant_update=True))
         cs.stream_port.set_number(state.stream_port if state.stream_port is not None else 1234)
 
     def on_stop(self):
         self._streamer.stop()
-        
+
     def on_cs_source_type(self, idx, source_type):
         state, cs = self.get_state(), self.get_control_sheet()
-        if source_type == SourceType.ALIGNED_FACE:
+        if source_type in [SourceType.ALIGNED_FACE, SourceType.ALIGNED_N_SWAPPED_FACE]:
             cs.aligned_face_id.enable()
             cs.aligned_face_id.set_config(lib_csw.Number.Config(min=0, max=16, step=1, allow_instant_update=True))
             cs.aligned_face_id.set_number(state.aligned_face_id or 0)
@@ -210,19 +212,19 @@ class StreamOutputWorker(BackendWorker):
         state, cs = self.get_state(), self.get_control_sheet()
         state.is_streaming = is_streaming
         self.save_state()
-    
+
     def on_cs_stream_addr(self, stream_addr):
         state, cs = self.get_state(), self.get_control_sheet()
         state.stream_addr = stream_addr
         self.save_state()
         self._streamer.set_addr_port(state.stream_addr, state.stream_port)
-        
+
     def on_cs_stream_port(self, stream_port):
         state, cs = self.get_state(), self.get_control_sheet()
         state.stream_port = stream_port
         self.save_state()
         self._streamer.set_addr_port(state.stream_addr, state.stream_port)
-    
+
     def on_tick(self):
         cs, state = self.get_control_sheet(), self.get_state()
 
@@ -278,6 +280,24 @@ class StreamOutputWorker(BackendWorker):
                     if source_frame is not None and merged_frame is not None:
                         view_image = np.concatenate( (source_frame, merged_frame), 1 )
 
+                elif source_type == SourceType.ALIGNED_N_SWAPPED_FACE:
+                    aligned_face_id = state.aligned_face_id
+                    aligned_face = None
+                    swapped_face = None
+                    for i, fsi in enumerate(bcd.get_face_swap_info_list()):
+                        if aligned_face_id == i:
+                            aligned_face = bcd.get_image(fsi.face_align_image_name)
+                            break
+
+                    for fsi in bcd.get_face_swap_info_list():
+                        swapped_face = bcd.get_image(fsi.face_swap_image_name)
+                        if swapped_face is not None:
+                            break
+
+                    if aligned_face is not None and swapped_face is not None:
+                        view_image = np.concatenate( (aligned_face, swapped_face), 1 )
+
+
                 if view_image is not None:
                     buffered_frames.add_buffer( bcd.get_frame_timestamp(), view_image )
 
@@ -321,7 +341,7 @@ class Sheet:
             self.is_streaming = lib_csw.Flag.Client()
             self.stream_addr = lib_csw.Text.Client()
             self.stream_port = lib_csw.Number.Client()
-            
+
     class Worker(lib_csw.Sheet.Worker):
         def __init__(self):
             super().__init__()
@@ -336,7 +356,7 @@ class Sheet:
             self.is_streaming = lib_csw.Flag.Host()
             self.stream_addr = lib_csw.Text.Host()
             self.stream_port = lib_csw.Number.Host()
-            
+
 class WorkerState(BackendWorkerState):
     source_type : SourceType = None
     is_showing_window : bool = None

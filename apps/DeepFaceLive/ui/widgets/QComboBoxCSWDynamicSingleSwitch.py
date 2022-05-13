@@ -26,7 +26,9 @@ class QComboBoxCSWDynamicSingleSwitch(QCSWControl):
         super().__init__(csw_control=csw_switch, reflect_state_widgets=reflect_state_widgets, layout=self._main_l)
 
     def _on_csw_choices(self, choices, choices_names, none_choice_name : Union[str,None]):
+        idx = 0
         if self._combobox is not None:
+            idx = self._combobox.currentIndex()
             self._main_l.removeWidget(self._combobox)
             self._combobox.deleteLater()
 
@@ -40,7 +42,9 @@ class QComboBoxCSWDynamicSingleSwitch(QCSWControl):
 
             for choice_name in choices_names:
                 combobox.addItem( qtx.QIcon(), L(choice_name) )
-
+        
+            combobox.setCurrentIndex(idx)
+        
         self._main_l.addWidget(combobox)
 
     def on_combobox_index_changed(self, idx):

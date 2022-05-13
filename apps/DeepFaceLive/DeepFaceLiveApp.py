@@ -14,6 +14,7 @@ from .ui.QFaceAligner import QFaceAligner
 from .ui.QFaceDetector import QFaceDetector
 from .ui.QFaceMarker import QFaceMarker
 from .ui.QFaceMerger import QFaceMerger
+from .ui.QFaceAnimator import QFaceAnimator
 from .ui.QFaceSwapper import QFaceSwapper
 from .ui.QFileSource import QFileSource
 from .ui.QFrameAdjuster import QFrameAdjuster
@@ -31,6 +32,9 @@ class QLiveSwap(qtx.QXWidget):
 
         dfm_models_path = userdata_path / 'dfm_models'
         dfm_models_path.mkdir(parents=True, exist_ok=True)
+
+        animatables_path = userdata_path / 'animatables'
+        animatables_path.mkdir(parents=True, exist_ok=True)
 
         output_sequence_path = userdata_path / 'output_sequence'
         output_sequence_path.mkdir(parents=True, exist_ok=True)
@@ -53,18 +57,21 @@ class QLiveSwap(qtx.QXWidget):
         face_detector  = self.face_detector  = backend.FaceDetector (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=multi_sources_bc_out, bc_out=face_detector_bc_out, backend_db=backend_db )
         face_marker    = self.face_marker    = backend.FaceMarker   (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=face_detector_bc_out, bc_out=face_marker_bc_out, backend_db=backend_db)
         face_aligner   = self.face_aligner   = backend.FaceAligner  (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=face_marker_bc_out, bc_out=face_aligner_bc_out, backend_db=backend_db )
+        face_animator  = self.face_animator  = backend.FaceAnimator (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=face_aligner_bc_out, bc_out=face_merger_bc_out, animatables_path=animatables_path, backend_db=backend_db )
+
         face_swapper   = self.face_swapper   = backend.FaceSwapper  (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=face_aligner_bc_out, bc_out=face_swapper_bc_out, dfm_models_path=dfm_models_path, backend_db=backend_db )
         frame_adjuster = self.frame_adjuster = backend.FrameAdjuster(weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=face_swapper_bc_out, bc_out=frame_adjuster_bc_out, backend_db=backend_db )
         face_merger    = self.face_merger    = backend.FaceMerger   (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=frame_adjuster_bc_out, bc_out=face_merger_bc_out, backend_db=backend_db )
         stream_output  = self.stream_output  = backend.StreamOutput (weak_heap=backed_weak_heap, reemit_frame_signal=reemit_frame_signal, bc_in=face_merger_bc_out, save_default_path=userdata_path, backend_db=backend_db)
 
-        self.all_backends : List[backend.BackendHost] = [file_source, camera_source, face_detector, face_marker, face_aligner, face_swapper, frame_adjuster, face_merger, stream_output]
+        self.all_backends : List[backend.BackendHost] = [file_source, camera_source, face_detector, face_marker, face_aligner, face_animator, face_swapper, frame_adjuster, face_merger, stream_output]
 
         self.q_file_source    = QFileSource(self.file_source)
         self.q_camera_source  = QCameraSource(self.camera_source)
         self.q_face_detector  = QFaceDetector(self.face_detector)
         self.q_face_marker    = QFaceMarker(self.face_marker)
         self.q_face_aligner   = QFaceAligner(self.face_aligner)
+        self.q_face_animator  = QFaceAnimator(self.face_animator, animatables_path=animatables_path)
         self.q_face_swapper   = QFaceSwapper(self.face_swapper, dfm_models_path=dfm_models_path)
         self.q_frame_adjuster = QFrameAdjuster(self.frame_adjuster)
         self.q_face_merger    = QFaceMerger(self.face_merger)
@@ -72,12 +79,12 @@ class QLiveSwap(qtx.QXWidget):
 
         self.q_ds_frame_viewer = QBCFrameViewer(backed_weak_heap, multi_sources_bc_out)
         self.q_ds_fa_viewer    = QBCFaceAlignViewer(backed_weak_heap, face_aligner_bc_out, preview_width=256)
-        self.q_ds_fc_viewer    = QBCFaceSwapViewer(backed_weak_heap, face_swapper_bc_out, preview_width=256)
+        self.q_ds_fc_viewer    = QBCFaceSwapViewer(backed_weak_heap, face_merger_bc_out, preview_width=256)
         self.q_ds_merged_frame_viewer = QBCMergedFrameViewer(backed_weak_heap, face_merger_bc_out)
 
         q_nodes = qtx.QXWidgetHBox([    qtx.QXWidgetVBox([self.q_file_source, self.q_camera_source], spacing=5, fixed_width=256),
                                         qtx.QXWidgetVBox([self.q_face_detector,  self.q_face_aligner,], spacing=5, fixed_width=256),
-                                        qtx.QXWidgetVBox([self.q_face_marker, self.q_face_swapper], spacing=5, fixed_width=256),
+                                        qtx.QXWidgetVBox([self.q_face_marker, self.q_face_animator, self.q_face_swapper], spacing=5, fixed_width=256),
                                         qtx.QXWidgetVBox([self.q_frame_adjuster, self.q_face_merger, self.q_stream_output], spacing=5, fixed_width=256),
                                     ], spacing=5, size_policy=('fixed', 'fixed') )
 
@@ -88,7 +95,7 @@ class QLiveSwap(qtx.QXWidget):
                                         ], spacing=5, size_policy=('fixed', 'fixed') )
 
         self.setLayout(qtx.QXVBoxLayout( [ (qtx.QXWidgetVBox([q_nodes, q_view_nodes], spacing=5), qtx.AlignCenter) ]))
-                       
+
         self._timer = qtx.QXTimer(interval=5, timeout=self._on_timer_5ms, start=True)
 
     def _process_messages(self):
@@ -103,8 +110,11 @@ class QLiveSwap(qtx.QXWidget):
         self.backend_db.clear()
 
     def initialize(self):
-        for backend in self.all_backends:
-            backend.restore_on_off_state()
+        for bcknd in self.all_backends:
+            default_state = True
+            if isinstance(bcknd, (backend.CameraSource, backend.FaceAnimator) ):
+                default_state = False
+            bcknd.restore_on_off_state(default_state=default_state)
 
     def finalize(self):
         # Gracefully stop the backend
@@ -146,10 +156,10 @@ class QDFLAppWindow(qtx.QXWindow):
 
         menu_language_action_english = menu_language.addAction('English' )
         menu_language_action_english.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('en-US'), qtx.QXMainApplication.inst.reinitialize()) )
-        
+
         menu_language_action_spanish = menu_language.addAction('Español' )
         menu_language_action_spanish.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('es-ES'), qtx.QXMainApplication.inst.reinitialize()) )
-        
+
         menu_language_action_italian = menu_language.addAction('Italiano' )
         menu_language_action_italian.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('it-IT'), qtx.QXMainApplication.inst.reinitialize()) )
 

@@ -137,6 +137,8 @@ class DynamicSingleSwitch:
              none_choice_name('')   str/None  if not None, shows None choice with name,
                                                 by default empty string
             """
+            self.unselect()
+
             # Validate choices
             if choices is None:
                 raise ValueError('Choices cannot be None.')

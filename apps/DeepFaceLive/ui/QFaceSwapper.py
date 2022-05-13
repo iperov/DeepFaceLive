@@ -33,7 +33,7 @@ class QFaceSwapper(QBackendPanel):
 
         q_model_info_label = self._q_model_info_label = QLabelPopupInfoCSWInfoLabel(cs.model_info_label)
 
-        q_device_label  = QLabelPopupInfo(label=L('@QFaceSwapper.device'), popup_info_text=L('@QFaceSwapper.help.device') )
+        q_device_label  = QLabelPopupInfo(label=L('@common.device'), popup_info_text=L('@common.help.device') )
         q_device        = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
         q_swap_all_faces_label = QLabelPopupInfo(label=L('@QFaceSwapper.swap_all_faces') )

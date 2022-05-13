@@ -470,8 +470,8 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
                                    clear_release_path=True)
 
     # PIP INSTALLATIONS
-    
-    builder.install_pip_package('numpy==1.21.5')
+
+    builder.install_pip_package('numpy==1.21.6')
     builder.install_pip_package('h5py')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('opencv-python==4.5.5.64')
@@ -521,6 +521,9 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
 
     print('Copying samples.')
     shutil.copytree( str(Path(__file__).parent.parent / 'samples'), str(userdata_path / 'samples') )
+
+    print('Copying animatables.')
+    shutil.copytree( str(Path(__file__).parent.parent / 'animatables'), str(userdata_path / 'animatables') )
 
     if backend == 'cuda':
         builder.create_run_python_script('DeepFaceLive.bat', 'DeepFaceLive\\main.py', 'run DeepFaceLive --userdata-dir="%~dp0userdata"')

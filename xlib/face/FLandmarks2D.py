@@ -2,12 +2,13 @@ from typing import Tuple
 
 import cv2
 import numpy as np
-import numpy.linalg as npla
 
+from .. import math as lib_math
 from ..math import Affine2DMat, Affine2DUniMat
 from .ELandmarks2D import ELandmarks2D
 from .FRect import FRect
 from .IState import IState
+
 
 class FLandmarks2D(IState):
     def __init__(self):
@@ -105,13 +106,14 @@ class FLandmarks2D(IState):
         r = max(xrt[0], xrb[0])
         b = max(xlb[1], xrb[1])
         return FRect.from_ltrb( (l,t,r,b) )
-        
-        
+
+
 
     def calc_cut(self, h_w, coverage : float, output_size : int,
                        exclude_moving_parts : bool = False,
                        head_yaw : float = None,
-                       x_offset : float = 0, y_offset : float = 0):
+                       x_offset : float = 0, y_offset : float = 0,
+                       freeze_z_rotation = False):
         """
         Calculates affine mat for face cut.
 
@@ -129,10 +131,10 @@ class FLandmarks2D(IState):
             type = ELandmarks2D.L68
             lmrks = lmrks[ lmrks_106_to_68_mean_pairs ]
             lmrks = lmrks.reshape( (68,2,2)).mean(1)
-            
+
         if type == ELandmarks2D.L68:
             mat = Affine2DMat.umeyama( np.concatenate ([ lmrks[17:36], lmrks[36:37], lmrks[39:40], lmrks[42:43], lmrks[45:46], lmrks[48:49], lmrks[54:55] ]), uni_landmarks_68)
-            
+
         elif type == ELandmarks2D.L468:
             src_lmrks = lmrks
             dst_lmrks = uni_landmarks_468
@@ -149,13 +151,10 @@ class FLandmarks2D(IState):
         g_c = g_p[4]
 
         # calc diagonal vectors between corners in global space
-        tb_diag_vec = (g_p[2]-g_p[0]).astype(np.float32)
-        tb_diag_vec /= npla.norm(tb_diag_vec)
-        bt_diag_vec = (g_p[1]-g_p[3]).astype(np.float32)
-        bt_diag_vec /= npla.norm(bt_diag_vec)
+        tb_diag_vec = lib_math.segment_to_vector(g_p[0], g_p[2]).astype(np.float32)
+        bt_diag_vec = lib_math.segment_to_vector(g_p[3], g_p[1]).astype(np.float32)
 
-        # calc modifier of diagonal vectors for coverage value
-        mod = npla.norm(g_p[0]-g_p[2])*(coverage*0.5)
+        mod = lib_math.segment_length(g_p[0],g_p[4])*coverage
 
         if head_yaw is not None:
             # Damp near zero
@@ -164,12 +163,32 @@ class FLandmarks2D(IState):
         # adjust vertical offset to cover more forehead
         h_vec = (g_p[1]-g_p[0]).astype(np.float32)
         v_vec = (g_p[3]-g_p[0]).astype(np.float32)
-        
+
         g_c += h_vec*x_offset + v_vec*y_offset
 
-        l_t = np.array( [ g_c - tb_diag_vec*mod,
-                          g_c + bt_diag_vec*mod,
-                          g_c + tb_diag_vec*mod ], np.float32 )
+        if not freeze_z_rotation:
+            l_t = np.array([g_c - tb_diag_vec*mod,
+                            g_c + bt_diag_vec*mod,
+                            g_c + tb_diag_vec*mod], np.float32 )
+        else:
+            # remove_align - face will be centered in the frame but not aligned
+            l_t = np.array([g_c - tb_diag_vec*mod,
+                            g_c + bt_diag_vec*mod,
+                            g_c + tb_diag_vec*mod,
+                            g_c - bt_diag_vec*mod], np.float32 )
+
+            # get area of face square in global space
+            area = 0.5*np.abs(np.dot(l_t[:,0],np.roll(l_t[:,1],1))-np.dot(l_t[:,1],np.roll(l_t[:,0],1)))
+
+            # calc side of square
+            side = np.float32(np.sqrt(area) / 2)
+
+            # calc 3 points with unrotated square
+            l_t = np.array([g_c + [-side,-side],
+                            g_c + [ side,-side],
+                            g_c + [ side, side]], np.float32 )
+
+
 
         # calc affine transform from 3 global space points to 3 local space points size of 'output_size'
         mat     = Affine2DMat.from_3_pairs ( l_t, np.float32(( (0,0),(output_size,0),(output_size,output_size) )))
@@ -184,7 +203,8 @@ class FLandmarks2D(IState):
                   exclude_moving_parts : bool = False,
                   head_yaw : float = None,
                   x_offset : float = 0,
-                  y_offset : float = 0) -> Tuple[np.ndarray, Affine2DUniMat]:
+                  y_offset : float = 0,
+                  freeze_z_rotation : bool = False) -> Tuple[np.ndarray, Affine2DUniMat]:
         """
         Cut the face to square of output_size from img using landmarks with given parameters
 
@@ -208,7 +228,7 @@ class FLandmarks2D(IState):
         """
         h,w = img.shape[0:2]
 
-        mat, uni_mat = self.calc_cut( (h,w), coverage, output_size, exclude_moving_parts, head_yaw=head_yaw, x_offset=x_offset, y_offset=y_offset)
+        mat, uni_mat = self.calc_cut( (h,w), coverage, output_size, exclude_moving_parts, head_yaw=head_yaw, x_offset=x_offset, y_offset=y_offset, freeze_z_rotation=freeze_z_rotation)
 
         face_image = cv2.warpAffine(img, mat, (output_size, output_size), cv2.INTER_CUBIC )
         return face_image, uni_mat
@@ -243,7 +263,7 @@ lmrks_106_to_68_mean_pairs = [1,9, 10,11, 12,13, 14,15, 16,2, 3,4, 5,6, 7,8, 0,0
                    35,35, 41,40, 40,42, 39,39, 37,33, 33,36,
                    89,89, 95,94, 94,96, 93,93, 91,87, 87,90,
                 52,52, 64,64, 63,63, 71,71, 67,67, 68,68, 61,61, 58,58, 59,59, 53,53, 56,56, 55,55, 65,65, 66,66, 62,62, 70,70, 69,69, 57,57, 60,60, 54,54]
-                    
+
 uni_landmarks_68 = np.float32([
 [ 0.000213256,  0.106454  ], #17
 [ 0.0752622,    0.038915  ], #18

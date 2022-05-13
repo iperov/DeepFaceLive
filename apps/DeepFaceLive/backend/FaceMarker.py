@@ -60,7 +60,7 @@ class FaceMarkerWorker(BackendWorker):
 
         cs.marker_type.enable()
         cs.marker_type.set_choices(MarkerType, MarkerTypeNames, none_choice_name=None)
-        cs.marker_type.select(state.marker_type if state.marker_type is not None else MarkerType.INSIGHT_2D106)
+        cs.marker_type.select(state.marker_type if state.marker_type is not None else MarkerType.GOOGLE_FACEMESH)
 
     def on_cs_marker_type(self, idx, marker_type):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -113,7 +113,7 @@ class FaceMarkerWorker(BackendWorker):
             cs.marker_coverage.set_number(marker_coverage)
 
             cs.temporal_smoothing.enable()
-            cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=10, step=1, allow_instant_update=True))
+            cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=50, step=1, allow_instant_update=True))
             cs.temporal_smoothing.set_number(marker_state.temporal_smoothing if marker_state.temporal_smoothing is not None else 1)
 
         else:

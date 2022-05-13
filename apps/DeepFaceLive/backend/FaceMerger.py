@@ -113,7 +113,6 @@ class FaceMergerWorker(BackendWorker):
             cs.face_opacity.enable()
             cs.face_opacity.set_config(lib_csw.Number.Config(min=0.0, max=1.0, step=0.01, decimals=2, allow_instant_update=True))
             cs.face_opacity.set_number(state.face_opacity if state.face_opacity is not None else 1.0)
-
         else:
             state.device = device
             self.save_state()
@@ -326,30 +325,38 @@ class FaceMergerWorker(BackendWorker):
                     fsi_list = bcd.get_face_swap_info_list()
                     fsi_list_len = len(fsi_list)
                     has_merged_faces = False
+
                     for fsi_id, fsi in enumerate(fsi_list):
-                        image_to_align_uni_mat = fsi.image_to_align_uni_mat
-                        face_resolution        = fsi.face_resolution
 
-                        face_align_img            = bcd.get_image(fsi.face_align_image_name)
-                        face_align_lmrks_mask_img = bcd.get_image(fsi.face_align_lmrks_mask_name)
-                        face_align_mask_img       = bcd.get_image(fsi.face_align_mask_name)
-                        face_swap_img             = bcd.get_image(fsi.face_swap_image_name)
-                        face_swap_mask_img        = bcd.get_image(fsi.face_swap_mask_name)
-
-                        if all_is_not_None(face_resolution, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, image_to_align_uni_mat):
+                        face_anim_img             = bcd.get_image(fsi.face_anim_image_name)
+                        if face_anim_img is not None:
                             has_merged_faces = True
-                            face_height, face_width = face_align_img.shape[:2]
-                            frame_height, frame_width = merged_frame.shape[:2]
-                            aligned_to_source_uni_mat = image_to_align_uni_mat.invert()
-                            aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_translated(-state.face_x_offset, -state.face_y_offset)
-                            aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_scaled_around_center(state.face_scale,state.face_scale)
-                            aligned_to_source_uni_mat = aligned_to_source_uni_mat.to_exact_mat (face_width, face_height, frame_width, frame_height)
+                            merged_frame = face_anim_img
+                        else:
 
-                            do_color_compression = fsi_id == fsi_list_len-1
-                            if state.device == 'CPU':
-                                merged_frame = self._merge_on_cpu(merged_frame, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression=do_color_compression )
-                            else:
-                                merged_frame = self._merge_on_gpu(merged_frame, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression=do_color_compression )
+                            image_to_align_uni_mat = fsi.image_to_align_uni_mat
+                            face_resolution        = fsi.face_resolution
+
+                            face_align_img            = bcd.get_image(fsi.face_align_image_name)
+                            face_align_lmrks_mask_img = bcd.get_image(fsi.face_align_lmrks_mask_name)
+                            face_align_mask_img       = bcd.get_image(fsi.face_align_mask_name)
+                            face_swap_img             = bcd.get_image(fsi.face_swap_image_name)
+                            face_swap_mask_img        = bcd.get_image(fsi.face_swap_mask_name)
+
+                            if all_is_not_None(face_resolution, face_align_img, face_align_mask_img, face_swap_img, face_swap_mask_img, image_to_align_uni_mat):
+                                has_merged_faces = True
+                                face_height, face_width = face_align_img.shape[:2]
+                                frame_height, frame_width = merged_frame.shape[:2]
+                                aligned_to_source_uni_mat = image_to_align_uni_mat.invert()
+                                aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_translated(-state.face_x_offset, -state.face_y_offset)
+                                aligned_to_source_uni_mat = aligned_to_source_uni_mat.source_scaled_around_center(state.face_scale,state.face_scale)
+                                aligned_to_source_uni_mat = aligned_to_source_uni_mat.to_exact_mat (face_width, face_height, frame_width, frame_height)
+
+                                do_color_compression = fsi_id == fsi_list_len-1
+                                if state.device == 'CPU':
+                                    merged_frame = self._merge_on_cpu(merged_frame, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression=do_color_compression )
+                                else:
+                                    merged_frame = self._merge_on_gpu(merged_frame, face_resolution, face_align_img, face_align_mask_img, face_align_lmrks_mask_img, face_swap_img, face_swap_mask_img, aligned_to_source_uni_mat, frame_width, frame_height, do_color_compression=do_color_compression )
 
                     if has_merged_faces:
                         # keep image in float32 in order not to extra load FaceMerger

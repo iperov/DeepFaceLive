@@ -14,7 +14,7 @@ class QFaceMerger(QBackendPanel):
     def __init__(self, backend):
         cs = backend.get_control_sheet()
 
-        q_device_label = QLabelPopupInfo(label=L('@QFaceMerger.device'), popup_info_text=L('@QFaceMerger.help.device'))
+        q_device_label = QLabelPopupInfo(label=L('@common.device'), popup_info_text=L('@common.help.device'))
         q_device       = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
         q_face_x_offset_label = QLabelPopupInfo(label=L('@QFaceMerger.face_x_offset'))

@@ -174,7 +174,8 @@ class FRect(IState):
 
         return FRect.from_4pts(pts)
 
-    def cut(self, img : np.ndarray, coverage : float, output_size : int) -> Tuple[Affine2DMat, Affine2DUniMat]:
+    def cut(self, img : np.ndarray, coverage : float, output_size : int,
+                  x_offset : float = 0, y_offset : float = 0,) -> Tuple[Affine2DMat, Affine2DUniMat]:
         """
         Cut the face to square of output_size from img with given coverage using this rect
 
@@ -193,14 +194,20 @@ class FRect(IState):
         mat = Affine2DMat.umeyama(pts, uni_rect, True)
 
         # get corner points in global space
-        g_p = mat.invert().transform_points ( [(0,0),(0,1),(1,1),(1,0),(0.5,0.5)] )
+        g_p = mat.invert().transform_points ( [(0,0),(1,0),(1,1),(0,1),(0.5,0.5)] )
         g_c = g_p[4]
+
+        h_vec = (g_p[1]-g_p[0]).astype(np.float32)
+        v_vec = (g_p[3]-g_p[0]).astype(np.float32)
+
 
         # calc diagonal vectors between corners in global space
         tb_diag_vec = lib_math.segment_to_vector(g_p[0], g_p[2]).astype(np.float32)
-        bt_diag_vec = lib_math.segment_to_vector(g_p[1], g_p[3]).astype(np.float32)
+        bt_diag_vec = lib_math.segment_to_vector(g_p[3], g_p[1]).astype(np.float32)
 
         mod = lib_math.segment_length(g_p[0],g_p[4])*coverage
+
+        g_c += h_vec*x_offset + v_vec*y_offset
 
         l_t = np.array( [ g_c - tb_diag_vec*mod,
                           g_c + bt_diag_vec*mod,

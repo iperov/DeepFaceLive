@@ -31,7 +31,7 @@ class QFaceDetector(QBackendPanel):
         q_detector_type_label = QLabelPopupInfo(label=L('@QFaceDetector.detector_type'), popup_info_text=L('@QFaceDetector.help.detector_type') )
         q_detector_type       = QComboBoxCSWDynamicSingleSwitch(cs.detector_type, reflect_state_widgets=[q_detector_type_label])
 
-        q_device_label        = QLabelPopupInfo(label=L('@QFaceDetector.device'), popup_info_text=L('@QFaceDetector.help.device') )
+        q_device_label        = QLabelPopupInfo(label=L('@common.device'), popup_info_text=L('@common.help.device') )
         q_device              = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
         q_fixed_window_size_label = QLabelPopupInfo(label=L('@QFaceDetector.window_size'), popup_info_text=L('@QFaceDetector.help.window_size') )

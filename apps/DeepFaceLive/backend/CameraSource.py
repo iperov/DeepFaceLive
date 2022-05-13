@@ -102,7 +102,7 @@ class CameraSourceWorker(BackendWorker):
 
         cs.driver.enable()
         cs.driver.set_choices(_DriverType, _DriverType_names, none_choice_name='@misc.menu_select')
-        cs.driver.select(state.driver)
+        cs.driver.select(state.driver if state.driver is not None else _DriverType.DSHOW if platform.system() == 'Windows' else _DriverType.COMPATIBLE)
 
         cs.resolution.enable()
         cs.resolution.set_choices(_ResolutionType, _ResolutionType_names, none_choice_name=None)

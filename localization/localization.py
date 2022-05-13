@@ -44,6 +44,20 @@ class Localization:
                 'es-ES' : '--seleccionar--',
                 'it-IT' : '--selezionare--'},
 
+    'common.device':{
+                'en-US' : 'Device',
+                'ru-RU' : 'Устройство',
+                'zh-CN' : '设备',
+                'es-ES' : 'Dispositivo',
+                'it-IT' : 'Dispositivo'},
+
+    'common.help.device':{
+                'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
+                'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
+                'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率',
+                'es-ES' : 'Ajuste la combinación de dispositivos del módulo para lograr más FPS o una menor utilización de CPU.',
+                'it-IT' : 'Regola la combinazione dei dispositivi del modulo per ottenere fps più alti o un minore utilizzo della CPU.'},
+
     'QBackendPanel.start':{
                 'en-US' : 'Start',
                 'ru-RU' : 'Запустить',
@@ -319,20 +333,6 @@ class Localization:
                 'es-ES' : 'Diferentes tipos de detecciones funcionan de manera distinta.',
                 'it-IT' : 'Diversi tipi di rilevatori funzionano in maniera diversa'},
 
-    'QFaceDetector.device':{
-                'en-US' : 'Device',
-                'ru-RU' : 'Устройство',
-                'zh-CN' : '设备',
-                'es-ES' : 'Dispositivo',
-                'it-IT' : 'Dispositivo'},
-
-    'QFaceDetector.help.device':{
-                'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
-                'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
-                'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率',
-                'es-ES' : 'Ajuste la combinación de dispositivos del módulo para lograr más FPS o una menor utilización de CPU.',
-                'it-IT' : 'Regola la combinazione dei dispositivi del modulo per ottenere fps più alti o un minore utilizzo della CPU.'},
-
     'QFaceDetector.window_size':{
                 'en-US' : 'Window size',
                 'ru-RU' : 'Размер окна',
@@ -345,7 +345,7 @@ class Localization:
                 'ru-RU' : 'Меньший размер окна быстрее, но менее точен.',
                 'zh-CN' : '检测窗口越小越快，但越不精准',
                 'es-ES' : 'Menor tamaño de ventana es más rápido, pero menos preciso.',
-                'it-IT' : 'Una dimensione della finestra minore è più veloce, ma meno accurata.'},   
+                'it-IT' : 'Una dimensione della finestra minore è più veloce, ma meno accurata.'},
 
     'QFaceDetector.threshold':{
                 'en-US' : 'Threshold',
@@ -417,6 +417,20 @@ class Localization:
                 'es-ES' : 'Alineador de caras',
                 'it-IT' : 'Allineatore facciale'},
 
+    'QFaceAligner.align_mode':{
+                'en-US' : 'Align mode',
+                'ru-RU' : 'Режим выравнивания',
+                'zh-CN' : '对齐模式',
+                'es-ES' : 'Modo de alineación',
+                'it-IT' : 'Modalità di allineamento'},
+
+    'QFaceAligner.help.align_mode':{
+                'en-US' : 'From rectangle is good for Face Animator. From points is good for face swapper.',
+                'ru-RU' : 'Из прямоугольника подходит для Face Animator. Из точек подходит для программы смены лиц.',
+                'zh-CN' : '从矩形来看，适合于脸部动画师。从点上看，适合换脸的人。',
+                'es-ES' : 'Desde el rectángulo es bueno para el animador de la cara. Desde los puntos es adecuado para los cambiadores de cara.',
+                'it-IT' : "Il rettangolo è adatto all'animatore di volti. Dai punti è adatto a chi cambia il volto."},
+
     'QFaceAligner.face_coverage':{
                 'en-US' : 'Face coverage',
                 'ru-RU' : 'Покрытие лица',
@@ -473,6 +487,13 @@ class Localization:
                 'es-ES' : 'Modo HEAD. Usado con el modelo HEAD.',
                 'it-IT' : 'Modalità testa. Usala con un modello HEAD.'},
 
+    'QFaceAligner.freeze_z_rotation':{
+                'en-US' : 'Freeze Z rotation',
+                'ru-RU' : 'Заморозить Z поворот',
+                'zh-CN' : '冻结Z旋转',
+                'es-ES' : 'Congelar la rotación Z',
+                'it-IT' : 'Congelare la rotazione Z'},
+
     'QFaceAligner.x_offset':{
                 'en-US' : 'X offset',
                 'ru-RU' : 'Смещение по X',
@@ -508,20 +529,6 @@ class Localization:
                 'es-ES' : 'Tipo de marcador de caras.',
                 'it-IT' : 'Tipo di marcatore facciale.'},
 
-    'QFaceMarker.device':{
-                'en-US' : 'Device',
-                'ru-RU' : 'Устройство',
-                'zh-CN' : '设备',
-                'es-ES' : 'Dispositivo',
-                'it-IT' : 'Dispositivo'},
-
-    'QFaceMarker.help.device':{
-                'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
-                'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
-                'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率',
-                'es-ES' : 'Ajuste la combinación de dispositivos del módulo para alcanzar un mayor número de FPS o una menor carga de CPU.',
-                'it-IT' : 'Regola la combinazione dei dispositivi del modulo per ottenere FPS più alti o un utilizzo più basso della CPU'},
-
     'QFaceMarker.marker_coverage':{
                 'en-US' : 'Marker coverage',
                 'ru-RU' : 'Покрытие маркера',
@@ -550,6 +557,41 @@ class Localization:
                 'es-ES' : 'Estabiliza los puntos de referencia de la cara haciendo un promedio de los fotogramas.\nBueno para usar en escenas estáticas o con cámaras web.',
                 'it-IT' : 'Stabilizza i punti di riferimento della faccia facendo la media dei fotogrammi.\nBuono da usare in scene statiche o con una webcam.'},
 
+    'QFaceAnimator.module_title':{
+                'en-US' : 'Face animator',
+                'ru-RU' : 'Аниматор лица',
+                'zh-CN' : '脸部动画师',
+                'es-ES' : 'Animador de caras',
+                'it-IT' : 'Animatore di volti'},
+
+    'QFaceAnimator.animatable':{
+                'en-US' : 'Animatable',
+                'ru-RU' : 'Анимируемый',
+                'zh-CN' : '可动画化',
+                'es-ES' : 'Animable',
+                'it-IT' : 'Animabile'},
+
+    'QFaceAnimator.animator_face_id':{
+                'en-US' : 'Animator Face ID',
+                'ru-RU' : 'Номер лица аниматора',
+                'zh-CN' : '动画师脸部ID',
+                'es-ES' : 'Animator Face ID',
+                'it-IT' : 'Animatore Face ID'},
+
+    'QFaceAnimator.relative_mode':{
+                'en-US' : 'Relative mode',
+                'ru-RU' : 'Относительный режим',
+                'zh-CN' : '相对模式',
+                'es-ES' : 'Modo relativo',
+                'it-IT' : 'Modalità relativa'},
+
+    'QFaceAnimator.reset_reference_pose':{
+                'en-US' : 'Reset reference pose',
+                'ru-RU' : 'Сбросить относительную позу',
+                'zh-CN' : '重置参考姿态',
+                'es-ES' : 'Restablecer la pose de referencia',
+                'it-IT' : 'Azzeramento della posa di riferimento'},
+
     'QFaceSwapper.module_title':{
                 'en-US' : 'Face swapper',
                 'ru-RU' : 'Замена лица',
@@ -570,20 +612,6 @@ class Localization:
                 'zh-CN' : '从本地文件夹载入，没有的话可从deepfacelab官方中文论坛dfldata.xyz下载模型文件。\您可以用 DeepFaceLab 训练自己的模型。',
                 'es-ES' : 'Archivo de modelo desde una carpeta o disponible para descargar desde Internet.\nPuede entrenar su propio modelo en DeepFaceLab.',
                 'it-IT' : 'File del modello da una cartella or disponibile per il download da internet.\nPuoi addestrare il tuo modello su DeepFaceLab.'},
-
-    'QFaceSwapper.device':{
-                'en-US' : 'Device',
-                'ru-RU' : 'Устройство',
-                'zh-CN' : '设备',
-                'es-ES' : 'Dispositivo',
-                'it-IT' : 'Dispositivo'},
-
-    'QFaceSwapper.help.device':{
-                'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
-                'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
-                'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率',
-                'es-ES' : 'Ajuste la combinación de dispositivos del módulo para alcanzar un mayor número de FPS o una menor carga de CPU.',
-                'it-IT' : 'Regola la combinazione dei dispositivi del modulo per ottenere FPS più alti o un utilizzo più basso della CPU'},
 
     'QFaceSwapper.swap_all_faces':{
                 'en-US' : 'Swap all faces',
@@ -703,20 +731,6 @@ class Localization:
                 'zh-CN' : '人脸融合器',
                 'es-ES' : 'Fusionador de caras',
                 'it-IT' : 'Unitore di facce (Merger)'},
-
-    'QFaceMerger.device':{
-                'en-US' : 'Device',
-                'ru-RU' : 'Устройство',
-                'zh-CN' : '设备',
-                'es-ES' : 'Dispositivo',
-                'it-IT' : 'Dispositivo'},
-
-    'QFaceMerger.help.device':{
-                'en-US' : 'Adjust the combination of module devices to achieve higher fps or lower CPU usage.',
-                'ru-RU' : 'Настройте комбинации устройств модулей для достижения высоких кадр/сек либо снижения нагрузки на процессор.',
-                'zh-CN' : '调整模块设备的组合以实现更高的fps或更低的CPU使用率。',
-                'es-ES' : 'Ajuste la combinación de dispositivos de los módulos para alcanzar un mayor número de FPS o una menor carga de CPU.',
-                'it-IT' : 'Regola la combinazione dei dispositivi del modulo per ottenere fps più alti o un minore utilizzo della CPU.'},
 
     'QFaceMerger.face_x_offset':{
                 'en-US' : 'Face X offset',
@@ -970,6 +984,20 @@ class Localization:
                 'es-ES' : 'De abajo a arriba',
                 'it-IT' : "Dal basso verso l'alto"},
 
+    'FaceAligner.AlignMode.FROM_RECT':{
+                'en-US' : 'From rectangle',
+                'ru-RU' : 'Из прямоугольника',
+                'zh-CN' : '从长方形',
+                'es-ES' : 'Desde el rectángulo',
+                'it-IT' : 'Da rettangolo'},
+
+    'FaceAligner.AlignMode.FROM_POINTS':{
+                'en-US' : 'From points',
+                'ru-RU' : 'Из точек',
+                'zh-CN' : '从点',
+                'es-ES' : 'De los puntos',
+                'it-IT' : 'Da punti'},
+
     'FaceSwapper.model_information':{
                 'en-US' : 'Model information',
                 'ru-RU' : 'Информация о модели',
@@ -1046,4 +1074,13 @@ class Localization:
                 'zh-CN' : '源和融合后的帧则源帧',
                 'es-ES' : 'Frame de origen y fusionado o frame de origen',
                 'it-IT' : 'Fotogramma sorgente e fuso o fotogramma sorgente'},
+
+    'StreamOutput.SourceType.ALIGNED_N_SWAPPED_FACE':{
+                'en-US' : 'Aligned and swapped face',
+                'ru-RU' : 'Выровненное и заменённое лицо',
+                'zh-CN' : '对齐和调换面孔',
+                'es-ES' : 'Cara alineada e intercambiada',
+                'it-IT' : 'Faccia allineata e scambiata'},
     }
+
+

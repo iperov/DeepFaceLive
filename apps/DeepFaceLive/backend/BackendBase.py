@@ -21,6 +21,7 @@ class BackendFaceSwapInfo:
         self.face_align_image_name : str = None
         self.face_align_mask_name : str = None
         self.face_align_lmrks_mask_name : str = None
+        self.face_anim_image_name : str = None
         self.face_swap_image_name : str = None
         self.face_swap_mask_name : str = None
 

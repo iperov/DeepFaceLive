@@ -1,7 +1,9 @@
 from .BackendBase import (BackendConnection, BackendConnectionData, BackendDB,
-                          BackendSignal, BackendWeakHeap, BackendHost, BackendWorker)
+                          BackendHost, BackendSignal, BackendWeakHeap,
+                          BackendWorker)
 from .CameraSource import CameraSource
 from .FaceAligner import FaceAligner
+from .FaceAnimator import FaceAnimator
 from .FaceDetector import FaceDetector
 from .FaceMarker import FaceMarker
 from .FaceMerger import FaceMerger

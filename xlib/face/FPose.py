@@ -49,4 +49,4 @@ class FPose(IState):
         mat[2,:] = np.cross(mat[0, :], mat[1, :])
         pitch, yaw, roll = lib_math.rotation_matrix_to_euler(mat)
 
-        return FPose.from_radians(pitch, yaw, roll)
+        return FPose.from_radians(pitch, yaw*2, roll)

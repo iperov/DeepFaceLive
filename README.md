@@ -12,9 +12,13 @@
 
 <tr><td colspan=2 align="center">
 
-## Available ready-to-use public face models.
+## Face Swapper
 
-## These persons do not exists. Similarities with real people are accidental.
+You can swap your face from a webcam or the face in the video using trained face models.
+
+Here is a list of available ready-to-use public face models.
+
+These persons do not exists. Similarities with real people are accidental.
 
 </td></tr>
 
@@ -117,6 +121,21 @@ Here is an <a href="https://www.tiktok.com/@arnoldschwarzneggar/video/6995538782
 
 <tr><td colspan=2 align="center">
 
+## Face Animator
+
+There is also a Face Animator module in DeepFaceLive app. You can control a static face picture using video or your own face from the camera. The quality is not the best, and requires fine face matching and tuning parameters for every face pair, but enough for funny videos and memes or real-time streaming at 25 fps using 35 TFLOPS GPU.
+
+<img src="doc/face_animator_example.gif"></img>
+
+Here is a [mini video](doc/FaceAnimator_tutor.mp4) showing the process of setting up the Face Animator for Obama controlling Kim Chen's face.
+
+</td></tr>
+
+</table>
+<table align="center" border="0">
+
+<tr><td colspan=2 align="center">
+
 ## Minimum system requirements
 
 any DirectX12 compatible graphics card
@@ -150,7 +169,7 @@ Windows 10
 ## Releases
 
 </td></tr>
-<tr><td align="right"> 
+<tr><td align="right">
 
 <a href="https://disk.yandex.ru/d/7i5XTKIKVg5UUg">Windows 10 x64 (yandex.ru)</a>
 
@@ -187,7 +206,7 @@ NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. Face
 
 </td></tr>
 <tr><td colspan=2 align="center">
-I need the computing power to train models. 
+I need the computing power to train models.
 <br>
 If you have a free computer with 2080TI or better card with 12GB+ VRAM, you can give me remote access to it. I will train 1 model in a month. Contact me(iperov#6528) in Discord channel.
 </td></tr>
@@ -209,7 +228,7 @@ bitcoin:bc1qewl062v70rszulml3f0mjdjrys8uxdydw3v6rq
 <!--
     <a href="https://br-stone.online"><img src="doc/logo_barclay_stone.png"></img></a><a href="https://exmo.com"><img src="doc/logo_exmo.png"></img></a>
 
-    presents 
+    presents
 
     <tr><td align="right">
 

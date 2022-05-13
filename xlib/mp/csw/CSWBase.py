@@ -284,11 +284,11 @@ class Host(Base):
             # Save only when the process is fully started / stopped
             self._db.set_value(self._db_key_host_onoff, self._process_status == Host._ProcessStatus.STARTED )
 
-    def restore_on_off_state(self):
+    def restore_on_off_state(self, default_state=True):
         """
         restore saved on_off state from db. Default is on.
         """
-        is_on = self._db.get_value(self._db_key_host_onoff, True)
+        is_on = self._db.get_value(self._db_key_host_onoff, default_state)
         if is_on:
             self.start()
 

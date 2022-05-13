@@ -15,7 +15,7 @@ class QFaceMarker(QBackendPanel):
         q_marker_type_label  = QLabelPopupInfo(label=L('@QFaceMarker.marker_type'), popup_info_text=L('@QFaceMarker.help.marker_type') )
         q_marker_type        = QComboBoxCSWDynamicSingleSwitch(cs.marker_type, reflect_state_widgets=[q_marker_type_label])
 
-        q_device_label       = QLabelPopupInfo(label=L('@QFaceMarker.device'), popup_info_text=L('@QFaceMarker.help.device') )
+        q_device_label       = QLabelPopupInfo(label=L('@common.device'), popup_info_text=L('@common.help.device') )
         q_device             = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
         q_marker_coverage_label = QLabelPopupInfo(label=L('@QFaceMarker.marker_coverage'), popup_info_text=L('@QFaceMarker.help.marker_coverage') )
