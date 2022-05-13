@@ -1,5 +1,6 @@
 import time
 from pathlib import Path
+from typing import Dict
 
 import numpy as np
 from modelhub import DFLive
@@ -24,7 +25,7 @@ class FaceSwapper(BackendHost):
                          worker_start_args=[weak_heap, reemit_frame_signal, bc_in, bc_out, dfm_models_path])
 
     def get_control_sheet(self) -> 'Sheet.Host': return super().get_control_sheet()
-    
+
     def _get_name(self):
         return super()._get_name()# + f'{self._id}'
 
@@ -48,7 +49,7 @@ class FaceSwapperWorker(BackendWorker):
 
         state, cs = self.get_state(), self.get_control_sheet()
 
-        cs.model.call_on_selected(self.on_cs_model_info)
+        cs.model.call_on_selected(self.on_cs_model)
         cs.device.call_on_selected(self.on_cs_device)
         cs.swap_all_faces.call_on_flag(self.on_cs_swap_all_faces)
         cs.face_id.call_on_number(self.on_cs_face_id)
@@ -59,32 +60,31 @@ class FaceSwapperWorker(BackendWorker):
         cs.pre_gamma_blue.call_on_number(self.on_cs_pre_gamma_blue)
         cs.two_pass.call_on_flag(self.on_cs_two_pass)
 
-        cs.model.enable()
-        cs.model.set_choices( DFLive.get_available_models_info(dfm_models_path), none_choice_name='@misc.menu_select')
-        cs.model.select(state.model)
+        cs.device.enable()
+        cs.device.set_choices( DFLive.get_available_devices(), none_choice_name='@misc.menu_select')
+        cs.device.select(state.device)
 
 
-    def on_cs_model_info(self, idx, model):
+    def on_cs_device(self, idx, device):
         state, cs = self.get_state(), self.get_control_sheet()
-        if state.model == model:
-
-            cs.device.enable()
-            cs.device.set_choices( DFLive.get_available_devices(), none_choice_name='@misc.menu_select')
-            cs.device.select(state.model_state.device)
+        if device is not None and state.device == device:
+            cs.model.enable()
+            cs.model.set_choices( DFLive.get_available_models_info(self.dfm_models_path), none_choice_name='@misc.menu_select')
+            cs.model.select(state.model)
         else:
-            state.model = model
-            state.model_state = ModelState()
+            state.device = device
             self.save_state()
             self.restart()
 
-    def on_cs_device(self, idxs, device):
+    def on_cs_model(self, idx, model):
         state, cs = self.get_state(), self.get_control_sheet()
-        if device is not None and state.model_state.device == device:
-            self.dfm_model_initializer = DFLive.DFMModel_from_info(state.model, device)
+
+        if state.model == model:
+            state.model_state = state.models_state[model.get_name()] = state.models_state.get(model.get_name(), ModelState())
+            self.dfm_model_initializer = DFLive.DFMModel_from_info(state.model, state.device)
             self.set_busy(True)
         else:
-            state.model_state = ModelState()
-            state.model_state.device = device
+            state.model = model
             self.save_state()
             self.restart()
 
@@ -338,7 +338,6 @@ class Sheet:
             self.two_pass = lib_csw.Flag.Host()
 
 class ModelState(BackendWorkerState):
-    device = None
     swap_all_faces : bool = None
     face_id : int = None
     morph_factor : float = None
@@ -349,5 +348,9 @@ class ModelState(BackendWorkerState):
     two_pass : bool = None
 
 class WorkerState(BackendWorkerState):
-    model : DFLive.DFMModelInfo = None
-    model_state : ModelState = None
+    def __init__(self):
+        super().__init__()
+        self.device = None
+        self.model : DFLive.DFMModelInfo = None
+        self.models_state : Dict[str, ModelState] = {}
+        self.model_state : ModelState = None

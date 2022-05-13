@@ -25,6 +25,9 @@ class QFaceSwapper(QBackendPanel):
 
         btn_open_folder = self.btn_open_folder = qtx.QXPushButton(image = QXImageDB.eye_outline('light gray'), tooltip_text='Reveal in Explorer', released=self._btn_open_folder_released, fixed_size=(24,22) )
 
+        q_device_label  = QLabelPopupInfo(label=L('@common.device'), popup_info_text=L('@common.help.device') )
+        q_device        = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
+
         q_model_label = QLabelPopupInfo(label=L('@QFaceSwapper.model'), popup_info_text=L('@QFaceSwapper.help.model') )
         q_model       = QComboBoxCSWDynamicSingleSwitch(cs.model, reflect_state_widgets=[q_model_label, btn_open_folder])
 
@@ -32,9 +35,6 @@ class QFaceSwapper(QBackendPanel):
         q_model_dl_progress = self._q_model_dl_progress = QProgressBarCSWProgress(cs.model_dl_progress)
 
         q_model_info_label = self._q_model_info_label = QLabelPopupInfoCSWInfoLabel(cs.model_info_label)
-
-        q_device_label  = QLabelPopupInfo(label=L('@common.device'), popup_info_text=L('@common.help.device') )
-        q_device        = QComboBoxCSWDynamicSingleSwitch(cs.device, reflect_state_widgets=[q_device_label])
 
         q_swap_all_faces_label = QLabelPopupInfo(label=L('@QFaceSwapper.swap_all_faces') )
         q_swap_all_faces       = QCheckBoxCSWFlag(cs.swap_all_faces, reflect_state_widgets=[q_swap_all_faces_label])
@@ -59,15 +59,15 @@ class QFaceSwapper(QBackendPanel):
 
         grid_l = qtx.QXGridLayout( spacing=5)
         row = 0
+        grid_l.addWidget(q_device_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_device, row, 1, alignment=qtx.AlignLeft )
+        row += 1
         grid_l.addWidget(q_model_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addLayout(qtx.QXHBoxLayout([q_model, 2, btn_open_folder, 2, q_model_info_label]), row, 1 )
         row += 1
         grid_l.addWidget(q_model_dl_progress, row, 0, 1, 2 )
         row += 1
         grid_l.addWidget(q_model_dl_error, row, 0, 1, 2 )
-        row += 1
-        grid_l.addWidget(q_device_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
-        grid_l.addWidget(q_device, row, 1, alignment=qtx.AlignLeft )
         row += 1
         grid_l.addWidget( q_swap_all_faces_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addLayout( qtx.QXHBoxLayout([q_swap_all_faces, 4, q_face_id_label, 4, q_face_id ]), row, 1, alignment=qtx.AlignLeft )
