@@ -1,0 +1,1 @@
+from .oleaut32 import VariantInit

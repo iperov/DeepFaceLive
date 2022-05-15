@@ -1,0 +1,40 @@
+from ctypes import c_uint, c_int, Structure
+
+class D3D_FEATURE_LEVEL(c_uint):
+    D3D_FEATURE_LEVEL_1_0_CORE	= 0x1000
+    D3D_FEATURE_LEVEL_9_1	= 0x9100
+    D3D_FEATURE_LEVEL_9_2	= 0x9200
+    D3D_FEATURE_LEVEL_9_3	= 0x9300
+    D3D_FEATURE_LEVEL_10_0	= 0xa000
+    D3D_FEATURE_LEVEL_10_1	= 0xa100
+    D3D_FEATURE_LEVEL_11_0	= 0xb000
+    D3D_FEATURE_LEVEL_11_1	= 0xb100
+    D3D_FEATURE_LEVEL_12_0	= 0xc000
+    D3D_FEATURE_LEVEL_12_1	= 0xc100
+
+class D3D12_COMMAND_LIST_TYPE(c_uint):
+    D3D12_COMMAND_LIST_TYPE_DIRECT	= 0
+    D3D12_COMMAND_LIST_TYPE_BUNDLE	= 1
+    D3D12_COMMAND_LIST_TYPE_COMPUTE	= 2
+    D3D12_COMMAND_LIST_TYPE_COPY	= 3
+    D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE	= 4
+    D3D12_COMMAND_LIST_TYPE_VIDEO_PROCESS	= 5
+    D3D12_COMMAND_LIST_TYPE_VIDEO_ENCODE	= 6
+
+class D3D12_COMMAND_QUEUE_FLAGS(c_uint):
+    D3D12_COMMAND_QUEUE_FLAG_NONE = 0
+    D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT = 0x1
+
+
+class D3D12_COMMAND_QUEUE_DESC(Structure):
+    _fields_ = [('Type', D3D12_COMMAND_LIST_TYPE),
+                ('Priority', c_int),
+                ('Flags', D3D12_COMMAND_QUEUE_FLAGS),
+                ('NodeMask', c_uint),
+               ]
+
+    def __init__(self):
+        self.Type : D3D12_COMMAND_LIST_TYPE = D3D12_COMMAND_LIST_TYPE()
+        self.Priority : c_int = c_int()
+        self.Flags : D3D12_COMMAND_QUEUE_FLAGS = D3D12_COMMAND_QUEUE_FLAGS()
+        self.NodeMask : c_uint = c_uint()

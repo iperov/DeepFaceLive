@@ -1,12 +1,12 @@
-from ctypes import (POINTER, WINFUNCTYPE, byref, c_byte, c_int64, c_longlong,
-                    c_size_t, c_ubyte, c_uint, c_uint32, c_ulong, c_void_p,
-                    c_wchar)
-from typing import List, Union
+from ctypes import POINTER, c_longlong, c_uint, c_void_p
+from typing import Union
+
 from xlib.api.win32.wintypes.wintypes import BOOL
 
-from ..wintypes import (ERROR, GUID, HRESULT, REFGUID, REFIID, IUnknown, dll_import,
-                     interface)
+from ..wintypes import (ERROR, GUID, HRESULT, REFGUID, REFIID, IUnknown,
+                        dll_import, interface)
 from .structs import *
+
 
 @interface
 class IDXGIObject(IUnknown):

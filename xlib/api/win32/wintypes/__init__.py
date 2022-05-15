@@ -1,3 +1,6 @@
-from .wintypes import (BOOL, DWORD, ERROR, GUID, HANDLE, HRESULT, IID,
-                       LARGE_INTEGER, MMERROR, MMRESULT, REFGUID, REFIID,
-                       IUnknown, dll_import, interface)
+from .wintypes import (BOOL, CHAR, CLSID, DOUBLE, DWORD, ERROR, FLOAT, GUID,
+                       HANDLE, HRESULT, IID, INT, LARGE_INTEGER, LONG,
+                       LONGLONG, LPCOLESTR, MMERROR, MMRESULT, PVOID,
+                       REFCLSID, REFGUID, REFIID, SHORT, UINT, ULARGE_INTEGER,  
+                       USHORT, VARIANT, VARTYPE, WORD, IUnknown, dll_import,
+                       interface)

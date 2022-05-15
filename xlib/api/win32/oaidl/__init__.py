@@ -1,0 +1,1 @@
+from .oaidl import IPropertyBag, IErrorLog
