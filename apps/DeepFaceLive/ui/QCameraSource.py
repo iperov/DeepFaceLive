@@ -15,11 +15,11 @@ class QCameraSource(QBackendPanel):
     def __init__(self, backend : CameraSource):
         cs = backend.get_control_sheet()
 
-        q_device_idx_label = QLabelPopupInfo(label=L('@QCameraSource.device_index') )
-        q_device_idx       = QComboBoxCSWDynamicSingleSwitch(cs.device_idx, reflect_state_widgets=[q_device_idx_label])
-
         q_driver_label    = QLabelPopupInfo(label=L('@QCameraSource.driver'), popup_info_text=L('@QCameraSource.help.driver') )
         q_driver          = QComboBoxCSWDynamicSingleSwitch(cs.driver, reflect_state_widgets=[q_driver_label])
+        
+        q_device_idx_label = QLabelPopupInfo(label=L('@QCameraSource.device_index') )
+        q_device_idx       = QComboBoxCSWDynamicSingleSwitch(cs.device_idx, reflect_state_widgets=[q_device_idx_label])
 
         q_resolution_label = QLabelPopupInfo(label=L('@QCameraSource.resolution'), popup_info_text=L('@QCameraSource.help.resolution') )
         q_resolution       = QComboBoxCSWDynamicSingleSwitch(cs.resolution, reflect_state_widgets=[q_resolution_label])
@@ -41,11 +41,11 @@ class QCameraSource(QBackendPanel):
 
         grid_l = qtx.QXGridLayout(spacing=5)
         row = 0
-        grid_l.addWidget(q_device_idx_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
-        grid_l.addWidget(q_device_idx, row, 1, alignment=qtx.AlignLeft )
-        row += 1
         grid_l.addWidget(q_driver_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_driver, row, 1, alignment=qtx.AlignLeft )
+        row += 1
+        grid_l.addWidget(q_device_idx_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_device_idx, row, 1, alignment=qtx.AlignLeft )
         row += 1
         grid_l.addWidget(q_resolution_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_resolution, row, 1, alignment=qtx.AlignLeft )

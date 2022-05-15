@@ -71,6 +71,7 @@ class _RotationType(IntEnum):
 
 _RotationType_names = ['0 degrees', '90 degrees', '180 degrees', '270 degrees']
 
+
 class CameraSourceWorker(BackendWorker):
     def get_state(self) -> 'WorkerState': return super().get_state()
     def get_control_sheet(self) -> 'Sheet.Worker': return super().get_control_sheet()
@@ -86,8 +87,8 @@ class CameraSourceWorker(BackendWorker):
 
         state, cs = self.get_state(), self.get_control_sheet()
 
-        cs.device_idx.call_on_selected(self.on_cs_device_idx_selected)
         cs.driver.call_on_selected(self.on_cs_driver_selected)
+        cs.device_idx.call_on_selected(self.on_cs_device_idx_selected)
         cs.resolution.call_on_selected(self.on_cs_resolution_selected)
         cs.fps.call_on_number(self.on_cs_fps)
         cs.rotation.call_on_selected(self.on_cs_rotation_selected)
@@ -96,13 +97,23 @@ class CameraSourceWorker(BackendWorker):
         cs.load_settings.call_on_signal(self.on_cs_load_settings)
         cs.save_settings.call_on_signal(self.on_cs_save_settings)
 
-        cs.device_idx.enable()
-        cs.device_idx.set_choices([*range(16)], none_choice_name='@misc.menu_select')
-        cs.device_idx.select(state.device_idx)
-
         cs.driver.enable()
         cs.driver.set_choices(_DriverType, _DriverType_names, none_choice_name='@misc.menu_select')
         cs.driver.select(state.driver if state.driver is not None else _DriverType.DSHOW if platform.system() == 'Windows' else _DriverType.COMPATIBLE)
+
+        if platform.system() == 'Windows':
+            from xlib.api.win32 import ole32
+            from xlib.api.win32 import dshow
+            ole32.CoInitializeEx(0,0)
+            choices = [ f'{idx} : {name}' for idx, name in enumerate(dshow.get_video_input_devices_names()) ]
+            choices += [ f'{idx}' for idx in range(len(choices), 16) ]
+            ole32.CoUninitialize()
+        else:
+            choices = [ f'{idx}' for idx in range(16) ]
+
+        cs.device_idx.enable()
+        cs.device_idx.set_choices(choices, none_choice_name='@misc.menu_select')
+        cs.device_idx.select(state.device_idx)
 
         cs.resolution.enable()
         cs.resolution.set_choices(_ResolutionType, _ResolutionType_names, none_choice_name=None)
@@ -144,20 +155,19 @@ class CameraSourceWorker(BackendWorker):
                 cs.save_settings.enable()
             else:
                 cs.device_idx.unselect()
-                cs.driver.unselect()
-
-    def on_cs_device_idx_selected(self, idx, device_idx):
-        cs, state = self.get_control_sheet(), self.get_state()
-        if state.device_idx != device_idx:
-            state.device_idx = device_idx
-            self.save_state()
-            if self.is_started():
-                self.restart()
 
     def on_cs_driver_selected(self, idx, driver):
         cs, state = self.get_control_sheet(), self.get_state()
         if state.driver != driver:
             state.driver = driver
+            self.save_state()
+            if self.is_started():
+                self.restart()
+
+    def on_cs_device_idx_selected(self, device_idx, device_name):
+        cs, state = self.get_control_sheet(), self.get_state()
+        if state.device_idx != device_idx:
+            state.device_idx = device_idx
             self.save_state()
             if self.is_started():
                 self.restart()
