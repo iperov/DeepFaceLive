@@ -39,6 +39,7 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
             DFMModelInfo(name='David Kovalniy', model_path=models_path / f'David_Kovalniy.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DAVID_KOVALNIY/David_Kovalniy.dfm'),
             DFMModelInfo(name='Dilraba Dilmurat', model_path=models_path / f'Dilraba_Dilmurat.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DILRABA_DILMURAT/Dilraba_Dilmurat.dfm'),
             DFMModelInfo(name='Ewon Spice', model_path=models_path / f'Ewon_Spice.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/EWON_SPICE/Ewon_Spice.dfm'),
+            DFMModelInfo(name='Keanu Reeves 320', model_path=models_path / f'Keanu_Reeves_320.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES/Keanu_Reeves_320.dfm'),
             DFMModelInfo(name='Kim Jarrey', model_path=models_path / f'Kim_Jarrey.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KIM_JARREY/Kim_Jarrey.dfm'),
             DFMModelInfo(name='Matilda Bobbie', model_path=models_path / f'Matilda_Bobbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MATILDA_BOBBIE/Matilda_Bobbie.dfm'),
             DFMModelInfo(name='Nicola Badge', model_path=models_path / f'Nicola_Badge.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NICOLA_BADGE/Nicola_Badge.dfm'),
