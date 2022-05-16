@@ -19,8 +19,8 @@ def get_video_input_devices_names() -> List[str]:
         if sys_dev_enum.CreateClassEnumerator(uuids.CLSID_VideoInputDeviceCategory, pEnumCat, 0) == wintypes.ERROR.SUCCESS:
 
             moniker = objidl.IMoniker()
-
             while pEnumCat.Next(1, moniker, None) == wintypes.ERROR.SUCCESS:
+                name = 'unnamed'
 
                 prop_bag = oaidl.IPropertyBag()
                 if moniker.BindToStorage(None, None, oaidl.IPropertyBag.IID, prop_bag) == wintypes.ERROR.SUCCESS:
@@ -29,10 +29,11 @@ def get_video_input_devices_names() -> List[str]:
                     hr = prop_bag.Read(wintypes.LPCOLESTR('Description'), var, None )
                     if hr != wintypes.ERROR.SUCCESS:
                         hr = prop_bag.Read(wintypes.LPCOLESTR('FriendlyName'), var, None )
-
-                    names.append(var.value.bstrVal.value if hr == wintypes.ERROR.SUCCESS else 'unnamed')
-
+                    if hr == wintypes.ERROR.SUCCESS:
+                        name = var.value.bstrVal.value
                     prop_bag.Release()
+                names.append(name)
+
                 moniker.Release()
             pEnumCat.Release()
         sys_dev_enum.Release()
