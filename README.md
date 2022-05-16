@@ -25,13 +25,14 @@ These persons do not exists. Similarities with real people are accidental. Excep
 
 <table align="center" border="0">
 
-<tr><td align="center" colspan=4>
+<tr><td align="center">
 Keanu Reeves
 
 <img src="doc/celebs/Keanu_Reeves/Keanu_Reeves.png" width=128></img>
 
 <a href="doc/celebs/Keanu_Reeves/examples.md">examples</a>
-</td></tr>
+</td></tr></table>
+<table align="center" border="0">
 <tr><td align="center">
 Ava de Addario
 
