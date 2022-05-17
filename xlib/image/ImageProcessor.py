@@ -466,9 +466,9 @@ class ImageProcessor:
         """
         apply HSV modification for BGR image
             
-            h_diff = [-360.0 .. 360.0]
+            h_diff = [-1.0 .. 1.0]
             s_diff = [-1.0 .. 1.0]
-            s_diff = [-1.0 .. 1.0]
+            v_diff = [-1.0 .. 1.0]
         """
         dtype = self.get_dtype()
         self.to_ufloat32()
@@ -481,7 +481,7 @@ class ImageProcessor:
         img = img.reshape( (N*H,W,C) )
         
         h, s, v = cv2.split(cv2.cvtColor(img, cv2.COLOR_BGR2HSV))
-        h = ( h + h_diff ) % 360
+        h = ( h + h_diff*360.0 ) % 360
         
         s += s_diff
         np.clip (s, 0, 1, out=s )

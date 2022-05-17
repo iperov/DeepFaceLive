@@ -196,7 +196,7 @@ class TrainingDataGenerator(lib_mp.MPWorker):
                         ip = lib_img.ImageProcessor(img_aligned_shifted)
                         rnd = np.random
                         if rnd.randint(2) == 0:
-                            ip.hsv( rnd.randint(0, 360), rnd.uniform(-0.5,0.5), rnd.uniform(-0.5,0.5), mask=lib_sd.random_circle_faded_multi((resolution,resolution), complexity=random_mask_complexity))
+                            ip.hsv( rnd.uniform(0,1), rnd.uniform(-0.5,0.5), rnd.uniform(-0.5,0.5), mask=lib_sd.random_circle_faded_multi((resolution,resolution), complexity=random_mask_complexity))
                         else:
                             ip.levels( [ [rnd.uniform(0,0.25),rnd.uniform(0.75,1.0),rnd.uniform(0.5,1.5), rnd.uniform(0,0.25),rnd.uniform(0.75,1.0),  ],
                                          [rnd.uniform(0,0.25),rnd.uniform(0.75,1.0),rnd.uniform(0.5,1.5), rnd.uniform(0,0.25),rnd.uniform(0.75,1.0),],
