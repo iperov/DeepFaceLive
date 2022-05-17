@@ -51,8 +51,14 @@ class QFaceSwapper(QBackendPanel):
         q_pre_gamma_label = QLabelPopupInfo(label=L('@QFaceSwapper.pregamma'), popup_info_text=L('@QFaceSwapper.help.pregamma') )
 
         q_pre_gamma_red   = QSpinBoxCSWNumber(cs.pre_gamma_red, reflect_state_widgets=[q_pre_gamma_label])
-        q_pre_gamma_green = QSpinBoxCSWNumber(cs.pre_gamma_green )
+        q_pre_gamma_green = QSpinBoxCSWNumber(cs.pre_gamma_green)
         q_pre_gamma_blue  = QSpinBoxCSWNumber(cs.pre_gamma_blue)
+
+        q_post_gamma_label = QLabelPopupInfo(label=L('@QFaceSwapper.postgamma'))
+
+        q_post_gamma_red = QSpinBoxCSWNumber(cs.post_gamma_red, reflect_state_widgets=[q_post_gamma_label])
+        q_post_gamma_green = QSpinBoxCSWNumber(cs.post_gamma_green)
+        q_post_gamma_blue = QSpinBoxCSWNumber(cs.post_gamma_blue)
 
         q_two_pass_label = QLabelPopupInfo(label=L('@QFaceSwapper.two_pass'), popup_info_text=L('@QFaceSwapper.help.two_pass') )
         q_two_pass       = QCheckBoxCSWFlag(cs.two_pass, reflect_state_widgets=[q_two_pass_label])
@@ -80,6 +86,9 @@ class QFaceSwapper(QBackendPanel):
         row += 1
         grid_l.addWidget( q_pre_gamma_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addLayout( qtx.QXHBoxLayout([q_pre_gamma_red, q_pre_gamma_green, q_pre_gamma_blue ]), row, 1)
+        row += 1
+        grid_l.addWidget( q_post_gamma_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addLayout( qtx.QXHBoxLayout([q_post_gamma_red, q_post_gamma_green, q_post_gamma_blue]), row, 1)
         row += 1
         grid_l.addWidget(q_two_pass_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_two_pass, row, 1)

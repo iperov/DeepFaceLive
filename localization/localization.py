@@ -676,6 +676,13 @@ class Localization:
                 'es-ES' : 'Cambiar el valor gamma de la imagen antes de enviarla a la red neuronal.',
                 'it-IT' : "Cambia il gamma dell'immagine prima di inserirla nella rete neurale."},
 
+    'QFaceSwapper.postgamma':{
+                'en-US' : 'Post-gamma',
+                'ru-RU' : 'Пост-гамма',
+                'zh-CN' : '后伽马校正',
+                'es-ES' : 'Post-gamma',
+                'it-IT' : 'Post-gamma'},
+
     'QFaceSwapper.two_pass':{
                 'en-US' : 'Two pass',
                 'ru-RU' : '2 прохода',

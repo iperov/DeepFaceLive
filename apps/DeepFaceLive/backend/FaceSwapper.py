@@ -55,15 +55,17 @@ class FaceSwapperWorker(BackendWorker):
         cs.face_id.call_on_number(self.on_cs_face_id)
         cs.morph_factor.call_on_number(self.on_cs_morph_factor)
         cs.presharpen_amount.call_on_number(self.on_cs_presharpen_amount)
-        cs.pre_gamma_red.call_on_number(self.on_cs_gamma_red)
+        cs.pre_gamma_red.call_on_number(self.on_cs_pre_gamma_red)
         cs.pre_gamma_green.call_on_number(self.on_cs_pre_gamma_green)
         cs.pre_gamma_blue.call_on_number(self.on_cs_pre_gamma_blue)
+        cs.post_gamma_red.call_on_number(self.on_cs_post_gamma_red)
+        cs.post_gamma_blue.call_on_number(self.on_cs_post_gamma_blue)
+        cs.post_gamma_green.call_on_number(self.on_cs_post_gamma_green)
         cs.two_pass.call_on_flag(self.on_cs_two_pass)
 
         cs.device.enable()
         cs.device.set_choices( DFLive.get_available_devices(), none_choice_name='@misc.menu_select')
         cs.device.select(state.device)
-
 
     def on_cs_device(self, idx, device):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -135,7 +137,7 @@ class FaceSwapperWorker(BackendWorker):
             self.save_state()
             self.reemit_frame_signal.send()
 
-    def on_cs_gamma_red(self, pre_gamma_red):
+    def on_cs_pre_gamma_red(self, pre_gamma_red):
         state, cs = self.get_state(), self.get_control_sheet()
         model_state = state.model_state
         if model_state is not None:
@@ -165,7 +167,35 @@ class FaceSwapperWorker(BackendWorker):
             self.save_state()
             self.reemit_frame_signal.send()
 
+    def on_cs_post_gamma_red(self, post_gamma_red):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        if model_state is not None:
+            cfg = cs.post_gamma_red.get_config()
+            post_gamma_red = model_state.post_gamma_red = float(np.clip(post_gamma_red, cfg.min, cfg.max))
+            cs.post_gamma_red.set_number(post_gamma_red)
+            self.save_state()
+            self.reemit_frame_signal.send()
 
+    def on_cs_post_gamma_blue(self, post_gamma_blue):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        if model_state is not None:
+            cfg = cs.post_gamma_blue.get_config()
+            post_gamma_blue = model_state.post_gamma_blue = float(np.clip(post_gamma_blue, cfg.min, cfg.max))
+            cs.post_gamma_blue.set_number(post_gamma_blue)
+            self.save_state()
+            self.reemit_frame_signal.send()
+
+    def on_cs_post_gamma_green(self, post_gamma_green):
+        state, cs = self.get_state(), self.get_control_sheet()
+        model_state = state.model_state
+        if model_state is not None:
+            cfg = cs.post_gamma_green.get_config()
+            post_gamma_green = model_state.post_gamma_green = float(np.clip(post_gamma_green, cfg.min, cfg.max))
+            cs.post_gamma_green.set_number(post_gamma_green)
+            self.save_state()
+            self.reemit_frame_signal.send()
 
     def on_cs_two_pass(self, two_pass):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -174,8 +204,6 @@ class FaceSwapperWorker(BackendWorker):
             model_state.two_pass = two_pass
             self.save_state()
             self.reemit_frame_signal.send()
-
-
 
     def on_tick(self):
         state, cs = self.get_state(), self.get_control_sheet()
@@ -233,6 +261,18 @@ class FaceSwapperWorker(BackendWorker):
                 cs.pre_gamma_blue.set_config(lib_csw.Number.Config(min=0.010, max=4, step=0.01, decimals=2, allow_instant_update=True))
                 cs.pre_gamma_blue.set_number(state.model_state.pre_gamma_blue if state.model_state.pre_gamma_blue is not None else 1)
 
+                cs.post_gamma_red.enable()
+                cs.post_gamma_red.set_config(lib_csw.Number.Config(min=0.010, max=4, step=0.01, decimals=2, allow_instant_update=True))
+                cs.post_gamma_red.set_number(state.model_state.post_gamma_red if state.model_state.post_gamma_red is not None else 1)
+
+                cs.post_gamma_blue.enable()
+                cs.post_gamma_blue.set_config(lib_csw.Number.Config(min=0.010, max=4, step=0.01, decimals=2, allow_instant_update=True))
+                cs.post_gamma_blue.set_number(state.model_state.post_gamma_blue if state.model_state.post_gamma_blue is not None else 1)
+
+                cs.post_gamma_green.enable()
+                cs.post_gamma_green.set_config(lib_csw.Number.Config(min=0.010, max=4, step=0.01, decimals=2, allow_instant_update=True))
+                cs.post_gamma_green.set_number(state.model_state.post_gamma_green if state.model_state.post_gamma_green is not None else 1)
+
                 cs.two_pass.enable()
                 cs.two_pass.set_flag(state.model_state.two_pass if state.model_state.two_pass is not None else False)
 
@@ -268,6 +308,9 @@ class FaceSwapperWorker(BackendWorker):
                             pre_gamma_red = model_state.pre_gamma_red
                             pre_gamma_green = model_state.pre_gamma_green
                             pre_gamma_blue = model_state.pre_gamma_blue
+                            post_gamma_red = model_state.post_gamma_red
+                            post_gamma_blue = model_state.post_gamma_blue
+                            post_gamma_green = model_state.post_gamma_green
 
                             fai_ip = ImageProcessor(face_align_image)
                             if model_state.presharpen_amount != 0:
@@ -283,6 +326,9 @@ class FaceSwapperWorker(BackendWorker):
                             if model_state.two_pass:
                                 celeb_face, celeb_face_mask_img, _ = dfm_model.convert(celeb_face, morph_factor=model_state.morph_factor)
                                 celeb_face, celeb_face_mask_img = celeb_face[0], celeb_face_mask_img[0]
+
+                            if post_gamma_red != 1.0 or post_gamma_blue != 1.0 or post_gamma_green != 1.0:
+                                celeb_face = ImageProcessor(celeb_face).gamma(post_gamma_red, post_gamma_blue, post_gamma_green).get_image('HWC')
 
                             fsi.face_align_mask_name = f'{fsi.face_align_image_name}_mask'
                             fsi.face_swap_image_name = f'{fsi.face_align_image_name}_swapped'
@@ -316,8 +362,11 @@ class Sheet:
             self.morph_factor = lib_csw.Number.Client()
             self.presharpen_amount = lib_csw.Number.Client()
             self.pre_gamma_red = lib_csw.Number.Client()
-            self.pre_gamma_blue = lib_csw.Number.Client()
             self.pre_gamma_green = lib_csw.Number.Client()
+            self.pre_gamma_blue = lib_csw.Number.Client()
+            self.post_gamma_red = lib_csw.Number.Client()
+            self.post_gamma_blue = lib_csw.Number.Client()
+            self.post_gamma_green = lib_csw.Number.Client()
             self.two_pass = lib_csw.Flag.Client()
 
     class Worker(lib_csw.Sheet.Worker):
@@ -333,8 +382,11 @@ class Sheet:
             self.morph_factor = lib_csw.Number.Host()
             self.presharpen_amount = lib_csw.Number.Host()
             self.pre_gamma_red = lib_csw.Number.Host()
-            self.pre_gamma_blue = lib_csw.Number.Host()
             self.pre_gamma_green = lib_csw.Number.Host()
+            self.pre_gamma_blue = lib_csw.Number.Host()
+            self.post_gamma_red = lib_csw.Number.Host()
+            self.post_gamma_blue = lib_csw.Number.Host()
+            self.post_gamma_green = lib_csw.Number.Host()
             self.two_pass = lib_csw.Flag.Host()
 
 class ModelState(BackendWorkerState):
@@ -345,6 +397,9 @@ class ModelState(BackendWorkerState):
     pre_gamma_red : float = None
     pre_gamma_blue : float = None
     pre_gamma_green: float = None
+    post_gamma_red : float = None
+    post_gamma_blue : float = None
+    post_gamma_green : float = None
     two_pass : bool = None
 
 class WorkerState(BackendWorkerState):
