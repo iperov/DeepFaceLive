@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from localization import Localization
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 from xlib import path as lib_path
 
 

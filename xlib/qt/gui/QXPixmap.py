@@ -1,5 +1,5 @@
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 
 
 class QXPixmap(QPixmap):

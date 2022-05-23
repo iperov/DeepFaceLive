@@ -1,4 +1,4 @@
-from PyQt6.QtCore import *
+from PySide6.QtCore import *
 
 
 class QXTimer(QTimer):

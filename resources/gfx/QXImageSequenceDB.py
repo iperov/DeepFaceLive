@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
 from xlib import path as lib_path
 from xlib.qt.gui.from_file import QXImage_from_file
 from xlib.qt.gui.QXImageSequence import QXImageSequence

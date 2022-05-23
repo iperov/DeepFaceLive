@@ -1,9 +1,9 @@
 from typing import List, Union
 
 import numpy as np
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 from ..gui.from_np import QImage_from_np
 from .QXWidget import QXWidget
 

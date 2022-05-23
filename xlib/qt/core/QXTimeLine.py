@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from PyQt6.QtCore import *
+from PySide6.QtCore import *
 
 _linear_easing_curve = QEasingCurve(QEasingCurve.Type.Linear)
 class QXTimeLine(QTimeLine):

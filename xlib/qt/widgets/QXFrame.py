@@ -1,5 +1,5 @@
-from PyQt6.QtGui import *
-from PyQt6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 
 from ._part_QXWidget import _part_QXWidget
 from .QXMainApplication import QXMainApplication

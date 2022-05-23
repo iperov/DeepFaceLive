@@ -1,6 +1,6 @@
 from collections import Iterable
 
-from PyQt6.QtCore import *
+from PySide6.QtCore import *
 
 
 class BlockSignals:

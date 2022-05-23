@@ -1,7 +1,7 @@
-from PyQt6.QtGui import *
-from PyQt6.QtOpenGL import *
-from PyQt6.QtOpenGLWidgets import *
-from PyQt6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtOpenGL import *
+from PySide6.QtOpenGLWidgets import *
+from PySide6.QtWidgets import *
 
 from ._part_QXWidget import _part_QXWidget
 
