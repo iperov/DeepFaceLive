@@ -122,7 +122,7 @@ class FaceDetectorWorker(BackendWorker):
             detector_state = state.get_detector_state()
 
             cs.max_faces.enable()
-            cs.max_faces.set_config(lib_csw.Number.Config(min=0, max=16, step=1, decimals=0, allow_instant_update=True))
+            cs.max_faces.set_config(lib_csw.Number.Config(min=0, max=256, step=1, decimals=0, allow_instant_update=True))
             cs.max_faces.set_number(detector_state.max_faces or 1)
 
             if detector_type in [DetectorType.CENTER_FACE, DetectorType.S3FD, DetectorType.YOLOV5]:
