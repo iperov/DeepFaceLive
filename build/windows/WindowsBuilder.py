@@ -474,6 +474,7 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.install_pip_package('numpy==1.21.6')
     builder.install_pip_package('h5py')
     builder.install_pip_package('numexpr')
+    builder.install_pip_package('protobuf==3.20.1')
     builder.install_pip_package('opencv-python==4.5.5.64')
     builder.install_pip_package('opencv-contrib-python==4.5.5.64')
     builder.install_pip_package('pyqt6==6.3.0')
