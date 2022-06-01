@@ -145,13 +145,16 @@ Here is a [mini video](doc/FaceAnimator_tutor.webm?raw=true) showing the process
 </td></tr>
 
 </table>
+
 <table align="center" border="0">
 
 <tr><td colspan=2 align="center">
 
-## Minimum system requirements
+## System requirements
 
 any DirectX12 compatible graphics card
+
+(Recommended RTX 2070+ / Radeon RX 5700 XT+ )
 
 Modern CPU with AVX instructions
 
