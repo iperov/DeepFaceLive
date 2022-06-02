@@ -476,21 +476,21 @@ class Localization:
     'QFaceAligner.head_mode':{
                 'en-US' : 'Head mode',
                 'ru-RU' : 'Режим головы',
-                'zh-CN' : 'Head mode(没有翻译)',
+                'zh-CN' : '人头模式',
                 'es-ES' : 'Modo HEAD',
                 'it-IT' : 'Modalità Testa (HEAD)'},
 
     'QFaceAligner.help.head_mode':{
                 'en-US' : 'Head mode. Used with HEAD model.',
                 'ru-RU' : 'Режим головы. Используется с HEAD моделью.',
-                'zh-CN' : 'Head mode. Used with HEAD model.(没有翻译)',
+                'zh-CN' : '人头模式',
                 'es-ES' : 'Modo HEAD. Usado con el modelo HEAD.',
                 'it-IT' : 'Modalità testa. Usala con un modello HEAD.'},
 
     'QFaceAligner.freeze_z_rotation':{
                 'en-US' : 'Freeze Z rotation',
                 'ru-RU' : 'Заморозить Z поворот',
-                'zh-CN' : '冻结Z旋转',
+                'zh-CN' : '冻结Z轴旋转',
                 'es-ES' : 'Congelar la rotación Z',
                 'it-IT' : 'Congelare la rotazione Z'},
 
@@ -560,21 +560,21 @@ class Localization:
     'QFaceAnimator.module_title':{
                 'en-US' : 'Face animator',
                 'ru-RU' : 'Аниматор лица',
-                'zh-CN' : '脸部动画师',
+                'zh-CN' : '人脸照片驱动器',
                 'es-ES' : 'Animador de caras',
                 'it-IT' : 'Animatore di volti'},
 
     'QFaceAnimator.animatable':{
                 'en-US' : 'Animatable',
                 'ru-RU' : 'Анимируемый',
-                'zh-CN' : '可动画化',
+                'zh-CN' : '可被动画化',
                 'es-ES' : 'Animable',
                 'it-IT' : 'Animabile'},
 
     'QFaceAnimator.animator_face_id':{
                 'en-US' : 'Animator Face ID',
                 'ru-RU' : 'Номер лица аниматора',
-                'zh-CN' : '动画师脸部ID',
+                'zh-CN' : '待驱动的脸部ID',
                 'es-ES' : 'Animator Face ID',
                 'it-IT' : 'Animatore Face ID'},
 
@@ -791,7 +791,7 @@ class Localization:
     'QFaceMerger.color_transfer':{
                 'en-US' : 'Color transfer',
                 'ru-RU' : 'Перенос цвета',
-                'zh-CN' : '彩色转印',
+                'zh-CN' : '色彩迁移',
                 'es-ES' : 'Transferencia de color',
                 'it-IT' : 'Trasferimento di colore'},
 
