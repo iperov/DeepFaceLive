@@ -34,9 +34,11 @@ class DFMModelInfo:
 def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
     # predefined list of celebs with urls
     dfm_models = [
+            DFMModelInfo(name='Amber Song', model_path=models_path / f'Amber_Song.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/AMBER_SONG/Amber_Song.dfm'),
             DFMModelInfo(name='Ava de Addario', model_path=models_path / f'Ava_de_Addario.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/AVA_DE_ADDARIO/Ava_de_Addario.dfm'),
             DFMModelInfo(name='Bryan Greynolds', model_path=models_path / f'Bryan_Greynolds.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/BRYAN_GREYNOLDS/Bryan_Greynolds.dfm'),
             DFMModelInfo(name='David Kovalniy', model_path=models_path / f'David_Kovalniy.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DAVID_KOVALNIY/David_Kovalniy.dfm'),
+            DFMModelInfo(name='Dean Wiesel', model_path=models_path / f'Dean_Wiesel.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DEAN_WIESEL/Dean_Wiesel.dfm'),
             DFMModelInfo(name='Dilraba Dilmurat', model_path=models_path / f'Dilraba_Dilmurat.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DILRABA_DILMURAT/Dilraba_Dilmurat.dfm'),
             DFMModelInfo(name='Ewon Spice', model_path=models_path / f'Ewon_Spice.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/EWON_SPICE/Ewon_Spice.dfm'),
             DFMModelInfo(name='Keanu Reeves', model_path=models_path / f'Keanu_Reeves.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES/Keanu_Reeves.dfm'),

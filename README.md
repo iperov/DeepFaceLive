@@ -46,18 +46,24 @@ Dilraba Dilmurat
 
 examples
 </td><td align="center">
-Ewon Spice
+Matilda Bobbie
 
-<img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
+<img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
 
-<a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
-
+<a href="doc/celebs/Matilda_Bobbie/examples.md">examples</a>
 </td><td align="center">
 Yohanna Coralson
 
 <img src="doc/celebs/Yohanna_Coralson/Yohanna_Coralson.png" width=128></img>
 
 <a href="doc/celebs/Yohanna_Coralson/examples.md">examples</a>
+
+</td><td align="center">
+Amber Song
+
+<img src="doc/celebs/Amber_Song/Amber_Song.png" width=128></img>
+
+examples
 
 </td></tr></table>
 <table align="center" border="0">
@@ -67,25 +73,26 @@ Kim Jarrey
 <img src="doc/celebs/Kim_Jarrey/Kim_Jarrey.png" width=128></img>
 
 <a href="doc/celebs/Kim_Jarrey/examples.md">examples</a>
-</td><td>
+</td><td align="center">
 David Kovalniy
 
 <img src="doc/celebs/David_Kovalniy/David_Kovalniy.png" width=128></img>
 
 <a href="doc/celebs/David_Kovalniy/examples.md">examples</a>
-</td><td>
-Matilda Bobbie
+</td><td align="center">
+Ewon Spice
 
-<img src="doc/celebs/Matilda_Bobbie/Matilda_Bobbie.png" width=128></img>
+<img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
 
-<a href="doc/celebs/Matilda_Bobbie/examples.md">examples</a>
-</td><td>
+<a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
+
+</td><td align="center">
 Bryan Greynolds
 
 <img src="doc/celebs/Bryan_Greynolds/Bryan_Greynolds.png" width=128></img>
 
 <a href="doc/celebs/Bryan_Greynolds/examples.md">examples</a>
-</td><td>
+</td><td align="center">
 Nicola Badge
 
 <img src="doc/celebs/Nicola_Badge/Nicola_Badge.png" width=128></img>
@@ -93,26 +100,32 @@ Nicola Badge
 <a href="doc/celebs/Nicola_Badge/examples.md">examples</a>
 </td></tr></table>
 <table align="center" border="0">
-<tr align="center"><td align="center">
+<tr align="center"><td>
+Dean Wiesel
+
+<img src="doc/celebs/Dean_Wiesel/Dean_Wiesel.png" width=128></img>
+
+<a href="doc/celebs/Dean_Wiesel/examples.md">examples</a>
+</td><td align="center">
 Silwan Stillwone
 
 <img src="doc/celebs/Silwan_Stillwone/Silwan_Stillwone.png" width=128></img>
 
 <a href="doc/celebs/Silwan_Stillwone/examples.md">examples</a>
-</td><td>
+</td><td align="center">
 Tim Chrys
 
 <img src="doc/celebs/Tim_Chrys/Tim_Chrys.png" width=128></img>
 
 <a href="doc/celebs/Tim_Chrys/examples.md">examples</a>
 
-</td><td>
+</td><td align="center">
 Zahar Lupin
 
 <img src="doc/celebs/Zahar_Lupin/Zahar_Lupin.png" width=128></img>
 
 <a href="doc/celebs/Zahar_Lupin/examples.md">examples</a>
-</td><td>
+</td><td align="center">
 Tim Norland
 
 <img src="doc/celebs/Tim_Norland/Tim_Norland.png" width=128></img>
