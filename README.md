@@ -202,11 +202,9 @@ Linux
 <tr><td align="right">
 Frequently asked questions
 </td><td align="left">
-
 <a href="doc/user_faq/user_faq.md">for User</a>
 
 <a href="doc/developer_faq/developer_faq.md">for Developer</a>
-
 </td></tr>
 <tr><td colspan=2 align="center">
 
