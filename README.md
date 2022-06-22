@@ -178,19 +178,34 @@ Windows 10
 </td></tr>
 <tr><td colspan=2 align="center">
 
-## Setup tutorial
-
-<tr><td colspan=2 align="center">
-
-<a href="doc/setup_tutorial_windows/index.md">Windows 10 x64</a>
-
-<a href="build/linux">Linux build info</a>
-
 ## Documentation
 
-<a href="doc/user_faq/user_faq.md">User FAQ</a>
+</td></tr>
+<tr><td align="right">
+Windows
+</td><td align="left">
 
-<a href="doc/developer_faq/developer_faq.md">Developer FAQ</a>
+<a href="doc/windows/general_setup.md">Main setup</a>
+
+- <a href="doc/windows/for_streaming.md">additional setup for streaming</a>
+
+- <a href="doc/windows/for_video_calls.md">additional setup for video calls</a>       
+
+<a href="doc/windows/using_android_phone_camera.md">Using Android phone camera</a>  
+
+</td></tr>
+<tr><td align="right">
+Linux
+</td><td align="left">
+<a href="build/linux">Build info</a>
+</td></tr>
+<tr><td align="right">
+Frequently asked questions
+</td><td align="left">
+
+<a href="doc/user_faq/user_faq.md">for User</a>
+
+<a href="doc/developer_faq/developer_faq.md">for Developer</a>
 
 </td></tr>
 <tr><td colspan=2 align="center">

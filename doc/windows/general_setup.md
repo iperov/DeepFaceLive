@@ -102,15 +102,6 @@
 <img src="deepfacelive_window.jpg"></img>
 
 </td></tr>
-<tr><td colspan=2 align="center">
-
-<a href="setup_for_streaming.md">continue setup for streaming</a>
-
-or
-
-<a href="setup_for_video_calls.md">continue setup for video calls</a>
-
-</td></tr>
 </table>
 
 
