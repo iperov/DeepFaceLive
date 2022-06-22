@@ -185,7 +185,7 @@ Windows 10
 Windows
 </td><td align="left">
 
-<a href="doc/windows/general_setup.md">Main setup</a>
+<a href="doc/windows/main_setup.md">Main setup</a>
 
 - <a href="doc/windows/for_streaming.md">additional setup for streaming</a>
 
