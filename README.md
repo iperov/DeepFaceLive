@@ -26,11 +26,24 @@ These persons do not exists. Similarities with real people are accidental. Excep
 <table align="center" border="0">
 
 <tr><td align="center">
+Bryan Greynolds
+
+<img src="doc/celebs/Bryan_Greynolds/Bryan_Greynolds.png" width=128></img>
+
+<a href="doc/celebs/Bryan_Greynolds/examples.md">examples</a>
+</td><td align="center">
 Keanu Reeves
 
 <img src="doc/celebs/Keanu_Reeves/Keanu_Reeves.png" width=128></img>
 
 <a href="doc/celebs/Keanu_Reeves/examples.md">examples</a>
+</td><td align="center">
+Ewon Spice
+
+<img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
+
+<a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
+
 </td></tr></table>
 <table align="center" border="0">
 <tr><td align="center">
@@ -80,18 +93,11 @@ David Kovalniy
 
 <a href="doc/celebs/David_Kovalniy/examples.md">examples</a>
 </td><td align="center">
-Ewon Spice
+Jackie Chan
 
-<img src="doc/celebs/Ewon_Spice/Ewon_Spice.png" width=128></img>
+<img src="doc/celebs/Jackie_Chan/Jackie_Chan.png" width=128></img>
 
-<a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
-
-</td><td align="center">
-Bryan Greynolds
-
-<img src="doc/celebs/Bryan_Greynolds/Bryan_Greynolds.png" width=128></img>
-
-<a href="doc/celebs/Bryan_Greynolds/examples.md">examples</a>
+examples
 </td><td align="center">
 Nicola Badge
 
