@@ -254,9 +254,7 @@ NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. Face
 
 </td></tr>
 <tr><td colspan=2 align="center">
-I need the computing power to train models.
-<br>
-If you have a free computer with 2080TI or better card with 12GB+ VRAM, you can give me remote access to it. I will train 1 model in a month. Contact me(iperov#6528) in Discord channel.
+Train your own face model by following the recommendations in the FAQ section and share it on Discord. If the model fits the quality, it will be added to the public library.
 </td></tr>
 <tr><td colspan=2 align="center">
 Register github account and push "Star" button.
