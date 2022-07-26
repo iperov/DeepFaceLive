@@ -169,6 +169,9 @@ class QDFLAppWindow(qtx.QXWindow):
         menu_language_action_chinese = menu_language.addAction('汉语')
         menu_language_action_chinese.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('zh-CN'), qtx.QXMainApplication.inst.reinitialize()) )
 
+        menu_language_action_chinese = menu_language.addAction('日本語')
+        menu_language_action_chinese.triggered.connect(lambda: (qtx.QXMainApplication.inst.set_language('ja-JP'), qtx.QXMainApplication.inst.reinitialize()) )
+
         menu_help = menu_bar.addMenu( L('@QDFLAppWindow.help') )
         menu_help_action_github = menu_help.addAction( L('@QDFLAppWindow.visit_github_page') )
         menu_help_action_github.triggered.connect(lambda: qtx.QDesktopServices.openUrl(qtx.QUrl('https://github.com/iperov/DeepFaceLive' )))
