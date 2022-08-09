@@ -249,7 +249,7 @@ NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. Face
 
 <tr><td align="right">
 QQ群124500433
-</td><td align="center">中文交流QQ群，商务合作找群主</td></tr>
+</td><td align="left">中文交流QQ群，商务合作找群主</td></tr>
 
 </td></tr>
 <tr><td colspan=2 align="center">
