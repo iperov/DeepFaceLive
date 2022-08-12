@@ -236,7 +236,7 @@ NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. Face
 ## Communication groups
 
 <tr><td align="right">
-<a href="https://discord.gg/S2h7kPySQp">Discord</a>
+<a href="https://discord.gg/rxa7h9M6rH">Discord</a>
 </td><td align="left">Official discord channel. English / Russian.</td></tr>
 
 <tr><td align="right">
