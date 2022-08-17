@@ -59,11 +59,11 @@ Gather 5000+ samples of your face with various conditions using webcam which wil
 
 Here public storage https://disk.yandex.ru/d/7i5XTKIKVg5UUg with facesets and models.
 
-> Using pretrained "RTT model 224.zip" from public storage (see above)
+> Using pretrained "RTT model 224 V2.zip" from public storage (see above)
 
 Make a backup before every stage !
 
-1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
+1. place RTM WF Faceset V2 from public storage (see above) to workspace/data_dst/aligned
 
 2. place your celeb to workspace/data_src/aligned
 
@@ -71,21 +71,21 @@ Make a backup before every stage !
 
 4. replace dst faceset with your faceset in workspace/data_dst/aligned
 
-5. continue train +500.000
+5. continue train +500.000, (optional) deleting inter_AB.npy every 100.000 (save, delete, continue run)
 
 6. random_warp:OFF, train +500.000
 
 7. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
 
-8. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+8. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 > Using SAEHD model from scratch.
 
-res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
+res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:N, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
 
 Make a backup before every stage !
 
-1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
+1. place RTM WF Faceset V2 from public storage (see above) to workspace/data_dst/aligned
 
 2. place your celeb to workspace/data_src/aligned
 
@@ -101,7 +101,7 @@ Make a backup before every stage !
 
 8. GAN 0.1 power, gan_dims:32, Train until the src loss value has not increased in the last 12 hours.
 
-9. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+9. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 10. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
 
@@ -119,31 +119,31 @@ Src faceset is celebrity. Must be diverse enough in yaw, light and shadow condit
 Do not mix different age. The best result is obtained when the face is filmed from a short period of time and does not change the makeup and structure.
 Src faceset should be xseg'ed and applied. You can apply Generic XSeg to src faceset.
 
-> Using pretrained "RTT model 224.zip" from public storage (see above)
+> Using pretrained "RTT model 224 V2.zip" from public storage (see above)
 
 Make a backup before every stage !
 
-1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
+1. place RTM WF Faceset V2 from public storage (see above) to workspace/data_dst/aligned
 
 2. place your celeb to workspace/data_src/aligned
 
 3. place model folder to workspace/model
 
-4. do not change settings, train +500.000 iters 
+4. do not change settings, train +500.000 iters, + (optional) deleting inter_AB.npy every 100.000 (save, delete, continue run)
 
-5. random_warp OFF, train +500.000, periodically (every 100.000 iters) disable masked training for 5.000 iters and enable again
+5. random_warp OFF, train +500.000, + (optional) periodically (every 100.000 iters) disable masked training for 5.000 iters and enable again
 
 6. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
 
-7. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+7. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 > Using SAEHD model from scratch
 
-res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:Y, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
+res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:N, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
 
 Make a backup before every stage !
 
-1. place RTM WF Faceset from public storage (see above) to workspace/data_dst/aligned
+1. place RTM WF Faceset V2 from public storage (see above) to workspace/data_dst/aligned
 
 2. place your celeb to workspace/data_src/aligned
 
@@ -155,7 +155,7 @@ Make a backup before every stage !
 
 6. GAN 0.1 power, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
 
-7. finalize model by disabling masked training for 100-200 (not thousand) iterations.
+7. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 > reusing trained SAEHD RTM model
 
