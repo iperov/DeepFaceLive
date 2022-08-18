@@ -44,6 +44,13 @@ Ewon Spice
 
 <a href="doc/celebs/Ewon_Spice/examples.md">examples</a>
 
+</td><td align="center">
+Natasha Former
+
+<img src="doc/celebs/Natasha_Former/Natasha_Former.png" width=128></img>
+
+<a href="doc/celebs/Natasha_Former/examples.md">examples</a>
+
 </td></tr></table>
 <table align="center" border="0">
 <tr><td align="center">
