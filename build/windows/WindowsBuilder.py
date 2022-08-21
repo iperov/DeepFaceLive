@@ -482,6 +482,9 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
 
     if backend == 'cuda':
         builder.install_pip_package('torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html')
+        #builder.install_pip_package('torch==1.11.0+cu115 torchvision==0.12.0+cu115 -f https://download.pytorch.org/whl/torch_stable.html')
+        #builder.install_pip_package('torch==1.12.1+cu116 torchvision==0.13.1+cu116 -f https://download.pytorch.org/whl/torch_stable.html')
+        
         builder.install_pip_package('onnxruntime-gpu==1.12.1')
     elif backend == 'directml':
         builder.install_pip_package('onnxruntime-directml==1.12.1')
@@ -511,8 +514,6 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.copyfiletree(Path(__file__).parent.parent.parent, deepfacelive_path)
     builder.rmdir_in_all_subdirs(deepfacelive_path, '.git')
 
-    builder.install_vscode(project_internal_dir='DeepFaceLive')
-
     release_path = builder.get_release_path()
     userdata_path = release_path / 'userdata'
     userdata_path.mkdir(parents=True, exist_ok=True)
@@ -535,7 +536,9 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.create_internal_run_python_script('build DeepFaceLive DirectX12.bat', 'DeepFaceLive\\build\\windows\\WindowsBuilder.py', '--build-type dfl-windows --release-dir Builds\DeepFaceLive_DirectX12 --cache-dir _cache --backend directml')
 
     builder.run_python('main.py dev merge_large_files --delete-parts', cwd=deepfacelive_path)
-
+    
+    builder.install_vscode(project_internal_dir='DeepFaceLive')
+    
     builder.cleanup()
 
     if backend == 'cuda':
