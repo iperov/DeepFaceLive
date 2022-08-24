@@ -481,11 +481,11 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.install_pip_package('onnx==1.12.0')
 
     if backend == 'cuda':
-        builder.install_pip_package('torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html')
+        #builder.install_pip_package('torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html')
         #builder.install_pip_package('torch==1.11.0+cu115 torchvision==0.12.0+cu115 -f https://download.pytorch.org/whl/torch_stable.html')
-        #builder.install_pip_package('torch==1.12.1+cu116 torchvision==0.13.1+cu116 -f https://download.pytorch.org/whl/torch_stable.html')
+        builder.install_pip_package('torch==1.12.1+cu116 torchvision==0.13.1+cu116 -f https://download.pytorch.org/whl/torch_stable.html')
         
-        builder.install_pip_package('onnxruntime-gpu==1.12.1')
+        builder.install_pip_package('onnxruntime-gpu==1.11.0')
     elif backend == 'directml':
         builder.install_pip_package('onnxruntime-directml==1.12.1')
 
@@ -508,6 +508,11 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
             print (f'Moving {target}')
             shutil.move (str(file), str(target) )
 
+        for file in torch_lib_path.glob("**/zlibwapi.dll"):
+            target = cuda_bin_path / file.name
+            print (f'Copying {target}')
+            shutil.copy (str(file), str(target) )
+            
     deepfacelive_path = builder.get_internal_path() / 'DeepFaceLive'
 
     print('Copying DeepFaceLive repository.')
