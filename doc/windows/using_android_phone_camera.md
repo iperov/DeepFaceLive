@@ -1,7 +1,7 @@
 <table align="center" border="0">
 <tr><td colspan=2 align="center">
 
-# Using Android phone camera
+# Using Android and iOS phone camera
 
 ### Download and install <a href="http://www.dev47apps.com/"> **_DroidCam_** </a>
 
