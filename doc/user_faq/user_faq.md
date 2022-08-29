@@ -77,8 +77,6 @@ Make a backup before every stage !
 
 7. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
 
-8. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
-
 > Using SAEHD model from scratch.
 
 res:224, WF, archi:liae-udt, ae_dims:512, e_dims:64, d_dims:64, d_mask_dims:32, eyes_mouth_prio:N, blur_out_mask:Y, uniform_yaw:Y, lr_dropout:Y, batch:8. Others by default.
@@ -101,9 +99,7 @@ Make a backup before every stage !
 
 8. GAN 0.1 power, gan_dims:32, Train until the src loss value has not increased in the last 12 hours.
 
-9. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
-
-10. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
+9. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
 
 </td></tr>
 <tr><td colspan=2 align="center">
@@ -129,13 +125,11 @@ Make a backup before every stage !
 
 3. place model folder to workspace/model
 
-4. do not change settings, train +500.000 iters, + (optional) deleting inter_AB.npy every 100.000 (save, delete, continue run)
+4. do not change settings, train +500.000 iters, + deleting inter_AB.npy every 100.000 (save, delete, continue run)
 
-5. random_warp OFF, train +500.000, + (optional) periodically (every 100.000 iters) disable masked training for 5.000 iters and enable again
+5. random_warp OFF, train +500.000
 
 6. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
-
-7. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 > Using SAEHD model from scratch
 
@@ -154,8 +148,6 @@ Make a backup before every stage !
 5. random_warp:OFF, train +500.000
 
 6. GAN 0.1 power, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
-
-7. (optional) finalize model by disabling masked training for 100-200 (not thousand) iterations.
 
 > reusing trained SAEHD RTM model
 
