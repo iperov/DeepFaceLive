@@ -111,6 +111,12 @@ Nicola Badge
 <img src="doc/celebs/Nicola_Badge/Nicola_Badge.png" width=128></img>
 
 <a href="doc/celebs/Nicola_Badge/examples.md">examples</a>
+</td><td align="center">
+Joker
+
+<img src="doc/celebs/Joker/Joker.png" width=128></img>
+
+examples
 </td></tr></table>
 <table align="center" border="0">
 <tr align="center"><td>

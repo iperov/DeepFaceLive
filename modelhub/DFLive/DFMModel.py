@@ -42,6 +42,7 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
             DFMModelInfo(name='Dilraba Dilmurat', model_path=models_path / f'Dilraba_Dilmurat.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/DILRABA_DILMURAT/Dilraba_Dilmurat.dfm'),
             DFMModelInfo(name='Ewon Spice', model_path=models_path / f'Ewon_Spice.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/EWON_SPICE/Ewon_Spice.dfm'),
             DFMModelInfo(name='Jackie Chan', model_path=models_path / f'Jackie_Chan.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/JACKIE_CHAN/Jackie_Chan.dfm'),
+            DFMModelInfo(name='Joker', model_path=models_path / f'Joker.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/JOKER/Joker.dfm'),
             DFMModelInfo(name='Keanu Reeves', model_path=models_path / f'Keanu_Reeves.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES/Keanu_Reeves.dfm'),
             DFMModelInfo(name='Keanu Reeves 320', model_path=models_path / f'Keanu_Reeves_320.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES_320/Keanu_Reeves_320.dfm'),
             DFMModelInfo(name='Kim Jarrey', model_path=models_path / f'Kim_Jarrey.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KIM_JARREY/Kim_Jarrey.dfm'),
