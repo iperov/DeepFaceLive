@@ -156,6 +156,30 @@ Models that are trained before random_warp:OFF, can be reused. In this case you 
 </td></tr>
 <tr><td colspan=2 align="left">
 
+## Is there any way to train a model faster?
+
+You can train a model in 1 day on RTX 3090, sacrificing quality.
+
+> 1-day-3090 training. Using pretrained "RTT model 224 V2.zip" from public storage (see above)
+1. place RTM WF Faceset V2 from public storage (see above) to workspace/data_dst/aligned
+
+2. place your celeb to workspace/data_src/aligned
+
+3. place model folder to workspace/model
+
+4. do not change settings, train +25.000 iters
+
+5. delete inter_AB.npy (save, delete, continue run)
+
+6. train +30.000 iters
+
+7. random_warp OFF, GAN 0.1 power, patch size 28, gan_dims:32.
+
+8. Turn off after 24 hours
+
+</td></tr>
+<tr><td colspan=2 align="left">
+
 ## I want to change some code and test the result on my local machine. What I need to do?
 
 There is ready-to-use VSCode editor inside DeepFaceLive folder located in
