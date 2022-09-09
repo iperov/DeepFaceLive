@@ -73,9 +73,7 @@ Make a backup before every stage !
 
 5. continue train +500.000, (optional) deleting inter_AB.npy every 100.000 (save, delete, continue run)
 
-6. random_warp:OFF, train +500.000
-
-7. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
+6. random_warp:OFF, GAN 0.1 power, patch size 28, gan_dims:32. Train +700.000
 
 > Using SAEHD model from scratch.
 
@@ -87,19 +85,15 @@ Make a backup before every stage !
 
 2. place your celeb to workspace/data_src/aligned
 
-3. train +500.000 deleting inter_AB.npy every 100.000 (save, delete, continue run)
+3. train +1.000.000 deleting inter_AB.npy every 100.000 (save, delete, continue run)
 
-4. train +500.000
+4. place your faceset to workspace/data_dst/aligned
 
-5. place your faceset to workspace/data_dst/aligned
+5. do not delete anything, continue train +500.000
 
-6. do not delete anything, continue train +500.000
+6. random_warp:OFF, GAN 0.1 power, patch size 28, gan_dims:32. Train +700.000
 
-7. random_warp:OFF, train +500.000
-
-8. GAN 0.1 power, gan_dims:32, Train until the src loss value has not increased in the last 12 hours.
-
-9. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
+7. export the model in .dfm format for use in DeepFaceLive. You can also try ordering a deepfake model from someone in Discord or forum.
 
 </td></tr>
 <tr><td colspan=2 align="center">
@@ -127,9 +121,7 @@ Make a backup before every stage !
 
 4. do not change settings, train +500.000 iters, + deleting inter_AB.npy every 100.000 (save, delete, continue run)
 
-5. random_warp OFF, train +500.000
-
-6. GAN 0.1 power, patch size 28, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
+5. random_warp:OFF, GAN 0.1 power, patch size 28, gan_dims:32. Train +700.000
 
 > Using SAEHD model from scratch
 
@@ -145,9 +137,7 @@ Make a backup before every stage !
 
 4. random_warp still ON, train +500.000
 
-5. random_warp:OFF, train +500.000
-
-6. GAN 0.1 power, gan_dims:32. Train until the src loss value has not increased in the last 12 hours.
+5. random_warp:OFF, GAN 0.1 power, patch size 28, gan_dims:32. Train +700.000
 
 > reusing trained SAEHD RTM model
 
