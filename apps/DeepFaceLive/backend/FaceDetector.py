@@ -139,7 +139,7 @@ class FaceDetectorWorker(BackendWorker):
                 cs.sort_by.select(detector_state.sort_by if detector_state.sort_by is not None else FaceSortBy.LARGEST)
 
                 cs.temporal_smoothing.enable()
-                cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=50, step=1, allow_instant_update=True))
+                cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=150, step=1, allow_instant_update=True))
                 cs.temporal_smoothing.set_number(detector_state.temporal_smoothing if detector_state.temporal_smoothing is not None else 1)
 
             if detector_type == DetectorType.CENTER_FACE:

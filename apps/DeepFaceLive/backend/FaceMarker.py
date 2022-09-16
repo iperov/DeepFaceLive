@@ -113,7 +113,7 @@ class FaceMarkerWorker(BackendWorker):
             cs.marker_coverage.set_number(marker_coverage)
 
             cs.temporal_smoothing.enable()
-            cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=50, step=1, allow_instant_update=True))
+            cs.temporal_smoothing.set_config(lib_csw.Number.Config(min=1, max=150, step=1, allow_instant_update=True))
             cs.temporal_smoothing.set_number(marker_state.temporal_smoothing if marker_state.temporal_smoothing is not None else 1)
 
         else:
