@@ -31,10 +31,8 @@ class QFaceAnimator(QBackendPanel):
 
         q_animator_face_id_label = QLabelPopupInfo(label=L('@QFaceAnimator.animator_face_id') )
         q_animator_face_id       = QSpinBoxCSWNumber(cs.animator_face_id, reflect_state_widgets=[q_animator_face_id_label])
-
-        q_relative_mode_label = QLabelPopupInfo(label=L('@QFaceAnimator.relative_mode') )
-        q_relative_mode = QCheckBoxCSWFlag(cs.relative_mode, reflect_state_widgets=[q_relative_mode_label])
-
+        
+        q_relative_power_label = QLabelPopupInfo(label=L('@QFaceAnimator.relative_power') )
         q_relative_power = QSliderCSWNumber(cs.relative_power)
 
         q_update_animatables = QXPushButtonCSWSignal(cs.update_animatables, image=QXImageDB.reload_outline('light gray'), button_size=(24,22) )
@@ -52,9 +50,8 @@ class QFaceAnimator(QBackendPanel):
         grid_l.addWidget(q_animator_face_id_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
         grid_l.addWidget(q_animator_face_id, row, 1, alignment=qtx.AlignLeft )
         row += 1
-        grid_l.addWidget(q_relative_mode_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
-        grid_l.addLayout(qtx.QXHBoxLayout([q_relative_mode,2,q_relative_power]), row, 1, alignment=qtx.AlignLeft )
-
+        grid_l.addWidget(q_relative_power_label, row, 0, alignment=qtx.AlignRight | qtx.AlignVCenter  )
+        grid_l.addWidget(q_relative_power, row, 1 )
 
         row += 1
         grid_l.addWidget(q_reset_reference_pose, row, 0, 1, 2  )

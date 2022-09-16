@@ -656,13 +656,13 @@ class Localization:
                 'it-IT' : 'Animatore Face ID',
                 'ja-JP' : '動かす顔のID番号'},
 
-    'QFaceAnimator.relative_mode':{
-                'en-US' : 'Relative mode',
-                'ru-RU' : 'Относительный режим',
-                'zh-CN' : '相对模式',
-                'es-ES' : 'Modo relativo',
-                'it-IT' : 'Modalità relativa',
-                'ja-JP' : '相対モード'},
+    'QFaceAnimator.relative_power':{
+                'en-US' : 'Relative power',
+                'ru-RU' : 'Относительная сила',
+                'zh-CN' : 'Relative power',
+                'es-ES' : 'Relative power',
+                'it-IT' : 'Relative power',
+                'ja-JP' : 'Relative power'},
 
     'QFaceAnimator.reset_reference_pose':{
                 'en-US' : 'Reset reference pose',
@@ -1143,7 +1143,15 @@ class Localization:
                 'es-ES' : 'De los puntos',
                 'it-IT' : 'Da punti',
                 'ja-JP' : '点から'},
-
+                
+    'FaceAligner.AlignMode.FROM_STATIC_RECT':{
+                'en-US' : 'From static rect',
+                'ru-RU' : 'Из статичного прямоугольника',
+                'zh-CN' : '从一个静态的矩形',
+                'es-ES' : 'From static rect',
+                'it-IT' : 'From static rect',
+                'ja-JP' : 'From static rect'},
+                
     'FaceSwapper.model_information':{
                 'en-US' : 'Model information',
                 'ru-RU' : 'Информация о модели',

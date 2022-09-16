@@ -3,6 +3,7 @@ from enum import IntEnum
 
 import numpy as np
 from xlib import os as lib_os
+from xlib.face import FRect
 from xlib.mp import csw as lib_csw
 from xlib.python import all_is_not_None
 
@@ -14,9 +15,11 @@ from .BackendBase import (BackendConnection, BackendDB, BackendHost,
 class AlignMode(IntEnum):
     FROM_RECT = 0
     FROM_POINTS = 1
+    FROM_STATIC_RECT = 2
 
 AlignModeNames = ['@FaceAligner.AlignMode.FROM_RECT',
                   '@FaceAligner.AlignMode.FROM_POINTS',
+                  '@FaceAligner.AlignMode.FROM_STATIC_RECT',
                  ]
 
 class FaceAligner(BackendHost):
@@ -57,7 +60,7 @@ class FaceAlignerWorker(BackendWorker):
         cs.align_mode.select(state.align_mode if state.align_mode is not None else AlignMode.FROM_POINTS)
 
         cs.face_coverage.enable()
-        cs.face_coverage.set_config(lib_csw.Number.Config(min=0.1, max=4.0, step=0.1, decimals=1, allow_instant_update=True))
+        cs.face_coverage.set_config(lib_csw.Number.Config(min=0.1, max=8.0, step=0.1, decimals=1, allow_instant_update=True))
         cs.face_coverage.set_number(state.face_coverage if state.face_coverage is not None else 2.2)
 
         cs.resolution.enable()
@@ -74,11 +77,11 @@ class FaceAlignerWorker(BackendWorker):
         cs.freeze_z_rotation.set_flag(state.freeze_z_rotation if state.freeze_z_rotation is not None else False)
 
         cs.x_offset.enable()
-        cs.x_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
+        cs.x_offset.set_config(lib_csw.Number.Config(min=-10, max=10, step=0.01, decimals=2, allow_instant_update=True))
         cs.x_offset.set_number(state.x_offset if state.x_offset is not None else 0)
 
         cs.y_offset.enable()
-        cs.y_offset.set_config(lib_csw.Number.Config(min=-1, max=1, step=0.01, decimals=2, allow_instant_update=True))
+        cs.y_offset.set_config(lib_csw.Number.Config(min=-10, max=10, step=0.01, decimals=2, allow_instant_update=True))
         cs.y_offset.set_number(state.y_offset if state.y_offset is not None else 0)
 
     def on_cs_align_mode(self, idx, align_mode):
@@ -164,18 +167,22 @@ class FaceAlignerWorker(BackendWorker):
                         if face_ulmrks is not None:
                             fsi.face_resolution = state.resolution
 
+                            H, W = frame_image.shape[:2]
                             if state.align_mode == AlignMode.FROM_RECT:
                                 face_align_img, uni_mat = fsi.face_urect.cut(frame_image, coverage= state.face_coverage, output_size=state.resolution,
                                                                              x_offset=state.x_offset, y_offset=state.y_offset)
 
                             elif state.align_mode == AlignMode.FROM_POINTS:
                                 face_align_img, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
-                                                                        exclude_moving_parts=state.exclude_moving_parts,
-                                                                        head_yaw=head_yaw,
-                                                                        x_offset=state.x_offset,
-                                                                        y_offset=state.y_offset-0.08,
-                                                                        freeze_z_rotation=state.freeze_z_rotation)
-
+                                                                          exclude_moving_parts=state.exclude_moving_parts,
+                                                                          head_yaw=head_yaw,
+                                                                          x_offset=state.x_offset,
+                                                                          y_offset=state.y_offset-0.08,
+                                                                          freeze_z_rotation=state.freeze_z_rotation)
+                            elif state.align_mode == AlignMode.FROM_STATIC_RECT:
+                                rect = FRect.from_ltrb([ 0.5 - (fsi.face_resolution/W)/2, 0.5 - (fsi.face_resolution/H)/2, 0.5 + (fsi.face_resolution/W)/2, 0.5 + (fsi.face_resolution/H)/2,])
+                                face_align_img, uni_mat = rect.cut(frame_image, coverage= state.face_coverage, output_size=state.resolution,
+                                                                             x_offset=state.x_offset, y_offset=state.y_offset)
 
                             fsi.face_align_image_name = f'{frame_image_name}_{face_id}_aligned'
                             fsi.image_to_align_uni_mat = uni_mat
