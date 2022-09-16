@@ -33,7 +33,7 @@ class QFaceAnimator(QBackendPanel):
         q_animator_face_id       = QSpinBoxCSWNumber(cs.animator_face_id, reflect_state_widgets=[q_animator_face_id_label])
         
         q_relative_power_label = QLabelPopupInfo(label=L('@QFaceAnimator.relative_power') )
-        q_relative_power = QSliderCSWNumber(cs.relative_power)
+        q_relative_power = QSliderCSWNumber(cs.relative_power, reflect_state_widgets=[q_relative_power_label])
 
         q_update_animatables = QXPushButtonCSWSignal(cs.update_animatables, image=QXImageDB.reload_outline('light gray'), button_size=(24,22) )
 
