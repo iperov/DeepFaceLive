@@ -179,7 +179,7 @@ There is also a Face Animator module in DeepFaceLive app. You can control a stat
 
 <img src="doc/face_animator_example.gif"></img>
 
-[![Stranger Things theme intro acapella](https://img.youtube.com/vi/Ng1C78Ceyxg/0.jpg)](https://www.youtube.com/watch?v=Ng1C78Ceyxg)
+[![Stranger Things theme intro acapella](doc/Ng1C78Ceyxg_screenshot.png)](https://www.youtube.com/watch?v=Ng1C78Ceyxg)
 
 Here is a [mini video](doc/FaceAnimator_tutor.webm?raw=true) showing the process of setting up the Face Animator for Obama controlling Kim Chen's face.
 
