@@ -20,7 +20,7 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### Download Windows build exe from one of the sources.
+### Download Windows build exe from one of [the sources](https://github.com/iperov/DeepFaceLive#releases).
 
 <img src="download_build.jpg"></img>
 
