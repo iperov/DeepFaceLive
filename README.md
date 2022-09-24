@@ -24,7 +24,16 @@ These persons do not exists. Similarities with real people are accidental. Excep
 <tr><td colspan=2 align="center">
 
 <table align="center" border="0">
+<tr><td align="center">
+Keanu Reeves
 
+<img src="doc/celebs/Keanu_Reeves/Keanu_Reeves.png" width=128></img>
+
+<a href="doc/celebs/Keanu_Reeves/examples.md">examples</a>
+</td></tr>
+</table>
+
+<table align="center" border="0">
 <tr><td align="center">
 Bryan Greynolds
 
@@ -32,11 +41,11 @@ Bryan Greynolds
 
 <a href="doc/celebs/Bryan_Greynolds/examples.md">examples</a>
 </td><td align="center">
-Keanu Reeves
+Mr. Bean
 
-<img src="doc/celebs/Keanu_Reeves/Keanu_Reeves.png" width=128></img>
+<img src="doc/celebs/Mr_Bean/Mr_Bean.png" width=128></img>
 
-<a href="doc/celebs/Keanu_Reeves/examples.md">examples</a>
+examples
 </td><td align="center">
 Ewon Spice
 
