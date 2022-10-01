@@ -1,6 +1,7 @@
 #!/bin/bash
 
-NV_VER=$(modinfo /usr/lib/modules/$(uname -r)/updates/dkms/nvidia.ko | grep ^version |awk '{print $2}'|awk -F '.' '{print $1}')
+NV_LIB=$(locate nvidia.ko |grep $(uname -r) |grep dkms | head -1)
+NV_VER=$(modinfo $NV_LIB | grep ^version |awk '{print $2}'|awk -F '.' '{print $1}')
 
 DATA_FOLDER=$(pwd)/data/
 declare CAM0 CAM1 CAM2 CAM3
