@@ -477,7 +477,7 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.install_pip_package('protobuf==3.20.1')
     builder.install_pip_package('opencv-python==4.6.0.66')
     builder.install_pip_package('opencv-contrib-python==4.6.0.66')
-    builder.install_pip_package('pyqt6==6.3.1')
+    builder.install_pip_package('pyqt6==6.4.0')
     builder.install_pip_package('onnx==1.12.0')
 
     if backend == 'cuda':
