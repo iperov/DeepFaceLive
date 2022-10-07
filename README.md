@@ -30,7 +30,14 @@ Keanu Reeves
 <img src="doc/celebs/Keanu_Reeves/Keanu_Reeves.png" width=128></img>
 
 <a href="doc/celebs/Keanu_Reeves/examples.md">examples</a>
+</td><td align="center">
+Irina Arty
+
+<img src="doc/celebs/Irina_Arty/Irina_Arty.png" width=128></img>
+
+examples
 </td></tr>
+
 </table>
 
 <table align="center" border="0">
