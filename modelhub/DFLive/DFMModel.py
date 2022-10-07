@@ -49,6 +49,7 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
             DFMModelInfo(name='Keanu Reeves 320', model_path=models_path / f'Keanu_Reeves_320.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES_320/Keanu_Reeves_320.dfm'),
             DFMModelInfo(name='Kim Jarrey', model_path=models_path / f'Kim_Jarrey.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KIM_JARREY/Kim_Jarrey.dfm'),
             DFMModelInfo(name='Matilda Bobbie', model_path=models_path / f'Matilda_Bobbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MATILDA_BOBBIE/Matilda_Bobbie.dfm'),
+            DFMModelInfo(name='Millie Park', model_path=models_path / f'Millie_Park.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MILLIE_PARK/Millie_Park.dfm'),
             DFMModelInfo(name='Mr. Bean', model_path=models_path / f'Mr_Bean.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MR_BEAN/Mr_Bean.dfm'),
             DFMModelInfo(name='Natasha Former', model_path=models_path / f'Natasha_Former.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NATASHA_FORMER/Natasha_Former.dfm'),
             DFMModelInfo(name='Nicola Badge', model_path=models_path / f'Nicola_Badge.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NICOLA_BADGE/Nicola_Badge.dfm'),

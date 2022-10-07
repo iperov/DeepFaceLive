@@ -36,6 +36,12 @@ Irina Arty
 <img src="doc/celebs/Irina_Arty/Irina_Arty.png" width=128></img>
 
 examples
+</td><td align="center">
+Millie Park
+
+<img src="doc/celebs/Millie_Park/Millie_Park.png" width=128></img>
+
+examples
 </td></tr>
 
 </table>
