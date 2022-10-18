@@ -160,9 +160,7 @@ class FaceAlignerWorker(BackendWorker):
                         if state.head_mode or state.freeze_z_rotation:
                             if fsi.face_pose is not None:
                                 head_yaw = fsi.face_pose.as_radians()[1]
-
-
-
+                        
                         face_ulmrks = fsi.face_ulmrks
                         if face_ulmrks is not None:
                             fsi.face_resolution = state.resolution
@@ -173,11 +171,11 @@ class FaceAlignerWorker(BackendWorker):
                                                                              x_offset=state.x_offset, y_offset=state.y_offset)
 
                             elif state.align_mode == AlignMode.FROM_POINTS:
-                                face_align_img, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage, state.resolution,
+                                face_align_img, uni_mat = face_ulmrks.cut(frame_image, state.face_coverage+ (1.0 if state.head_mode else 0.0), state.resolution,
                                                                           exclude_moving_parts=state.exclude_moving_parts,
                                                                           head_yaw=head_yaw,
                                                                           x_offset=state.x_offset,
-                                                                          y_offset=state.y_offset-0.08,
+                                                                          y_offset=state.y_offset-0.08 + (-0.50 if state.head_mode else 0.0),
                                                                           freeze_z_rotation=state.freeze_z_rotation)
                             elif state.align_mode == AlignMode.FROM_STATIC_RECT:
                                 rect = FRect.from_ltrb([ 0.5 - (fsi.face_resolution/W)/2, 0.5 - (fsi.face_resolution/H)/2, 0.5 + (fsi.face_resolution/W)/2, 0.5 + (fsi.face_resolution/H)/2,])
