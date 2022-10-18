@@ -42,6 +42,18 @@ Millie Park
 <img src="doc/celebs/Millie_Park/Millie_Park.png" width=128></img>
 
 examples
+</td><td align="center">
+Rob Doe
+
+<img src="doc/celebs/Rob_Doe/Rob_Doe.png" width=128></img>
+
+<a href="doc/celebs/Rob_Doe/examples.md">examples</a>
+</td><td align="center">
+Jesse Stat
+
+<img src="doc/celebs/Jesse_Stat/Jesse_Stat.png" width=128></img>
+
+examples
 </td></tr>
 
 </table>
