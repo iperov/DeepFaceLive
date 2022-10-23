@@ -4,6 +4,7 @@
 ## Why Python for such high load software and not C++?
 
 All CPU-intensive tasks are done by native libraries compiled for Python, such as OpenCV, NumPy, PyQt, onnxruntime. Python is more like a command processor that tells what to do. All you need is to organize such commands properly.
+  (Above information is not necessary accurate. Especially for Windows platform. Asyncronous IO is very well designed at Windows kernell, can'ty say the same about POSIX async IO in Linux... So, Python GIL is smart, and in most cases it is not blocking process/thread, if you call OS native IO libraries, despite being single threaded by a design, IO work is executed by OS in multithread manner. But, there is alway one but, Python performance is really degraded when it comes to dispatching callbacks from kernel IO, and perforance is really degraded comparing to C++ or even Java and C#. Having all that said, I am not saying that Python is a wrong choice here, there is no that much IO in this project - I suspect 95% of work is CPU/GPU bound. Knowing Python's simplicity, I belevei it was right choice. And I think this project is state of the art product, thanks)
 
 ## What does the internal architecture look like?
 
