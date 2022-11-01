@@ -54,7 +54,7 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
             DFMModelInfo(name='Mr. Bean', model_path=models_path / f'Mr_Bean.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MR_BEAN/Mr_Bean.dfm'),
             DFMModelInfo(name='Natasha Former', model_path=models_path / f'Natasha_Former.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NATASHA_FORMER/Natasha_Former.dfm'),
             DFMModelInfo(name='Nicola Badge', model_path=models_path / f'Nicola_Badge.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NICOLA_BADGE/Nicola_Badge.dfm'),
-            DFMModelInfo(name='Rob Doe 256', model_path=models_path / f'Rob_Doe_256.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ROB_DOE/Rob_Doe_256.dfm'),
+            DFMModelInfo(name='Rob Doe', model_path=models_path / f'Rob_Doe.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ROB_DOE/Rob_Doe.dfm'),
             DFMModelInfo(name='Silwan Stillwone', model_path=models_path / f'Silwan_Stillwone.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/SILWAN_STILLWONE/Silwan_Stillwone.dfm'),
             DFMModelInfo(name='Tim Chrys', model_path=models_path / f'Tim_Chrys.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_CHRYS/Tim_Chrys.dfm'),
             DFMModelInfo(name='Tim Norland', model_path=models_path / f'Tim_Norland.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_NORLAND/Tim_Norland.dfm'),
