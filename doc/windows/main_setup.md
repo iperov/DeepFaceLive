@@ -27,7 +27,7 @@
 </td></tr>
 <tr><td colspan=2 align="center">
 
-### Run and unpack to root of any disk.
+### Run and unpack to **root of any disk**.
 
 <img src="run_and_unpack.jpg"></img>
 
