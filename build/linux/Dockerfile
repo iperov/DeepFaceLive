@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.4.2-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.4.3-cudnn8-devel-ubuntu20.04
 WORKDIR /app
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NV_VER
@@ -11,8 +11,6 @@ RUN git clone https://github.com/iperov/DeepFaceLive.git
 
 RUN python -m pip install --upgrade pip
 RUN python -m pip install onnxruntime-gpu==1.12.1 numpy==1.21.6 h5py numexpr protobuf==3.20.1 opencv-python==4.6.0.66 opencv-contrib-python==4.6.0.66 pyqt6==6.4.0 onnx==1.12.0 torch==1.10.0 torchvision==0.11.1
-
-RUN apt install -y libnvidia-compute-$NV_VER
 
 WORKDIR /app/DeepFaceLive
 COPY example.sh example.sh
