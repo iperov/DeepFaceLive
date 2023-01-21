@@ -193,6 +193,41 @@ Tim Norland
 <a href="doc/celebs/Tim_Norland/examples.md">examples</a>
 </td></tr></table>
 
+
+<table align="center" border="0">
+<tr align="center"><td>
+Natalie Fatman
+
+<img src="doc/celebs/Natalie_Fatman/Natalie_Fatman.png" width=128></img>
+
+<a href="doc/celebs/Natalie_Fatman/examples.md">examples</a>
+</td><td align="center">
+Liu Lice
+
+<img src="doc/celebs/Liu_Lice/Liu_Lice.png" width=128></img>
+
+<a href="doc/celebs/Liu_Lice/examples.md">examples</a>
+</td><td align="center">
+Albica Johns
+
+<img src="doc/celebs/Albica_Johns/Albica_Johns.png" width=128></img>
+
+<a href="doc/celebs/Albica_Johns/examples.md">examples</a>
+
+</td><td align="center">
+Meggie Merkel
+
+<img src="doc/celebs/Meggie_Merkel/Meggie_Merkel.png" width=128></img>
+
+<a href="doc/celebs/Meggie_Merkel/examples.md">examples</a>
+</td><td align="center">
+Tina Shift
+
+<img src="doc/celebs/Tina_Shift/Tina_Shift.png" width=128></img>
+
+<a href="doc/celebs/Tina_Shift/examples.md">examples</a>
+</td></tr></table>
+
 </td></tr>
 
 <tr><td colspan=2 align="center">

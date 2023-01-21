@@ -34,6 +34,7 @@ class DFMModelInfo:
 def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
     # predefined list of celebs with urls
     dfm_models = [
+            DFMModelInfo(name='Albica Johns', model_path=models_path / f'Albica_Johns.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ALBICA_JOHNS/Albica_Johns.dfm'),
             DFMModelInfo(name='Amber Song', model_path=models_path / f'Amber_Song.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/AMBER_SONG/Amber_Song.dfm'),
             DFMModelInfo(name='Ava de Addario', model_path=models_path / f'Ava_de_Addario.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/AVA_DE_ADDARIO/Ava_de_Addario.dfm'),
             DFMModelInfo(name='Bryan Greynolds', model_path=models_path / f'Bryan_Greynolds.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/BRYAN_GREYNOLDS/Bryan_Greynolds.dfm'),
@@ -49,13 +50,17 @@ def get_available_models_info(models_path : Path) -> List[DFMModelInfo]:
             DFMModelInfo(name='Keanu Reeves', model_path=models_path / f'Keanu_Reeves.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES/Keanu_Reeves.dfm'),
             DFMModelInfo(name='Keanu Reeves 320', model_path=models_path / f'Keanu_Reeves_320.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KEANU_REEVES_320/Keanu_Reeves_320.dfm'),
             DFMModelInfo(name='Kim Jarrey', model_path=models_path / f'Kim_Jarrey.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/KIM_JARREY/Kim_Jarrey.dfm'),
+            DFMModelInfo(name='Liu Lice', model_path=models_path / f'Liu_Lice.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/LIU_LICE/Liu_Lice.dfm'),
             DFMModelInfo(name='Matilda Bobbie', model_path=models_path / f'Matilda_Bobbie.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MATILDA_BOBBIE/Matilda_Bobbie.dfm'),
+            DFMModelInfo(name='Meggie Merkel', model_path=models_path / f'Meggie_Merkel.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MEGGIE_MERKEL/Meggie_Merkel.dfm'),
             DFMModelInfo(name='Millie Park', model_path=models_path / f'Millie_Park.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MILLIE_PARK/Millie_Park.dfm'),
             DFMModelInfo(name='Mr. Bean', model_path=models_path / f'Mr_Bean.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/MR_BEAN/Mr_Bean.dfm'),
+            DFMModelInfo(name='Natalie Fatman', model_path=models_path / f'Natalie_Fatman.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NATALIE_FATMAN/Natalie_Fatman.dfm'),
             DFMModelInfo(name='Natasha Former', model_path=models_path / f'Natasha_Former.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NATASHA_FORMER/Natasha_Former.dfm'),
             DFMModelInfo(name='Nicola Badge', model_path=models_path / f'Nicola_Badge.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/NICOLA_BADGE/Nicola_Badge.dfm'),
             DFMModelInfo(name='Rob Doe', model_path=models_path / f'Rob_Doe.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/ROB_DOE/Rob_Doe.dfm'),
             DFMModelInfo(name='Silwan Stillwone', model_path=models_path / f'Silwan_Stillwone.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/SILWAN_STILLWONE/Silwan_Stillwone.dfm'),
+            DFMModelInfo(name='Tina Shift', model_path=models_path / f'Tina_Shift.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TINA_SHIFT/Tina_Shift.dfm'),
             DFMModelInfo(name='Tim Chrys', model_path=models_path / f'Tim_Chrys.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_CHRYS/Tim_Chrys.dfm'),
             DFMModelInfo(name='Tim Norland', model_path=models_path / f'Tim_Norland.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/TIM_NORLAND/Tim_Norland.dfm'),
             DFMModelInfo(name='Yohanna Coralson', model_path=models_path / f'Yohanna_Coralson.dfm', url=rf'https://github.com/iperov/DeepFaceLive/releases/download/YOHANNA_CORALSON/Yohanna_Coralson.dfm'),
