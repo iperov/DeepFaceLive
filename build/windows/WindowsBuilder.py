@@ -475,10 +475,10 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.install_pip_package('h5py')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('protobuf==3.20.1')
-    builder.install_pip_package('opencv-python==4.6.0.66')
-    builder.install_pip_package('opencv-contrib-python==4.6.0.66')
+    builder.install_pip_package('opencv-python==4.7.0.68')
+    builder.install_pip_package('opencv-contrib-python==4.7.0.68')
     builder.install_pip_package('pyqt6==6.4.0')
-    builder.install_pip_package('onnx==1.12.0')
+    builder.install_pip_package('onnx==1.13.0')
 
     if backend == 'cuda':
         #builder.install_pip_package('torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html')
