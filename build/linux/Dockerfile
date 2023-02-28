@@ -85,8 +85,8 @@ RUN python -c "from urllib.request import urlopen; \
     exec(urlopen('https://bootstrap.pypa.io/get-pip.py').read())"
 
 RUN python -m pip install \
-    onnxruntime-gpu==1.10 \
-    numpy==1.20 \
+    onnxruntime-gpu==1.12.1 \
+    numpy==1.21.6 \
     h5py \
     numexpr \
     protobuf==3.20.2 \
