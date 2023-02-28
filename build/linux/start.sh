@@ -6,7 +6,7 @@ NV_VER=$(modinfo $NV_LIB | grep ^version |awk '{print $2}'|awk -F '.' '{print $1
 DATA_FOLDER=$(pwd)/data/
 declare CAM0 CAM1 CAM2 CAM3
 printf "\n"
-while getopts 'cd:h' opt; do
+while getopts 'cdr:h' opt; do
     case "$opt" in
         c)
             printf "Starting with camera devices\n"
@@ -20,9 +20,14 @@ while getopts 'cd:h' opt; do
             DATA_FOLDER="$OPTARG"
             printf "Starting with data folder: %s\n" "$DATA_FOLDER"
             ;;
+        r)
+            NV_VER="$OPTARG"
+            printf "Build with Nvidia Driver version: %s\n" "$NV_VER"
+            ;;
    
         ?|h)
             printf "Usage:\n$(basename $0) [-d] /path/to/your/data/folder\n"
+            printf "$(basename $0) [-r] Build with you driver version from nvidia-smi\n"
             exit 1
             ;;
     esac
@@ -33,4 +38,4 @@ printf "\n"
 # Warning xhost + is overly permissive and will reduce system security. Edit as desired
 docker build . -t deepfacelive --build-arg NV_VER=$NV_VER
 xhost +
-docker run --ipc host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $DATA_FOLDER:/data/ $CAM0 $CAM1 $CAM2 $CAM3  --rm -it deepfacelive
+docker run --ipc host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $DATA_FOLDER:/usr/local/deepfacelive_data/ $CAM0 $CAM1 $CAM2 $CAM3  --rm -it deepfacelive
