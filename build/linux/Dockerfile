@@ -10,7 +10,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN git clone https://github.com/iperov/DeepFaceLive.git
 
 RUN python -m pip install --upgrade pip
-RUN python -m pip install onnxruntime-gpu==1.12.1 numpy==1.21.6 h5py numexpr protobuf==3.20.1 opencv-python==4.7.0.68 opencv-contrib-python==4.7.0.68 pyqt6==6.4.0 onnx==1.13.0 torch==1.10.0 torchvision==0.11.1
+RUN python -m pip install onnxruntime-gpu==1.14.1 numpy==1.21.6 h5py numexpr protobuf==3.20.1 opencv-python==4.7.0.72 opencv-contrib-python==4.7.0.72 pyqt6==6.5.0 onnx==1.13.0 torch==1.13.1 torchvision==0.14.1
 
 RUN apt install -y libnvidia-compute-$NV_VER
 

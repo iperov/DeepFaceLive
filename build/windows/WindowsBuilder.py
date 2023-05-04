@@ -1,6 +1,7 @@
 import argparse
 import os
 import shutil
+import ssl
 import subprocess
 import time
 import urllib.request
@@ -81,7 +82,7 @@ class WindowsFolderBuilder:
         f = None
         while True:
             try:
-                url_request = urllib.request.urlopen(url)
+                url_request = urllib.request.urlopen(url, context=ssl._create_unverified_context())
                 url_size = int( url_request.getheader('content-length') )
 
                 if use_cached:
@@ -462,7 +463,7 @@ pause
 """)
 
 
-def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backend='cuda'):
+def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.8.10', backend='cuda'):
 
     builder = WindowsFolderBuilder(release_path=Path(release_dir),
                                    cache_path=Path(cache_dir),
@@ -475,19 +476,19 @@ def build_deepfacelive_windows(release_dir, cache_dir, python_ver='3.7.9', backe
     builder.install_pip_package('h5py')
     builder.install_pip_package('numexpr')
     builder.install_pip_package('protobuf==3.20.1')
-    builder.install_pip_package('opencv-python==4.7.0.68')
-    builder.install_pip_package('opencv-contrib-python==4.7.0.68')
-    builder.install_pip_package('pyqt6==6.4.0')
+    builder.install_pip_package('opencv-python==4.7.0.72')
+    builder.install_pip_package('opencv-contrib-python==4.7.0.72')
+    builder.install_pip_package('pyqt6==6.5.0')
     builder.install_pip_package('onnx==1.13.0')
 
     if backend == 'cuda':
         #builder.install_pip_package('torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html')
         #builder.install_pip_package('torch==1.11.0+cu115 torchvision==0.12.0+cu115 -f https://download.pytorch.org/whl/torch_stable.html')
-        builder.install_pip_package('torch==1.12.1+cu116 torchvision==0.13.1+cu116 -f https://download.pytorch.org/whl/torch_stable.html')
+        builder.install_pip_package('torch==1.13.1+cu117 torchvision==0.14.1+cu117 -f https://download.pytorch.org/whl/torch_stable.html')
         
-        builder.install_pip_package('onnxruntime-gpu==1.13.1')
+        builder.install_pip_package('onnxruntime-gpu==1.14.1')
     elif backend == 'directml':
-        builder.install_pip_package('onnxruntime-directml==1.13.1')
+        builder.install_pip_package('onnxruntime-directml==1.14.1')
 
     builder.install_ffmpeg_binaries()
 
@@ -562,7 +563,7 @@ if __name__ == '__main__':
     p.add_argument('--build-type', required=True, choices=['dfl-windows'])
     p.add_argument('--release-dir', action=fixPathAction, default=None)
     p.add_argument('--cache-dir', action=fixPathAction, default=None)
-    p.add_argument('--python-ver', default="3.7.9")
+    p.add_argument('--python-ver', default="3.8.10")
     p.add_argument('--backend', choices=['cuda', 'directml'], default='cuda')
 
     args = p.parse_args()
