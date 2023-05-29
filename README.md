@@ -352,7 +352,7 @@ QQ群124500433
 Train your own face model by following the recommendations in the FAQ section and share it on Discord. If the model fits the quality, it will be added to the public library.
 </td></tr>
 <tr><td colspan=2 align="center">
-Register github account and push "Star" button.
+Register GitHub account and push "Star" button.
 </td></tr>
 <!--<tr><td colspan=2 align="center">
 <a href="https://www.paypal.com/paypalme/DeepFaceLab">Donate via Paypal</a>
