@@ -12,7 +12,7 @@
 
 <tr><td colspan=2 align="center">
 
-## Face Swapper
+## Face Swap (DFM)
 
 You can swap your face from a webcam or the face in the video using trained face models.
 
@@ -234,6 +234,21 @@ Tina Shift
 If you want a higher quality or better face match, you can train your own face model using <a href="https://github.com/iperov/DeepFaceLab">DeepFaceLab</a>
 
 Here is an <a href="https://www.tiktok.com/@arnoldschwarzneggar/video/6995538782204300545">example</a> of Arnold Schwarzneggar trained on a particular face and used in a video call. Read the FAQ for more information.
+
+</td></tr>
+
+</table>
+<table align="center" border="0">
+
+<tr><td colspan=2 align="center">
+
+## Face Swap (Insight)
+
+You can swap your face from a webcam or the face in the video using your own single photo.
+
+<img src="doc/lukashenko.png" width=128></img>
+
+<img src="doc/insight_faceswap_example.gif"></img>
 
 </td></tr>
 

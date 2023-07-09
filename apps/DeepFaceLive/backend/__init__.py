@@ -7,7 +7,8 @@ from .FaceAnimator import FaceAnimator
 from .FaceDetector import FaceDetector
 from .FaceMarker import FaceMarker
 from .FaceMerger import FaceMerger
-from .FaceSwapper import FaceSwapper
+from .FaceSwapInsight import FaceSwapInsight
+from .FaceSwapDFM import FaceSwapDFM
 from .FileSource import FileSource
 from .FrameAdjuster import FrameAdjuster
 from .StreamOutput import StreamOutput

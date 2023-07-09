@@ -10,6 +10,8 @@ from xlib import cv as lib_cv
 repo_root = Path(__file__).parent.parent
 large_files_list = [ (repo_root / 'modelhub' / 'onnx' / 'S3FD' / 'S3FD.onnx', 48*1024*1024),
                      (repo_root / 'modelhub' / 'onnx' / 'LIA' / 'generator.onnx', 48*1024*1024),
+                     (repo_root / 'modelhub' / 'onnx' / 'InsightFaceSwap' / 'inswapper_128.onnx', 48*1024*1024),
+                     (repo_root / 'modelhub' / 'onnx' / 'InsightFaceSwap' / 'w600k_r50.onnx', 48*1024*1024),
                      (repo_root / 'modelhub' / 'torch' / 'S3FD' / 'S3FD.pth', 48*1024*1024),
                      (repo_root / 'modelhub' / 'cv' / 'FaceMarkerLBF' / 'lbfmodel.yaml', 34*1024*1024),
                     ]

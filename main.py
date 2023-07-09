@@ -15,6 +15,15 @@ from xlib import os as lib_os
 #         # set environ for onnxruntime
 #         # os.environ['CUDA_PATH_V11_2'] = os.environ['CUDA_PATH']
 
+# from modelhub.onnx import InsightFaceSwap
+
+# x = InsightFaceSwap(InsightFaceSwap.get_available_devices()[0])
+
+
+# import code
+# code.interact(local=dict(globals(), **locals()))
+
+
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()

@@ -65,7 +65,16 @@ class Localization:
                 'it-IT' : 'Regola la combinazione dei dispositivi del modulo per ottenere fps più alti o un minore utilizzo della CPU.',
                 'ja-JP' : 'モジュールデバイスの組み合わせを調整し、より高いfpsや低いCPU使用率を実現します',
                 'de-DE' : 'Passen Sie die Kombination der geräte in den Modulen an, um höhere Bildraten oder eine geringere CPU-Auslastung zu erzielen.'},
-
+    
+    'common.face_id':{
+                'en-US' : 'Face ID',
+                'ru-RU' : 'Номер лица',
+                'zh-CN' : '人脸ID',
+                'es-ES' : 'ID de la cara',
+                'it-IT' : 'ID della faccia',
+                'ja-JP' : '顔のID番号',
+                'de-DE' : 'Gesichts ID'},
+                
     'QBackendPanel.start':{
                 'en-US' : 'Start',
                 'ru-RU' : 'Запустить',
@@ -751,17 +760,44 @@ class Localization:
                 'it-IT' : 'Azzeramento della posa di riferimento',
                 'ja-JP' : '元の画像に戻す',
                 'de-DE' : 'Referenzpose zurücksetzen'},
+    
+    'QFaceSwapInsight.module_title':{
+                'en-US' : 'Face swap (Insight)',
+                'ru-RU' : 'Замена лица (Insight)',
+                'zh-CN' : 'Face swap (Insight)',
+                'es-ES' : 'Face swap (Insight)',
+                'it-IT' : 'Face swap (Insight)',
+                'ja-JP' : 'Face swap (Insight)',
+                'de-DE' : 'Face swap (Insight)'},
+                
+    'QFaceSwapInsight.face':{
+                'en-US' : 'Face',
+                'ru-RU' : 'Лицо',
+                'zh-CN' : 'Face',
+                'es-ES' : 'Face',
+                'it-IT' : 'Face',
+                'ja-JP' : 'Face',
+                'de-DE' : 'Face'},
+                
+    'QFaceSwapInsight.match':{
+                'en-US' : 'Match',
+                'ru-RU' : 'Соответствие',
+                'zh-CN' : 'Match',
+                'es-ES' : 'Match',
+                'it-IT' : 'Match',
+                'ja-JP' : 'Match',
+                'de-DE' : 'Match'},
+                
+    'QFaceSwapDFM.module_title':{
+                'en-US' : 'Face swap (DFM)',
+                'ru-RU' : 'Замена лица (DFM)',
+                'zh-CN' : '人脸交换器 (DFM)',
+                'es-ES' : 'Intercambiador de caras (DFM)',
+                'it-IT' : 'Scambiatore di facce (DFM)',
+                'ja-JP' : '顔の入れ替え (DFM)',
+                'de-DE' : 'Gesichtstauscher (DFM)'},
 
-    'QFaceSwapper.module_title':{
-                'en-US' : 'Face swapper',
-                'ru-RU' : 'Замена лица',
-                'zh-CN' : '人脸交换器',
-                'es-ES' : 'Intercambiador de caras',
-                'it-IT' : 'Scambiatore di facce',
-                'ja-JP' : '顔の入れ替え',
-                'de-DE' : 'Gesichtstauscher'},
-
-    'QFaceSwapper.model':{
+    'QFaceSwapDFM.model':{
                 'en-US' : 'Model',
                 'ru-RU' : 'Модель',
                 'zh-CN' : '模型',
@@ -770,7 +806,7 @@ class Localization:
                 'ja-JP' : 'モデル',
                 'de-DE' : 'Modell'},
 
-    'QFaceSwapper.help.model':{
+    'QFaceSwapDFM.help.model':{
                 'en-US' : 'Model file from a folder or available for download from the Internet.\nYou can train your own model in DeepFaceLab.',
                 'ru-RU' : 'Файл модели из папки, либо доступные для загрузки из интернета.\nВы можете натренировать свою собственную модель в прогармме DeepFaceLab.',
                 'zh-CN' : '从本地文件夹载入，没有的话可从deepfacelab官方中文论坛dfldata.xyz下载模型文件。\您可以用 DeepFaceLab 训练自己的模型。',
@@ -779,7 +815,7 @@ class Localization:
                 'ja-JP' : 'モデルファイルをローカルまたはウェブからダウンロードして入力できます\n独自のモデルを作りたいときはDFLでトレーニングできます',
                 'de-DE' : 'Modelldatei aus einem Ordner oder verfügbar zum Herunterladen aus dem Internet.\nSie können Ihr eigenes Modell in DeepFaceLab trainieren.'},
 
-    'QFaceSwapper.swap_all_faces':{
+    'QFaceSwapDFM.swap_all_faces':{
                 'en-US' : 'Swap all faces',
                 'ru-RU' : 'Заменить все лица',
                 'zh-CN' : '改变所有面孔',
@@ -788,16 +824,9 @@ class Localization:
                 'ja-JP' : 'すべての顔を入替える',
                 'de-DE' : 'Alle Gesichter tauschen'},
 
-    'QFaceSwapper.face_id':{
-                'en-US' : 'Face ID',
-                'ru-RU' : 'Номер лица',
-                'zh-CN' : '人脸ID',
-                'es-ES' : 'ID de la cara',
-                'it-IT' : 'ID della faccia',
-                'ja-JP' : '顔のID番号',
-                'de-DE' : 'Gesichts ID'},
+    
 
-    'QFaceSwapper.help.face_id':{
+    'QFaceSwapDFM.help.face_id':{
                 'en-US' : 'Face ID to swap.',
                 'ru-RU' : 'Номер лица для замены',
                 'zh-CN' : '待换的人脸ID',
@@ -806,7 +835,7 @@ class Localization:
                 'ja-JP' : '指定したID番号の顔のみ入替えます',
                 'de-DE' : 'Gesichts ID zum Tauschen.'},
 
-    'QFaceSwapper.morph_factor':{
+    'QFaceSwapDFM.morph_factor':{
                 'en-US' : 'Morph factor',
                 'ru-RU' : 'Степень морфа',
                 'zh-CN' : '变形因子',
@@ -815,7 +844,7 @@ class Localization:
                 'ja-JP' : 'モーフィング係数',
                 'de-DE' : 'Morph-Faktor'},
 
-    'QFaceSwapper.help.morph_factor':{
+    'QFaceSwapDFM.help.morph_factor':{
                 'en-US' : 'Controls degree of face morph from source to celeb.',
                 'ru-RU' : 'Контролирует степень морфа лица от исходного в знаменитость.',
                 'zh-CN' : '控制从源人脸到目标人脸的面部变形程度。',
@@ -824,7 +853,7 @@ class Localization:
                 'ja-JP' : '顔の変化の度合いを調整します',
                 'de-DE' : 'Steuert den Grad des Gesichtsmorphs von der Quelle zum Prominenten.'},
 
-    'QFaceSwapper.presharpen_amount':{
+    'QFaceSwapDFM.presharpen_amount':{
                 'en-US' : 'Pre-sharpen',
                 'ru-RU' : 'Пред-резкость',
                 'zh-CN' : '预先锐化',
@@ -833,7 +862,7 @@ class Localization:
                 'ja-JP' : '事前シャープ化',
                 'de-DE' : 'Vor-Schärfen'},
 
-    'QFaceSwapper.help.presharpen_amount':{
+    'QFaceSwapDFM.help.presharpen_amount':{
                 'en-US' : 'Sharpen the image before feed into the neural network.',
                 'ru-RU' : 'Увеличить резкость лица до замены в нейронной сети.',
                 'zh-CN' : '在送入神经网络前提前对图片锐化',
@@ -842,7 +871,7 @@ class Localization:
                 'ja-JP' : 'ニューラルネットワークに入力する前に画像をシャープネス処理します',
                 'de-DE' : 'Schärfen Sie das Bild, bevor Sie es in das neuronale Netz laden.'},
 
-    'QFaceSwapper.pregamma':{
+    'QFaceSwapDFM.pregamma':{
                 'en-US' : 'Pre-gamma',
                 'ru-RU' : 'Пред-гамма',
                 'zh-CN' : '预先伽马校正',
@@ -851,7 +880,7 @@ class Localization:
                 'ja-JP' : '事前ガンマ補正',
                 'de-DE' : 'Vor-Gamma'},
 
-    'QFaceSwapper.help.pregamma':{
+    'QFaceSwapDFM.help.pregamma':{
                 'en-US' : 'Change gamma of the image before feed into the neural network.',
                 'ru-RU' : 'Изменить гамму лица до замены в нейронной сети.',
                 'zh-CN' : '在送入神经网络前提前对图片伽马校正',
@@ -860,7 +889,7 @@ class Localization:
                 'ja-JP' : 'ニューラルネットワークに入力する前に画像の色の明暗を処理します',
                 'de-DE' : 'Ändern Sie das Gamma des Bildes, bevor Sie es in das neuronale Netz laden.'},
 
-    'QFaceSwapper.postgamma':{
+    'QFaceSwapDFM.postgamma':{
                 'en-US' : 'Post-gamma',
                 'ru-RU' : 'Пост-гамма',
                 'zh-CN' : '后伽马校正',
@@ -869,7 +898,7 @@ class Localization:
                 'ja-JP' : '事後ガンマ補正',
                 'de-DE' : 'Nach-Gamma'},
 
-    'QFaceSwapper.two_pass':{
+    'QFaceSwapDFM.two_pass':{
                 'en-US' : 'Two pass',
                 'ru-RU' : '2 прохода',
                 'zh-CN' : '双重处理人脸',
@@ -878,7 +907,7 @@ class Localization:
                 'ja-JP' : '2パス処理',
                 'de-DE' : 'Zwei Durchgänge'},
 
-    'QFaceSwapper.help.two_pass':{
+    'QFaceSwapDFM.help.two_pass':{
                 'en-US' : 'Process the face twice. Reduces the fps by a factor of 2.',
                 'ru-RU' : 'Обработать лицо дважды. Снижает кадр/сек в 2 раза.',
                 'zh-CN' : '处理面部两次。 fps随之减半',
@@ -1292,7 +1321,7 @@ class Localization:
                 'ja-JP' : 'From static rect',
                 'de-DE' : 'Vom statischen Rechteck'},
                 
-    'FaceSwapper.model_information':{
+    'FaceSwapDFM.model_information':{
                 'en-US' : 'Model information',
                 'ru-RU' : 'Информация о модели',
                 'zh-CN' : '模型信息',
@@ -1301,7 +1330,7 @@ class Localization:
                 'ja-JP' : 'モデル情報',
                 'de-DE' : 'Modellinformationen'},
 
-    'FaceSwapper.filename':{
+    'FaceSwapDFM.filename':{
                 'en-US' : 'Filename:',
                 'ru-RU' : 'Имя файла:',
                 'zh-CN' : '文件名',
@@ -1310,7 +1339,7 @@ class Localization:
                 'ja-JP' : 'ファイル名',
                 'de-DE' : 'Dateiname:'},
 
-    'FaceSwapper.resolution':{
+    'FaceSwapDFM.resolution':{
                 'en-US' : 'Resolution:',
                 'ru-RU' : 'Разрешение:',
                 'zh-CN' : '分辨率',
@@ -1319,7 +1348,7 @@ class Localization:
                 'ja-JP' : '解像度',
                 'de-DE' : 'Auflösung:'},
 
-    'FaceSwapper.downloading_model':{
+    'FaceSwapDFM.downloading_model':{
                 'en-US' : 'Downloading model...',
                 'ru-RU' : 'Загрузка модели...',
                 'zh-CN' : '下载模型中...',
