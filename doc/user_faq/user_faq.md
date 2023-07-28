@@ -57,7 +57,7 @@ If you are novice, learn all about DeepFaceLab https://mrdeepfakes.com/forums/th
 
 Gather 5000+ samples of your face with various conditions using webcam which will be used for Live. The conditions are as follows: different lighting, different facial expressions, head direction, eyes direction, being far or closer to the camera, etc. Sort faceset by best to 2000.
 
-Here public storage https://disk.yandex.ru/d/7i5XTKIKVg5UUg with facesets and models.
+Here public storage https://helurl.com/drive/s/IfmyaC4f1IvScaWknpU8DrpecacgZ6 with facesets and models.
 
 > Using pretrained "RTT model 224 V2.zip" from public storage (see above)
 
