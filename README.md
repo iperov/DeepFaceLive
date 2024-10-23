@@ -346,10 +346,6 @@ NVIDIA build : NVIDIA cards only, GT730 and higher. Works faster than DX12. Face
 </td><td align="left">Official discord channel. English / Russian.</td></tr>
 
 <tr><td align="right">
-<a href="https://mrdeepfakes.com/forums/">mrdeepfakes</a>
-</td><td align="left">the biggest NSFW English deepfake community</td></tr>
-
-<tr><td align="right">
 <a href="https://www.dfldata.cc">dfldata.cc</a>
 </td><td align="left">中文交流论坛，免费软件教程、模型、人脸数据</td></tr>
 
